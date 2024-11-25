@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class SQLtest {
     public static void main(String[] args) throws Exception{
-        String url = "jdbc:mysql://localhost:3306/flights";
+        String url = "jdbc:mysql://localhost:3306/flights_project";
         String username = "project";
         String password = "project";
         String query = "SELECT * FROM booking";
@@ -17,7 +17,7 @@ public class SQLtest {
         Statement st = con.createStatement();
         ResultSet rs = st.executeQuery(query);
         rs.next();
-        String name = rs.getString("email");
+        String name = rs.getString("booking_no");
         System.out.println(name);
         st.close();
         con.close();
