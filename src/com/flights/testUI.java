@@ -9,16 +9,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Properties;
 
-public class testUI extends JFrame{
-    
+public class testUI extends JFrame implements ItemListener{
+    ButtonGroup flightType;
+    JRadioButton returnFlight;
+    JRadioButton oneWayFlight;
     JPanel flightSelectionPanel;
     String DEPARTURE_PLACEHOLDER = "Departure";
     String ARRIVAL_PLACEHOLDER = "Arrival";
+    JDatePickerImpl datePicker2;
+
     testUI () {
         setLayout(new BorderLayout());
         flightSelectionPanel = new JPanel();
@@ -44,18 +50,24 @@ public class testUI extends JFrame{
         JDatePanelImpl datePanel = new JDatePanelImpl(model, new Properties());
         JDatePanelImpl datePanel2 = new JDatePanelImpl(model2, new Properties());
         JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
-        JDatePickerImpl datePicker2 = new JDatePickerImpl(datePanel2, new DateLabelFormatter());
+        datePicker2 = new JDatePickerImpl(datePanel2, new DateLabelFormatter());
 
-        ButtonGroup flightType = new ButtonGroup();
-        JRadioButton returnFlight = new JRadioButton("Return Flight");
-        JRadioButton oneWayFlight = new JRadioButton("One Way Flight");
+        flightType = new ButtonGroup();
+
+        returnFlight = new JRadioButton("Return Flight");
         returnFlight.setSelected(true);
         returnFlight.setBackground(new Color(0x02610e));
         returnFlight.setForeground(Color.WHITE);
+
+        oneWayFlight = new JRadioButton("One Way Flight");
         oneWayFlight.setBackground(new Color(0x02610e));
         oneWayFlight.setForeground(Color.WHITE);
+
         flightType.add(returnFlight);
         flightType.add(oneWayFlight);
+
+        returnFlight.addItemListener(this);
+        oneWayFlight.addItemListener(this);
 
         JTextField departureField = new JTextField(20);
         departureField.setText(DEPARTURE_PLACEHOLDER);
@@ -113,7 +125,7 @@ public class testUI extends JFrame{
         submitButton.addActionListener(e -> {
             String arrivalTime;
             String arrival;
-            String departureTime;
+            String departureTime = "";
             String departure;
 
             if (departureField.getText().equals(DEPARTURE_PLACEHOLDER)) {
@@ -128,18 +140,23 @@ public class testUI extends JFrame{
                 JOptionPane.showMessageDialog(this, "Please enter the departure date.","Warning", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            if (datePicker2.getJFormattedTextField().getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter the arrival date.","Warning", JOptionPane.WARNING_MESSAGE);
-                return;
+            if (returnFlight.isSelected()) {
+                
+                if (datePicker2.getJFormattedTextField().getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter the arrival date.","Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                departureTime = datePicker2.getJFormattedTextField().getText();
+                datePicker2.getJFormattedTextField().setText("");
             }
+            
             arrival = arrivalField.getText();
             departure = departureField.getText();
             departureField.setText(DEPARTURE_PLACEHOLDER);
             arrivalField.setText(ARRIVAL_PLACEHOLDER);
             arrivalTime = datePicker.getJFormattedTextField().getText();
-            departureTime = datePicker2.getJFormattedTextField().getText();
             datePicker.getJFormattedTextField().setText("");
-            datePicker2.getJFormattedTextField().setText("");
+            
 
             System.out.println(arrival);
             System.out.println(arrivalTime);
@@ -163,7 +180,20 @@ public class testUI extends JFrame{
         setSize(871,504);
 
     }
+    public void itemStateChanged(ItemEvent e)
+    {
+        if (e.getSource() == returnFlight) {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                datePicker2.setVisible(true);
+            }
+        }
+        else {
 
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                datePicker2.setVisible(false);
+            }
+        }
+    }
 
     //    Date label formatter will format the Object to a String
     private static class DateLabelFormatter extends AbstractFormatter {
