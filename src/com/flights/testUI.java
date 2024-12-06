@@ -4,14 +4,15 @@ import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
+import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Properties;
-
-import javax.swing.JFormattedTextField.AbstractFormatter;
 
 public class testUI extends JFrame{
     
@@ -41,16 +42,41 @@ public class testUI extends JFrame{
         JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
 
+        JTextField departureField = new JTextField(15);
+        departureField.setText("To");
+        departureField.setForeground(Color.DARK_GRAY);
+
+//        Add placeholder text
+        departureField.addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (departureField.getText().equals("To")) {
+                    departureField.setForeground(Color.BLACK);
+                    departureField.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (departureField.getText().isEmpty()) {
+                    departureField.setText("To");
+                    departureField.setForeground(Color.DARK_GRAY);
+                }
+            }
+        });
+        columnPanel1.add(departureField);
         columnPanel2.add(datePicker,BorderLayout.CENTER);
 
 
 
         add(flightSelectionPanel, BorderLayout.PAGE_START);
         setSize(871,504);
-        setVisible(true);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
     }
-//    Date label formatter will format the Object to a String
+
+
+    //    Date label formatter will format the Object to a String
     private static class DateLabelFormatter extends AbstractFormatter {
 
         private final String datePattern = "yyyy-MM-dd";
@@ -76,5 +102,7 @@ public class testUI extends JFrame{
 //    Main
     public static void main(String[] args) {
         testUI UI = new testUI();
+        UI.setVisible(true);
+        UI.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 }
