@@ -21,8 +21,8 @@ public class testUI extends JFrame implements ItemListener{
     JRadioButton returnFlight;
     JRadioButton oneWayFlight;
     JPanel flightSelectionPanel;
-    String DEPARTURE_PLACEHOLDER = "Departure";
-    String ARRIVAL_PLACEHOLDER = "Arrival";
+    String DEPARTURE_PLACEHOLDER = "Enter departure airport";
+    String ARRIVAL_PLACEHOLDER = "Enter arrival airport";
     JDatePickerImpl datePicker2;
 
     testUI () {
@@ -69,57 +69,9 @@ public class testUI extends JFrame implements ItemListener{
         returnFlight.addItemListener(this);
         oneWayFlight.addItemListener(this);
 
-        JTextField departureField = new JTextField(20);
-        departureField.setText(DEPARTURE_PLACEHOLDER);
-        departureField.setForeground(Color.DARK_GRAY);
+        JPlaceHolderTextField departureField = new JPlaceHolderTextField(DEPARTURE_PLACEHOLDER, 20);
 
-        JTextField arrivalField = new JTextField(20);
-        arrivalField.setText(ARRIVAL_PLACEHOLDER);
-        arrivalField.setForeground(Color.DARK_GRAY);
-
-//        Add placeholder text listener
-        class PlaceholderFocus implements FocusListener {
-
-//            Check if the focus gained and the placeholder is still in place
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (e.getSource().equals(departureField)) {
-                    if (((JTextField) e.getSource()).getText().equals(DEPARTURE_PLACEHOLDER)) {
-                        ((JTextField) e.getSource()).setForeground(Color.BLACK);
-                        ((JTextField) e.getSource()).setText("");
-                    }
-                }
-
-                if (e.getSource().equals(arrivalField)) {
-                    if (((JTextField) e.getSource()).getText().equals(ARRIVAL_PLACEHOLDER)) {
-                        ((JTextField) e.getSource()).setForeground(Color.BLACK);
-                        ((JTextField) e.getSource()).setText("");
-                    }
-                }
-            }
-
-//          Check if focus is lost and if nothing is typed, replace with placeholder
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (e.getSource().equals(departureField)) {
-                    if (((JTextField) e.getSource()).getText().isEmpty()) {
-                        ((JTextField) e.getSource()).setForeground(Color.BLACK);
-                        ((JTextField) e.getSource()).setText(DEPARTURE_PLACEHOLDER);
-                    }
-                }
-
-                if (e.getSource().equals(arrivalField)) {
-                    if (((JTextField) e.getSource()).getText().isEmpty()) {
-                        ((JTextField) e.getSource()).setForeground(Color.BLACK);
-                        ((JTextField) e.getSource()).setText(ARRIVAL_PLACEHOLDER);
-                    }
-                }
-            }
-        }
-
-
-        arrivalField.addFocusListener(new PlaceholderFocus());
-        departureField.addFocusListener(new PlaceholderFocus());
+        JPlaceHolderTextField arrivalField = new JPlaceHolderTextField(ARRIVAL_PLACEHOLDER,20);
 
         JButton submitButton = new JButton("Submit");
         submitButton.addActionListener(e -> {
