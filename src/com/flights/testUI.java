@@ -1,11 +1,13 @@
 package com.flights;
 
 // imports
+
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-import javax.swing.JFormattedTextField.AbstractFormatter;
+
 import javax.swing.*;
+import javax.swing.JFormattedTextField.AbstractFormatter;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
