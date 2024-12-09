@@ -42,7 +42,7 @@ public class SQLTest2 extends JFrame {
             add(boxNorth, BorderLayout.NORTH);
             add(new JScrollPane(resultTable), BorderLayout.CENTER);
             add(boxSouth, BorderLayout.SOUTH);
-            submitButton.addActionListener(_ -> {
+            submitButton.addActionListener(e -> {
                 try {
                     tableModel.setQuery(queryArea.getText());
                 } catch (SQLException sqlException) {
@@ -63,7 +63,7 @@ public class SQLTest2 extends JFrame {
             resultTable.setRowSorter(sorter);
             setSize(500, 250);
             setVisible(true);
-            filterButton.addActionListener(_ -> {
+            filterButton.addActionListener(e -> {
                 String text = filterText.getText();
                 if (text.isEmpty())
                     sorter.setRowFilter(null);
