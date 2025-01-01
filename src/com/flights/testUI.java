@@ -35,7 +35,7 @@ public class testUI extends JFrame implements ItemListener{
         flightSelectionPanel.setLayout(new GridLayout(1,3,10,10 ));
         flightSelectionPanel.setBackground(new Color(0x02610e)); // dark green colour
         flightSelectionPanel.setPreferredSize(new Dimension(871, 187));
-
+        
         // create 3 separate column panels for separating the different elements
         JPanel columnPanel1 = new JPanel();
         JPanel columnPanel2 = new JPanel();
