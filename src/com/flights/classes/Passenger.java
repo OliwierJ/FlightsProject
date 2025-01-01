@@ -4,8 +4,8 @@ public class Passenger {
     private final int passengerID;
     private final String firstName;
     private final String lastName;
-    private String seatNum;
-    private String seatClass;
+    private final String seatNum;
+    private final String seatClass;
     private String returnSeatNum;
     private String returnSeatClass;
 

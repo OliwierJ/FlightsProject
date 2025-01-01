@@ -1,11 +1,10 @@
 package com.flights.classes;
 
 public abstract class Aircraft {
-    private int id;
-    private int economySeats;
-    private int businessSeats;
-    private int firstClassSeats;
-    private Seat seats[];
+    private final int id;
+    private final int economySeats;
+    private final int businessSeats;
+    private final int firstClassSeats;
     private int seatAmount;
 
     public Aircraft(int id, int economySeats, int businessSeats, int firstClassSeats) {
@@ -14,7 +13,7 @@ public abstract class Aircraft {
         this.businessSeats = businessSeats;
         this.firstClassSeats = firstClassSeats;
         this.seatAmount = countSeats();
-        seats = new Seat[seatAmount];
+        Seat[] seats = new Seat[seatAmount];
 
     }
 
