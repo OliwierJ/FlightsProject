@@ -80,7 +80,17 @@ public final class DBUtil {
     public static String[][] getFlightInfo(String dep, String arr) throws Exception {
         return getMultipleRows(connectAndExecuteQuery("SELECT * FROM flight WHERE departure_airport='"+dep+"' AND arrival_airport='"+arr+"'"));
     }
+    // gets all the passenger info matching the passenger ID
+    public static String[] getPassengerInfo(String passengerID) throws Exception{
+        String[] result = getRow(connectAndExecuteQuery("SELECT * FROM passenger WHERE passenger_id="+passengerID));
+        closeConnection();
+        return result;
+    }
 
+    // gets just the passengers from the booking ID
+    public static String[][] getPassengersFromBookingID(String bookingID) throws Exception {
+        return getMultipleRows(connectAndExecuteQuery("SELECT passenger.*  FROM passenger WHERE booking_no="+bookingID));
+    }
     // verifies given booking details, true if details valid, false if invalid
     public static boolean verifyBookingDetails(String bookingID, String email) throws Exception {
         boolean valid = connectAndExecuteQuery("SELECT * FROM booking WHERE booking_no='"+bookingID+"' AND email='"+email+"'").next(); // true if entry exists, false otherwise
@@ -88,9 +98,14 @@ public final class DBUtil {
         return valid;
     }
 
+    /* Is this needed? Especially as the Passenger Class already holds this information */
     // gets all relevant passenger information from a given booking ID, contains name, surname, seat no, seat class
     public static String[][] getPassengerInfoFromBookingID(String bookingID) throws Exception {
         return getMultipleRows(connectAndExecuteQuery("SELECT passenger.first_name, passenger.last_name, seat_passenger.seat_no, seat_passenger.is_return, seat.class FROM ((seat_passenger INNER JOIN passenger ON seat_passenger.passenger_id = passenger.passenger_ID) INNER JOIN seat ON seat_passenger.seat_no = seat.seat_no) WHERE booking_no="+bookingID));
+    }
+    // gets relevant seat information for a passenger from a given passenger ID, so the seat number and seat class.
+    public static String[][] getSeatFromPassengerID(String passengerID) throws Exception {
+        return getMultipleRows(connectAndExecuteQuery("SELECT seat.seat_no, seat.class FROM seat_passenger INNER JOIN seat ON seat_passenger.seat_no = seat.seat_no WHERE passenger_id="+passengerID));
     }
 
     // gets all booked flights from a given booking ID, departure and return flight (if applicable)
