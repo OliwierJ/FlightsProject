@@ -1,4 +1,4 @@
-package com.flights;
+package com.flights.tests;
 
 import java.sql.*;
 
@@ -44,16 +44,22 @@ public final class DBUtil {
         return result;
     }
 
-    // closes a connection after executing QUERY, uses statement
+    // closes a connection after executing
     private static void closeConnection() throws Exception{
-        stmt.close();
-        con.close();
-    }
-
-    // closes a connection after executing UPDATE, used prepared statement
-    private static void closeUpdateConnection() throws Exception {
-        pstmt.close();
-        con.close();
+        // tries to close either statement or prepared statement, depending on the type of query used
+        try {
+            stmt.close();
+        } catch (Exception e) {
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+        } finally {
+            try {
+                con.close();
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     // connects and executes an UPDATE (e.g. INSERT, UPDATE) that modifies the database
@@ -101,7 +107,7 @@ public final class DBUtil {
     /* Is this needed? Especially as the Passenger Class already holds this information */
     // gets all relevant passenger information from a given booking ID, contains name, surname, seat no, seat class
     public static String[][] getPassengerInfoFromBookingID(String bookingID) throws Exception {
-        return getMultipleRows(connectAndExecuteQuery("SELECT passenger.first_name, passenger.last_name, seat_passenger.seat_no, seat_passenger.is_return, seat.class FROM ((seat_passenger INNER JOIN passenger ON seat_passenger.passenger_id = passenger.passenger_ID) INNER JOIN seat ON seat_passenger.seat_no = seat.seat_no) WHERE booking_no="+bookingID));
+        return getMultipleRows(connectAndExecuteQuery("SELECT passenger.passenger_ID, passenger.first_name, passenger.last_name, seat_passenger.seat_no, seat_passenger.is_return, seat.class FROM ((seat_passenger INNER JOIN passenger ON seat_passenger.passenger_id = passenger.passenger_ID) INNER JOIN seat ON seat_passenger.seat_no = seat.seat_no) WHERE booking_no="+bookingID));
     }
     // gets relevant seat information for a passenger from a given passenger ID, so the seat number and seat class.
     public static String[][] getSeatFromPassengerID(String passengerID) throws Exception {
@@ -127,7 +133,7 @@ public final class DBUtil {
         if (arrFlightID != -1) {
             connectAndExecuteUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES ("+arrFlightID+", '"+bookingID+"', 1)");
         }
-        closeUpdateConnection();
+        closeConnection();
     }
 
     // overloaded above method, used in the event no return flight is booked
@@ -136,6 +142,9 @@ public final class DBUtil {
     }
 
     // adds a single passenger to a booking and updates all relevant tables
+    // TODO: DOESN'T CHECK IS SEAT OCCUPIED OR NOT, THIS MUST BE IMPLEMENTED
+    // Will throw SQLException if non-existing bookingID or seatNo provided, as these fields are used as foreign keys in these tables, input must be checked beforehand in driver class
+
     public static void addPassengerWithSeats(String bookingID, String name, String surname, String depSeat, String returnSeat) throws Exception {
         connectAndExecuteUpdate("INSERT INTO passenger (first_name, last_name, booking_no) VALUES ('"+name+"', '"+surname+"', '"+bookingID+"')");
 
@@ -155,7 +164,75 @@ public final class DBUtil {
         addPassengerWithSeats(bookingID, name, surname, depSeat, null);
     }
 
-    //TODO: update booking (passenger details, change seat, priority, luggage)
+    // updates booking details
+    public static void updateBooking(String bookingID, String email, int priority, int noOfLuggage) throws Exception{
+        ResultSet rs = connectAndExecuteQuery("SELECT * FROM booking WHERE booking_no='"+bookingID+"'");
+        if (!rs.next()) {
+            closeConnection();
+            throw new IllegalArgumentException("No such booking exists!");
+        }
+        connectAndExecuteUpdate("UPDATE booking SET email='"+email+"', priority_boarding="+priority+", luggage_amount="+noOfLuggage+" WHERE booking_no="+bookingID);
+        closeConnection();
+    }
+
+    // updates passenger details
+    public static void updatePassenger(int passengerID, String name, String surname) throws Exception{
+        ResultSet rs = connectAndExecuteQuery("SELECT * FROM passenger WHERE passenger_ID="+passengerID);
+        if (!rs.next()) {
+            closeConnection();
+            throw new IllegalArgumentException("No such passenger exists!");
+        }
+        connectAndExecuteUpdate("UPDATE passenger SET first_name='"+name+"', last_name='"+surname+"' WHERE passenger_ID="+passengerID);
+        closeConnection();
+    }
+
+    // private method updates a seat
+    private static void updateSeat(int passengerID, String seat, int isReturn) throws Exception{ // 0 for departure flight, 1 for return flight
+        ResultSet rs = connectAndExecuteQuery("SELECT * FROM passenger WHERE passenger_ID="+passengerID);
+        if (!rs.next()) {
+            closeConnection();
+            throw new IllegalArgumentException("No such passenger exists!");
+        }
+        // gets seat from seat table that passenger is currently in, needs seat_no from seat_passenger table and flight_id of the booking
+        // fully automatic way of getting flight ID, no need to pass around flightIDs or existing seats in driver program, just passengerID needed
+        String[] flightIDS = getRow(connectAndExecuteQuery("SELECT DISTINCT flight_booking.flight_id FROM flight_booking INNER JOIN booking b on flight_booking.booking_no = b.booking_no INNER JOIN passenger p on b.booking_no = p.booking_no INNER JOIN seat_passenger sp on p.passenger_ID = sp.passenger_id WHERE sp.passenger_id="+passengerID+"AND flight_booking.is_return="+isReturn));
+        String flightID = flightIDS[0];
+        String[] existingSeat = getRow(connectAndExecuteQuery("SELECT seat_passenger.seat_no FROM seat_passenger WHERE passenger_id="+passengerID+" AND is_return=0"));
+        String existingSeatNo = existingSeat[0];
+
+        // sets the current seat to be not occupied anymore
+        connectAndExecuteUpdate("UPDATE seat SET is_occupied=0 WHERE seat_no='"+existingSeatNo+"' AND flight_id="+flightID);
+        // updates the new seat to be occupied
+        connectAndExecuteUpdate("UPDATE seat SET is_occupied=1 WHERE seat_no='"+seat+"' AND flight_id="+flightID);
+        connectAndExecuteUpdate("UPDATE seat_passenger SET seat_no='"+seat+"' WHERE passenger_id="+passengerID+" AND is_return="+isReturn);
+        closeConnection();
+    }
+
+    // wrapper method for updateSeat
+    public static void updatePassengerDepartureSeat(int passengerID, String depSeat) throws Exception{
+        updateSeat(passengerID, depSeat, 0);
+    }
+
+    // wrapper method for updateSeat
+    public static void updatePassengerReturnSeat(int passengerID, String returnSeat) throws Exception{
+        updateSeat(passengerID, returnSeat, 1);
+    }
+
+    // updates passenger details and seat(s)
+    public static void updatePassengerAndSeats(int passengerID, String name, String surname, String depSeat, String returnSeat) throws Exception{
+        updatePassenger(passengerID, name, surname);
+        updateSeat(passengerID, depSeat, 0);
+        if (returnSeat != null) {
+            updateSeat(passengerID, returnSeat, 1);
+        }
+    }
+
+    // overloaded method if no return seat needed
+    public static void updatePassengerAndSeats(int passengerID, String name, String surname, String depSeat) throws Exception{
+        updatePassengerAndSeats(passengerID, name, surname, depSeat,null);
+    }
+
+    //TODO: update booking (passenger details, change seat, priority, luggage) TODO TESTING
     //TODO: cancel booking (delete booking, passengers, free up seats, etc)
     //TODO: add planes and generate seats database (one time use)
 

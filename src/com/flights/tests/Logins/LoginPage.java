@@ -1,11 +1,9 @@
-package com.flights.Logins;
+package com.flights.tests.Logins;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.logging.LoggingPermission;
 
 
 public class LoginPage extends JPanel implements ActionListener {

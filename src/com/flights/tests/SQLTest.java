@@ -19,8 +19,8 @@ public class SQLTest {
 
 
         // This should add all details for a booking with 1 passenger return flight to database
-//        DBUtil.addBooking("696969", "google@google.ie", 1, 3, 100, 101);
-//        DBUtil.addPassengerWithSeats("696969", "Brandon", "Jaroszczak", "A1", "A2");
+        DBUtil.addBooking("696969", "google@google.ie", 1, 3, 100, 101);
+        DBUtil.addPassengerWithSeats("696969", "Brandon", "Jaroszczak", "A1", "A2");
 
         // This should retrieve all relevant booking details for a single booking
         if (DBUtil.verifyBookingDetails("696969", "google@google.ie")) {
@@ -28,7 +28,5 @@ public class SQLTest {
             System.out.println(Arrays.deepToString(DBUtil.getFlightInfoFromBookingID("696969")));
             System.out.println(Arrays.deepToString(DBUtil.getPassengerInfoFromBookingID("696969")));
         }
-
-        System.out.println(Arrays.deepToString(DBUtil.getSeatFromPassengerID("1")));;
     }
 }

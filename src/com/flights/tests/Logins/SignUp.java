@@ -1,4 +1,4 @@
-package com.flights.Logins;
+package com.flights.tests.Logins;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package com.flights;
+package com.flights.tests;
 
 //A TableModel that supplies ResultSet data to a JTable.
 
