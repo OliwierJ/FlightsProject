@@ -1,4 +1,4 @@
-package com.flights.classes;
+package com.flights.tests.classes;
 
 public class Passenger {
     private final int passengerID;

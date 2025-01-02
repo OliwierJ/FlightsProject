@@ -1,4 +1,4 @@
-package com.flights;
+package com.flights.tests;
 
 //Display the contents of the Authors table in the books database.
 

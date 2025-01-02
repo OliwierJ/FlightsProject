@@ -1,4 +1,6 @@
-package com.flights.classes;
+package com.flights.tests.classes;
+
+import com.flights.objects.Aircraft;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -58,7 +60,6 @@ public class Flight {
                 ", arrivalAirport='" + arrivalAirport + '\'' +
                 ", departureTime=" + departureTime +
                 ", arrivalTime=" + arrivalTime +
-                ", aircraft=" + aircraft.getId() +
                 '}';
     }
 }

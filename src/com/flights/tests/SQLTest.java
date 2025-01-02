@@ -1,4 +1,4 @@
-package com.flights;
+package com.flights.tests;
 
 import java.util.Arrays;
 
@@ -21,6 +21,15 @@ public class SQLTest {
         // This should add all details for a booking with 1 passenger return flight to database
         DBUtil.addBooking("696969", "google@google.ie", 1, 3, 100, 101);
         DBUtil.addPassengerWithSeats("696969", "Brandon", "Jaroszczak", "A1", "A2");
+        DBUtil.addPassengerWithSeats("696969", "Massey", "Ferguson", "A2", "A1");
+
+        // All the below methods should produce errors
+//        DBUtil.updateBooking("696969", "google@google.ie", 1, 3);
+//        DBUtil.updatePassenger(6, "Joe", "Black");
+//        DBUtil.updatePassengerAndSeats(6, "Joe", "Black", "A1");
+//        DBUtil.updatePassengerAndSeats(6, "Joe", "Black", "A1", "A2");
+//        DBUtil.updatePassengerDepartureSeat(6, "A1");
+//        DBUtil.updatePassengerReturnSeat(6, "A2");
 
         // This should retrieve all relevant booking details for a single booking
         if (DBUtil.verifyBookingDetails("696969", "google@google.ie")) {
@@ -28,5 +37,7 @@ public class SQLTest {
             System.out.println(Arrays.deepToString(DBUtil.getFlightInfoFromBookingID("696969")));
             System.out.println(Arrays.deepToString(DBUtil.getPassengerInfoFromBookingID("696969")));
         }
+
+//        DBUtil.updateBooking("696969", "updated@google.ie", 0, 1);
     }
 }

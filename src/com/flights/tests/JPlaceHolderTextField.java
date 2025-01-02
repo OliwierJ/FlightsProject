@@ -1,4 +1,4 @@
-package com.flights;
+package com.flights.tests;
 
 import javax.swing.*;
 import java.awt.*;
