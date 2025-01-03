@@ -5,12 +5,14 @@ public abstract class Aircraft {
     private final int businessSeats;
     private final int firstClassSeats;
     private int seatAmount;
+    private final String name;
 
-    public Aircraft(int economySeats, int businessSeats, int firstClassSeats) {
+    public Aircraft(int economySeats, int businessSeats, int firstClassSeats, String name) {
         this.economySeats = economySeats;
         this.businessSeats = businessSeats;
         this.firstClassSeats = firstClassSeats;
         this.seatAmount = countSeats();
+        this.name = name;
     }
 
     private int countSeats() {
@@ -24,12 +26,30 @@ public abstract class Aircraft {
         return seatAmount;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getEconomySeats() {
+        return economySeats;
+    }
+
+    public int getBusinessSeats() {
+        return businessSeats;
+    }
+
+    public int getFirstClassSeats() {
+        return firstClassSeats;
+    }
+
     @Override
     public String toString() {
         return "Aircraft{" +
-                ", economySeats=" + economySeats +
+                "economySeats=" + economySeats +
                 ", businessSeats=" + businessSeats +
                 ", firstClassSeats=" + firstClassSeats +
+                ", seatAmount=" + seatAmount +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

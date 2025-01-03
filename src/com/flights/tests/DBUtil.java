@@ -232,6 +232,8 @@ public final class DBUtil {
         updatePassengerAndSeats(passengerID, name, surname, depSeat,null);
     }
 
+    //TODO: delete this class after other todos are implemented in other classes
+
     //TODO: update booking (passenger details, change seat, priority, luggage) TODO TESTING
     //TODO: cancel booking (delete booking, passengers, free up seats, etc)
     //TODO: add planes and generate seats database (one time use)

@@ -2,6 +2,8 @@ package com.flights.objects;
 
 import com.flights.DBConnectivity;
 
+import java.sql.SQLException;
+
 public class Flight extends DBConnectivity {
     private int flightID;
     private String departureAirport;
@@ -26,8 +28,8 @@ public class Flight extends DBConnectivity {
             } else {
                 System.out.println("Unknown aircraft");
             }
-        } catch (Exception e) {
-            System.out.println("An error occurred!");
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("An error occurred!"+e.getMessage());
         }
     }
 

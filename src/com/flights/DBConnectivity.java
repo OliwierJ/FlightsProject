@@ -11,7 +11,7 @@ public abstract class DBConnectivity {
     private static final String PASSWORD = "project";
 
     // connects and executes a QUERY (e.g. SELECT) that doesn't modify the database, returns a result set
-    protected static ResultSet connectAndExecuteQuery(String query) throws Exception {
+    protected static ResultSet connectAndExecuteQuery(String query) throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
         con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -19,7 +19,7 @@ public abstract class DBConnectivity {
     }
 
     // converts the next row of a result set into a 1d array and closes connection
-    protected static String[] getRow(ResultSet rs) throws Exception{
+    protected static String[] getRow(ResultSet rs) throws SQLException {
         int colNo = rs.getMetaData().getColumnCount();
         String[] result = new String[colNo];
         rs.next();
@@ -31,7 +31,7 @@ public abstract class DBConnectivity {
     }
 
     // converts the next row of a result set into a 1d array, method only used by getMultipleRows(), flag is for different signature
-    private static String[] getRow(ResultSet rs, int flag) throws Exception{
+    private static String[] getRow(ResultSet rs, int flag) throws SQLException {
         int colNo = rs.getMetaData().getColumnCount(); // IGNROE DUPLICATED CODE WARNING FOR NOW
         String[] result = new String[colNo];
         rs.next();
@@ -42,7 +42,7 @@ public abstract class DBConnectivity {
     }
 
     // converts all rows of a result set into a 2d array format
-    protected static String[][] getMultipleRows(ResultSet rs) throws Exception{
+    protected static String[][] getMultipleRows(ResultSet rs) throws SQLException {
         int colNo = rs.getMetaData().getColumnCount();
         rs.last();
         int rowNo = rs.getRow();
@@ -57,7 +57,7 @@ public abstract class DBConnectivity {
     }
 
     // closes a connection after executing
-    protected static void closeConnection() throws Exception{
+    protected static void closeConnection() {
         // tries to close either statement or prepared statement, depending on the type of query used
         try {
             stmt.close();
@@ -75,7 +75,7 @@ public abstract class DBConnectivity {
     }
 
     // connects and executes an UPDATE (e.g. INSERT, UPDATE) that modifies the database
-    protected static void connectAndExecuteUpdate(String query) throws Exception{
+    protected static void connectAndExecuteUpdate(String query) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
         con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         pstmt = con.prepareStatement(query);
@@ -83,9 +83,9 @@ public abstract class DBConnectivity {
     }
 
     // gets entire table from a given table name
-    protected static String[][] getTable(String name) throws Exception {
+    protected static String[][] getTable(String name) throws SQLException, ClassNotFoundException {
         return getMultipleRows(connectAndExecuteQuery("SELECT * FROM "+name));
     }
 
-    public abstract void updateDatabase(); // OVERRIDE this method to implement updating the database based on the contents of the class
+    protected abstract void updateDatabase(); // override this method to implement updating the database based on the contents of the class
 }
