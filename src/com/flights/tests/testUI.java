@@ -18,7 +18,7 @@ import java.util.Properties;
 
 // start class
 // extends JFrame and implements ItemListener for radio buttons
-public class testUI extends JFrame implements ItemListener{
+public class testUI extends JPanel implements ItemListener{
     // variables
     private final JRadioButton returnFlight;
     private final String DEPARTURE_PLACEHOLDER = "Enter departure airport";
@@ -130,6 +130,11 @@ public class testUI extends JFrame implements ItemListener{
             System.out.println(departure);
             System.out.println(departureTime);
 
+            try {
+                createAndShowGUI(new FlightSelection(arrival,departure, returnFlight.isSelected()));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         // add all the components
@@ -144,7 +149,7 @@ public class testUI extends JFrame implements ItemListener{
 
         columnPanel3.add(submitButton);
         add(flightSelectionPanel, BorderLayout.PAGE_START);
-        setSize(871,504);
+        setPreferredSize(new Dimension(900, 800));
 
     }
 
@@ -189,11 +194,23 @@ public class testUI extends JFrame implements ItemListener{
 
     }
 
+
+    static JFrame frame = new JFrame("TestUI");
+    public static void createAndShowGUI(JPanel panel) {
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        try {
+            frame.setContentPane(panel);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     //    Main
+
     public static void main(String[] args) {
-        testUI UI = new testUI();
-        UI.setVisible(true);
-        UI.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        SwingUtilities.invokeLater(() -> {createAndShowGUI(new testUI());});
     }
 
 } // end class
