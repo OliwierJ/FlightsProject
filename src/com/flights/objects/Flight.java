@@ -3,13 +3,14 @@ package com.flights.objects;
 import com.flights.DBConnectivity;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class Flight extends DBConnectivity {
     private int flightID;
     private String departureAirport;
     private String arrivalAirport;
-    private String departureTime;
-    private String arrivalTime;
+    private Timestamp departureTime;
+    private Timestamp arrivalTime;
     private Aircraft aircraft;
 
     public Flight(int flightID) {
@@ -18,8 +19,8 @@ public class Flight extends DBConnectivity {
             this.flightID = flightID;
             this.departureAirport = result[0];
             this.arrivalAirport = result[1];
-            this.departureTime = result[2];
-            this.arrivalTime = result[3];
+            this.departureTime = Timestamp.valueOf(result[2]);
+            this.arrivalTime = Timestamp.valueOf(result[3]);
 
             // aircraft of flight goes here
             String[] aircraftResult = getRow(connectAndExecuteQuery("SELECT model, no_economy_seats, no_business_seats, no_firstclass_seats FROM plane WHERE aircraft_id="+result[4]));
@@ -33,6 +34,14 @@ public class Flight extends DBConnectivity {
         }
     }
 
+    public Flight(int flightID, String departureAirport, String arrivalAirport, Timestamp departureTime, Timestamp arrivalTime) {
+        this.flightID = flightID;
+        this.departureAirport = departureAirport;
+        this.arrivalAirport = arrivalAirport;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+    }
+
     public String getDepartureAirport() {
         return departureAirport;
     }
@@ -42,11 +51,11 @@ public class Flight extends DBConnectivity {
     }
 
     public String getDepartureTime() {
-        return departureTime;
+        return departureTime.toString();
     }
 
     public String getArrivalTime() {
-        return arrivalTime;
+        return arrivalTime.toString();
     }
 
     public Aircraft getAircraft() {
