@@ -131,7 +131,7 @@ public class testUI extends JPanel implements ItemListener{
             System.out.println(departureTime);
 
             try {
-                createAndShowGUI(new FlightSelection(arrival,departure, returnFlight.isSelected()));
+                createAndShowGUI(new FlightSelectionDemo(arrival,departure, returnFlight.isSelected()));
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -171,7 +171,6 @@ public class testUI extends JPanel implements ItemListener{
     }
 
     //    Date label formatter will format the Object to a String
-    // Lowkey have no clue whats going on here but it works ig
     private static class DateLabelFormatter extends AbstractFormatter {
 
         private final String datePattern = "yyyy-MM-dd";

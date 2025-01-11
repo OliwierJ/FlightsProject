@@ -4,6 +4,9 @@ import com.flights.DBConnectivity;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Random;
 
 public class Flight extends DBConnectivity {
     private int flightID;
@@ -41,7 +44,24 @@ public class Flight extends DBConnectivity {
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
     }
+    public Flight(String departureAirport, String arrivalAirport, String date) throws Exception {
+        try {
+            String[] aircraftResult = getRow(connectAndExecuteQuery("Select flight_id, " +
+                    "departure_time, arrival_time, aircraft_id FROM flight WHERE departure_airport=\""+departureAirport+"\" AND arrival_airport=\""+arrivalAirport + "\" AND CAST(departure_time AS DATE)=\""+date+"\""));
 
+
+            this.departureAirport = departureAirport;
+            this.arrivalAirport = arrivalAirport;
+            this.flightID = Integer.parseInt(aircraftResult[0]);
+            this.departureTime = Timestamp.valueOf(aircraftResult[1]);
+            this.arrivalTime = Timestamp.valueOf(aircraftResult[2]);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e1) {
+            throw new Exception("No flight found");
+        }
+
+    }
     public String getDepartureAirport() {
         return departureAirport;
     }
@@ -51,11 +71,17 @@ public class Flight extends DBConnectivity {
     }
 
     public String getDepartureTime() {
-        return departureTime.toString();
+        LocalDateTime t = departureTime.toLocalDateTime();
+        String str = t.getHour() + ":";
+        str = t.getMinute() < 10 ? str + "0" + t.getMinute() : str + t.getMinute();
+        return str;
     }
 
     public String getArrivalTime() {
-        return arrivalTime.toString();
+        LocalDateTime t = arrivalTime.toLocalDateTime();
+        String str = t.getHour() + ":";
+        str = t.getMinute() < 10 ? str + "0" + t.getMinute() : str + t.getMinute();
+        return str;
     }
 
     public Aircraft getAircraft() {
@@ -65,7 +91,18 @@ public class Flight extends DBConnectivity {
     public int getFlightID() {
         return flightID;
     }
+    public int getPrice() {
+        return 0;
+    }
+    public double getFlightDuration() {
+        // Turn the Timestamp from sql to localDateTime
+        LocalDateTime d1 = departureTime.toLocalDateTime();
+        LocalDateTime d2 = arrivalTime.toLocalDateTime();
 
+        // ChronoUnit (???) is a standard for Time units. Between will return the difference between the two times
+        return (double) ChronoUnit.MINUTES.between(d1,d2);
+
+    }
     @Override
     public String toString() {
         return "Flight{" +

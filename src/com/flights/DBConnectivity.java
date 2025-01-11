@@ -7,7 +7,7 @@ public abstract class DBConnectivity {
     private static Statement stmt;
     private static PreparedStatement pstmt;
     private static final String URL = "jdbc:mysql://localhost:3306/flights_project";
-    private static final String USERNAME = "project@localhost";
+    private static final String USERNAME = "project";
     private static final String PASSWORD = "project";
 
     // connects and executes a QUERY (e.g. SELECT) that doesn't modify the database, returns a result set
