@@ -33,8 +33,8 @@ public class FlightSelectionDemo extends JPanel {
         flightsWindow.setLayout(new BoxLayout(flightsWindow, BoxLayout.Y_AXIS));
         flightsWindowReturn.setLayout(new BoxLayout(flightsWindowReturn, BoxLayout.Y_AXIS));
 
-        String[][] queryResult = DBUtil.getFlightInfo(dep, arrS);
-        String[][] queryResultReturns = DBUtil.getFlightInfo(arrS, dep);
+        String[][] queryResult = Flight.getFlightInfo(dep, arrS);
+        String[][] queryResultReturns = Flight.getFlightInfo(arrS, dep);
 
         // Creates array list of flights
         // for each String array turn it into a flight object and add it to the list

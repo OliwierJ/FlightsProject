@@ -1,5 +1,7 @@
 package com.flights.objects;
 
+import javax.swing.*;
+
 public abstract class Aircraft {
     private final int economySeats;
     private final int businessSeats;
@@ -41,6 +43,8 @@ public abstract class Aircraft {
     public int getFirstClassSeats() {
         return firstClassSeats;
     }
+
+    public abstract JPanel renderSeats(); // TODO: method for rendering complex seating layouts (see Boeing 777 layout online)
 
     @Override
     public String toString() {

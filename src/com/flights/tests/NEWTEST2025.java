@@ -8,7 +8,8 @@ public class NEWTEST2025 {
     public static void main(String[] args) {
         // only run 1 method for testing purposes
 //        viewBooking();
-        newBooking();
+//        newBooking();
+        System.out.println("DO NOT USE THIS CLASS FOR NOW, DATABASE CHANGES NOT IMPLEMENTED");
     }
 
     // simulates view booking gui and update booking gui

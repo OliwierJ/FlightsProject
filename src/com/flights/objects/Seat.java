@@ -1,7 +1,5 @@
 package com.flights.objects;
 
-import com.flights.DBConnectivity;
-
 import java.sql.SQLException;
 
 public class Seat extends DBConnectivity {

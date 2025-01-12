@@ -1,12 +1,9 @@
 package com.flights.objects;
 
-import com.flights.DBConnectivity;
-
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Random;
 
 public class Flight extends DBConnectivity {
     private int flightID;
@@ -118,8 +115,13 @@ public class Flight extends DBConnectivity {
     // TODO; OTHER STUFF GOES HERE COPY FROM FLIGHT CLASS
     //todo: like converting to timestamp
 
+    // copied from deleted DBUtil class
+    public static String[][] getFlightInfo(String dep, String arr) throws Exception {
+        return getMultipleRows(connectAndExecuteQuery("SELECT * FROM flight WHERE departure_airport='"+dep+"' AND arrival_airport='"+arr+"'"));
+    }
+
     @Override
-    public void updateDatabase() {
+    protected void updateDatabase() {
         // empty, nothing needs to ever be updated in flight or aircraft, for now
     }
 }

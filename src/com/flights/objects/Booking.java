@@ -1,7 +1,5 @@
 package com.flights.objects;
 
-import com.flights.DBConnectivity;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
