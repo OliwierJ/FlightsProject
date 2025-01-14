@@ -13,6 +13,7 @@ public class Flight extends DBConnectivity {
     private Timestamp arrivalTime;
     private Aircraft aircraft;
 
+    // retrieves a flight from database
     public Flight(int flightID) {
         try {
             String[] result = getRow(connectAndExecuteQuery("SELECT departure_airport, arrival_airport, departure_time, arrival_time, aircraft_id FROM flight WHERE flight_id="+flightID));
@@ -25,15 +26,16 @@ public class Flight extends DBConnectivity {
             // aircraft of flight goes here
             String[] aircraftResult = getRow(connectAndExecuteQuery("SELECT model, no_economy_seats, no_business_seats, no_firstclass_seats FROM plane WHERE aircraft_id="+result[4]));
             if (aircraftResult[0].equals("Boeing 737-800")) {
-                this.aircraft = new Boeing737(Integer.parseInt(aircraftResult[1]), Integer.parseInt(aircraftResult[2]), Integer.parseInt(aircraftResult[3]));
+                this.aircraft = new Boeing737(100, Integer.parseInt(aircraftResult[1]), Integer.parseInt(aircraftResult[2]), Integer.parseInt(aircraftResult[3]), 100);
             } else {
                 System.out.println("Unknown aircraft");
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.out.println("An error occurred!"+e.getMessage());
         }
     }
 
+    // testing purposes
     public Flight(int flightID, String departureAirport, String arrivalAirport, Timestamp departureTime, Timestamp arrivalTime) {
         this.flightID = flightID;
         this.departureAirport = departureAirport;
@@ -41,6 +43,8 @@ public class Flight extends DBConnectivity {
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
     }
+
+    // used by flight selection menu
     public Flight(String departureAirport, String arrivalAirport, String date) throws Exception {
         try {
             String[] aircraftResult = getRow(connectAndExecuteQuery("Select flight_id, " +
@@ -52,13 +56,11 @@ public class Flight extends DBConnectivity {
             this.flightID = Integer.parseInt(aircraftResult[0]);
             this.departureTime = Timestamp.valueOf(aircraftResult[1]);
             this.arrivalTime = Timestamp.valueOf(aircraftResult[2]);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e1) {
+        } catch (SQLException e) {
             throw new Exception("No flight found");
         }
-
     }
+
     public String getDepartureAirport() {
         return departureAirport;
     }
@@ -88,9 +90,11 @@ public class Flight extends DBConnectivity {
     public int getFlightID() {
         return flightID;
     }
+
     public int getPrice() {
         return 0;
     }
+
     public double getFlightDuration() {
         // Turn the Timestamp from sql to localDateTime
         LocalDateTime d1 = departureTime.toLocalDateTime();
@@ -100,6 +104,11 @@ public class Flight extends DBConnectivity {
         return (double) ChronoUnit.MINUTES.between(d1,d2);
 
     }
+
+    public Seat[] getSeats() {
+        return aircraft.getSeats();
+    }
+
     @Override
     public String toString() {
         return "Flight{" +
@@ -111,9 +120,6 @@ public class Flight extends DBConnectivity {
                 ", aircraft=" + aircraft +
                 '}';
     }
-
-    // TODO; OTHER STUFF GOES HERE COPY FROM FLIGHT CLASS
-    //todo: like converting to timestamp
 
     // copied from deleted DBUtil class
     public static String[][] getFlightInfo(String dep, String arr) throws Exception {

@@ -44,7 +44,7 @@ public class Booking extends DBConnectivity {
                 if (!exists) {
                     this.bookingID = String.valueOf(bookingNo);
                 }
-            } catch (SQLException | ClassNotFoundException e) {
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             } finally {
                 closeConnection();
@@ -179,10 +179,11 @@ public class Booking extends DBConnectivity {
     @Override
     public void updateDatabase() {
         try {
+            // create new booking
             if (newBooking) {
                 if (email == null || departureFlight == null || passengers.length == 0) {
                     throw new IllegalStateException("Booking is not complete!");
-                }
+                } 
                 connectAndExecuteUpdate("INSERT INTO booking (booking_no, email, priority_boarding, luggage_amount) VALUES ('" + bookingID + "', '" + email + "', " + priorityBoarding + ", " + luggage + ")");
                 connectAndExecuteUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES (" + departureFlight.getFlightID() + ", '" + bookingID + "', 0)");
                 if (returnFlight != null) {
@@ -190,17 +191,22 @@ public class Booking extends DBConnectivity {
                 }
                 this.newBooking = false;
             } else {
+                // update existing booking
                 ResultSet rs = connectAndExecuteQuery("SELECT * FROM booking WHERE booking_no='"+bookingID+"'");
                 if (!rs.next()) {
                     throw new IllegalArgumentException("No such booking exists!");
                 }
                 connectAndExecuteUpdate("UPDATE booking SET email='"+email+"', priority_boarding="+priorityBoarding+", luggage_amount="+luggage+" WHERE booking_no="+bookingID);
             }
+            // update each passenger
             for (Passenger passenger : passengers) {
+                if (passenger.getReturnSeat() == null && returnFlight != null) {
+                    throw new IllegalStateException(passenger.getName()+" "+passenger.getSurname()+" does not have a return seat assigned!");
+                }
                 passenger.updateDatabase(); // this will work as objects are mutable in a for each loop, however assigning new objects required a standard for loop
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            System.out.println("An error occurred while updating database!"+e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("An error occurred while updating database! "+e.getMessage());
         } finally {
             closeConnection();
         }

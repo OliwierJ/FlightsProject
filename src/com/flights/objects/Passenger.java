@@ -4,33 +4,38 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Passenger extends DBConnectivity {
+    private String title;
     private String name;
     private String surname;
     private String passengerID;
     private String bookingID;
     private Seat departureSeat;
     private Seat returnSeat;
-    private boolean existingPassenger;
+    private Seat newDepartureSeat;
+    private Seat newReturnSeat;
 
     // make a new empty passenger for a new booking
-    public Passenger(String name, String surname, String bookingID) {
+    public Passenger(String title, String name, String surname, String bookingID) {
+        this.title = title;
         this.name = name;
         this.surname = surname;
         this.bookingID = bookingID;
         this.departureSeat = null;
         this.returnSeat = null;
-        this.existingPassenger = false;
+        this.newDepartureSeat = null;
+        this.newReturnSeat = null;
+        this.passengerID = null;
         // passenger ID is created when saving to database for the first time
     }
 
     // gets an existing passenger from database
     public Passenger(String passengerID) {
-        this.existingPassenger = true;
         try {
-            String[] result = getRow(connectAndExecuteQuery("SELECT first_name, last_name, booking_no FROM passenger WHERE passenger_ID="+passengerID));
-            this.name = result[0];
-            this.surname = result[1];
-            this.bookingID = result[2];
+            String[] result = getRow(connectAndExecuteQuery("SELECT title, first_name, last_name, booking_no FROM passenger WHERE passenger_ID="+passengerID));
+            this.title = result[0];
+            this.name = result[1];
+            this.surname = result[2];
+            this.bookingID = result[3];
             this.passengerID = passengerID;
 
             // gets passenger seats
@@ -40,15 +45,18 @@ public class Passenger extends DBConnectivity {
             } else {
                 for (String[] seat : seats) {
                     if (seat[4].equals("0")) {
-                        departureSeat = new Seat(seat[0], seat[1], seat[2], seat[3], passengerID, false, true);
+                        departureSeat = new Seat(seat[0], seat[1], seat[2], seat[3], passengerID);
                     } else {
-                        returnSeat = new Seat(seat[0], seat[1], seat[2], seat[3], passengerID, true, true);
+                        returnSeat = new Seat(seat[0], seat[1], seat[2], seat[3], passengerID);
                     }
                 }
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            System.out.println("An error occurred in passenger"+e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("An error occurred in passenger database: "+e.getMessage());
         }
+    }
+    public String getTitle() {
+        return title;
     }
 
     public String getName() {
@@ -75,6 +83,10 @@ public class Passenger extends DBConnectivity {
         return returnSeat;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -83,42 +95,61 @@ public class Passenger extends DBConnectivity {
         this.surname = surname;
     }
 
-    public void setDepartureSeat(Seat departureSeat) {
-        this.departureSeat = departureSeat;
-        this.departureSeat.setPassengerID(this.passengerID);
+    // TODO: add some way to verify is the seat departure seat or return seat
+    public void setDepartureSeat(Seat newDepartureSeat) {
+        this.newDepartureSeat = newDepartureSeat;
     }
 
-    public void setReturnSeat(Seat returnSeat) {
-        this.returnSeat = returnSeat;
-        this.returnSeat.setPassengerID(this.passengerID);
+    public void setReturnSeat(Seat newReturnSeat) {
+        this.newReturnSeat = newReturnSeat;
     }
 
     @Override
     protected void updateDatabase() {
-        //TODO: update database appropriately after passenger details have been changed
         try {
-            if (existingPassenger) {
-                // update existing passenger in database
+            // update existing passenger in database
+            if (passengerID != null) {
                 ResultSet rs = connectAndExecuteQuery("SELECT * FROM passenger WHERE passenger_ID="+passengerID);
                 if (!rs.next()) {
                     throw new IllegalArgumentException("No such passenger exists!");
                 }
-                connectAndExecuteUpdate("UPDATE passenger SET first_name='"+name+"', last_name='"+surname+"' WHERE passenger_ID="+passengerID);
+                connectAndExecuteUpdate("UPDATE passenger SET title='"+title+"', first_name='"+name+"', last_name='"+surname+"' WHERE passenger_ID="+passengerID);
+
+                // if seat was changed
+                if (departureSeat != newDepartureSeat) {
+                    departureSeat.setPassengerID(null);
+                    newDepartureSeat.setPassengerID(passengerID);
+                    departureSeat = newDepartureSeat;
+                    connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+departureSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+departureSeat.getFlightID()+"' AND aircraft_id='"+departureSeat.getAircraftID()+"'");
+                }
+                // if return seat changed
+                if (returnSeat != newReturnSeat && returnSeat != null) {
+                    returnSeat.setPassengerID(null);
+                    newReturnSeat.setPassengerID(passengerID);
+                    returnSeat = newReturnSeat;
+                    connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+returnSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+returnSeat.getFlightID()+"' AND aircraft_id='"+returnSeat.getAircraftID()+"'");
+                }
             } else {
                 // add new passenger to database
-                if (departureSeat == null) {
-                    throw new IllegalStateException("No departure seat exists!");
+                if (name == null || surname == null || title == null || departureSeat == null || bookingID == null) {
+                    throw new IllegalStateException("Passenger details are not complete!");
                 }
-                connectAndExecuteUpdate("INSERT INTO passenger (first_name, last_name, booking_no) VALUES ('"+name+"', '"+surname+"', '"+bookingID+"')");
+                connectAndExecuteUpdate("INSERT INTO passenger (title, first_name, last_name, booking_no) VALUES ('"+title+"', '"+name+"', '"+surname+"', '"+bookingID+"')");
 
-                this.passengerID = getRow(connectAndExecuteQuery("SELECT passenger_ID FROM passenger WHERE first_name='"+name+"' AND last_name='"+surname+"' AND booking_no='"+bookingID+"'"))[0];
-                this.existingPassenger = true;
+                this.passengerID = getRow(connectAndExecuteQuery("SELECT passenger_ID FROM passenger WHERE title='"+title+"' AND first_name='"+name+"' AND last_name='"+surname+"' AND booking_no='"+bookingID+"'"))[0];
+            
+                newDepartureSeat.setPassengerID(passengerID);
+                departureSeat = newDepartureSeat;
+                connectAndExecuteUpdate("INSERT INTO seat (seat_no, class, aircraft_id, flight_id, passenger_id) VALUES ('"+departureSeat.getSeatNo()+"', '"+departureSeat.getSeatClass()+"', '"+departureSeat.getAircraftID()+"', '"+departureSeat.getFlightID()+"', '"+passengerID+"')");
+                // if a return seat was selected
+                if (newReturnSeat != null) {
+                    newReturnSeat.setPassengerID(passengerID);
+                    returnSeat = newReturnSeat;
+                    connectAndExecuteUpdate("INSERT INTO seat (seat_no, class, aircraft_id, flight_id, passenger_id) VALUES ('"+returnSeat.getSeatNo()+"', '"+returnSeat.getSeatClass()+"', '"+returnSeat.getAircraftID()+"', '"+returnSeat.getFlightID()+"', '"+passengerID+"')");
+                }
             }
-            departureSeat.updateDatabase();
-            if (returnSeat != null) {
-                returnSeat.updateDatabase();
-            }
-        } catch (SQLException | ClassNotFoundException e) {
+            
+        } catch (SQLException e) {
             System.out.println("An error occurred while updating passenger database"+e.getMessage());
         } finally {
             closeConnection();
@@ -134,7 +165,6 @@ public class Passenger extends DBConnectivity {
                 ", bookingID='" + bookingID + '\'' +
                 ", departureSeat=" + departureSeat +
                 ", returnSeat=" + returnSeat +
-                ", existingPassenger=" + existingPassenger +
                 '}';
     }
 }

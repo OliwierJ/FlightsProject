@@ -11,11 +11,15 @@ public abstract class DBConnectivity {
     private static final String PASSWORD = "project";
 
     // connects and executes a QUERY (e.g. SELECT) that doesn't modify the database, returns a result set
-    protected static ResultSet connectAndExecuteQuery(String query) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
-        con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        return stmt.executeQuery(query);
+    protected static ResultSet connectAndExecuteQuery(String query) throws SQLException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
+            con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            return stmt.executeQuery(query);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException();
+        }
     }
 
     // converts the next row of a result set into a 1d array and closes connection
@@ -75,15 +79,19 @@ public abstract class DBConnectivity {
     }
 
     // connects and executes an UPDATE (e.g. INSERT, UPDATE) that modifies the database
-    protected static void connectAndExecuteUpdate(String query) throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
-        con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        pstmt = con.prepareStatement(query);
-        pstmt.executeUpdate();
+    protected static void connectAndExecuteUpdate(String query) throws SQLException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
+            con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            pstmt = con.prepareStatement(query);
+            pstmt.executeUpdate();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException();
+        }
     }
 
     // gets entire table from a given table name
-    protected static String[][] getTable(String name) throws SQLException, ClassNotFoundException {
+    protected static String[][] getTable(String name) throws SQLException {
         return getMultipleRows(connectAndExecuteQuery("SELECT * FROM "+name));
     }
 

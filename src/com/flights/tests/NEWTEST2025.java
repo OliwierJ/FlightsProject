@@ -52,12 +52,12 @@ public class NEWTEST2025 {
 //        Booking b = new Booking();
         Booking b = new Booking("google@google.com", 1, 2, f, null); // null if no return flight needed
 
-        Passenger passenger1 = new Passenger("Brandon", "Jaroszczak", b.getBookingID());
-        Passenger passenger2 = new Passenger("Random", "Dude", b.getBookingID());
+        Passenger passenger1 = new Passenger("Mr", "Brandon", "Jaroszczak", b.getBookingID());
+        Passenger passenger2 = new Passenger("Mrs", "Random", "Dude", b.getBookingID());
         // seats can only be added using the method below (for now, can be changed if needed), other seat details are added via database calls (class, aircraftID), passenger ID only added when updateDatabase() on booking is called
         //TODO: later during GUI implementation, figure out a different way to do this, VERY error prone, currently if seat doesn't exist nothing happens
-        passenger1.setDepartureSeat(new Seat("A1", f.getFlightID(), false));
-        passenger2.setDepartureSeat(new Seat("A2", f.getFlightID(), false)); // if u don't add a seat A2 with flightID 100 to database manually u will get error, will be fixed by me later
+//        passenger1.setDepartureSeat(new Seat("A1", f.getFlightID()));
+//        passenger2.setDepartureSeat(new Seat("A2", f.getFlightID())); // if u don't add a seat A2 with flightID 100 to database manually u will get error, will be fixed by me later
         // add details to booking, unnecessary if added in constructor
         b.setEmail("google@google.com");
         b.setLuggage(2);
