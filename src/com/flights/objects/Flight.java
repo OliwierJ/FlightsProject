@@ -55,7 +55,7 @@ public class Flight extends DBConnectivity {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (SQLException e1) {
-            throw new Exception("No flight found");
+            throw new Exception("No flight found " + departureAirport + " " + arrivalAirport + " " + date);
         }
 
     }
@@ -73,7 +73,12 @@ public class Flight extends DBConnectivity {
         str = t.getMinute() < 10 ? str + "0" + t.getMinute() : str + t.getMinute();
         return str;
     }
-
+    public String getDepartureDate() {
+        return departureTime.toString();
+    }
+    public String getArrivalDate() {
+        return arrivalTime.toString();
+    }
     public String getArrivalTime() {
         LocalDateTime t = arrivalTime.toLocalDateTime();
         String str = t.getHour() + ":";

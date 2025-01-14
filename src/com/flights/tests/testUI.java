@@ -2,6 +2,10 @@ package com.flights.tests;
 
 // imports
 
+import com.flights.Util.FlightsConstants;
+import com.flights.gui.FlightSelection;
+import com.flights.gui.JPlaceHolderTextField;
+import com.flights.objects.Flight;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -33,7 +37,7 @@ public class testUI extends JPanel implements ItemListener{
         JPanel flightSelectionPanel = new JPanel();
         // grid layout with 1 row and 3 columns
         flightSelectionPanel.setLayout(new GridLayout(1,3,10,10 ));
-        flightSelectionPanel.setBackground(new Color(0x02610e)); // dark green colour
+        flightSelectionPanel.setBackground(FlightsConstants.SEAGREEN); // dark green colour
         flightSelectionPanel.setPreferredSize(new Dimension(871, 187));
         
         // create 3 separate column panels for separating the different elements
@@ -65,12 +69,14 @@ public class testUI extends JPanel implements ItemListener{
 
         returnFlight = new JRadioButton("Return Flight");
         returnFlight.setSelected(true);     // selected by default
-        returnFlight.setBackground(new Color(0x02610e));
+        returnFlight.setBackground(FlightsConstants.SEAGREEN);
         returnFlight.setForeground(Color.WHITE);
+        returnFlight.setFocusable(false);
 
         JRadioButton oneWayFlight = new JRadioButton("One Way Flight");
-        oneWayFlight.setBackground(new Color(0x02610e));
+        oneWayFlight.setBackground(FlightsConstants.SEAGREEN);
         oneWayFlight.setForeground(Color.WHITE);
+        oneWayFlight.setFocusable(false);
 
         flightType.add(returnFlight);
         flightType.add(oneWayFlight);
@@ -131,10 +137,12 @@ public class testUI extends JPanel implements ItemListener{
             System.out.println(departureTime);
 
             try {
-                createAndShowGUI(new FlightSelectionDemo(arrival,departure, returnFlight.isSelected()));
+                Flight f = new Flight(departure,arrival,arrivalTime);
+                createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime));
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(frame,"No available flights found!", "No flights found", JOptionPane.WARNING_MESSAGE);
             }
+
         });
 
         // add all the components

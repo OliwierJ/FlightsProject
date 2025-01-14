@@ -1,5 +1,6 @@
-package com.flights.tests;
+package com.flights.gui;
 
+import com.flights.Util.FlightsConstants;
 import com.flights.objects.Flight;
 
 import javax.swing.*;
@@ -15,7 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class FlightSelectionDemo2 extends JPanel {
+public class FlightSelection extends JPanel {
     static JFrame frame = new JFrame();
     final int[] selectedDateIndex = {0};
     JLabel departureLabel = new JLabel("Departure Flight");
@@ -23,7 +24,7 @@ public class FlightSelectionDemo2 extends JPanel {
     int dateCount = 25;
     JLabel returnLabel = new JLabel("Return Flight");
 
-    public FlightSelectionDemo2(String arrS, String dep, boolean showReturns, String startDate, String endDate) {
+    public FlightSelection(Flight defaultFlight, boolean showReturns, String returnFlightDate) {
         setPreferredSize(new Dimension(1300, 800));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -36,18 +37,10 @@ public class FlightSelectionDemo2 extends JPanel {
         datesBox.setLayout(new BoxLayout(datesBox, BoxLayout.X_AXIS));
 
         // Dublin Barcelona 2024-12-7
-        System.out.println(startDate);
-
-        Flight defaultFlight = null;
-        try {
-            defaultFlight = new Flight(dep, arrS, startDate);
-        } catch (Exception e) {
-            System.out.println("No");
-        }
-
+        System.out.println(defaultFlight.getDepartureDate());
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date convertedStartDate = getParsedDate(startDate, sdf);
+        Date convertedStartDate = getParsedDate(defaultFlight.getDepartureDate(), sdf);
 
         JScrollPane datesScroller = new DatesScroller(datesBox);
         SelectedFlight selectedFlight = new SelectedFlight(defaultFlight);
@@ -60,7 +53,7 @@ public class FlightSelectionDemo2 extends JPanel {
             String newDate = getChangedDate(convertedStartDate, j);
             Flight f = null;
             try {
-                f = new Flight(dep, arrS, newDate);
+                f = new Flight(defaultFlight.getDepartureAirport(), defaultFlight.getArrivalAirport(), newDate);
                 differentFlights[index] = f;
             } catch (Exception ignored) {
             }
@@ -83,7 +76,7 @@ public class FlightSelectionDemo2 extends JPanel {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     if (selectedDateIndex[0] != finalI) {
-                        e.getComponent().setBackground(new Color(0xCEC7C7));
+                        e.getComponent().setBackground(FlightsConstants.SELECTEDGRAY);
                     }
                 }
 
@@ -116,12 +109,12 @@ public class FlightSelectionDemo2 extends JPanel {
 
             Flight defaultFlightReturn;
             try {
-                defaultFlightReturn = new Flight(arrS, dep, endDate);
+                defaultFlightReturn = new Flight(defaultFlight.getArrivalAirport(), defaultFlight.getDepartureAirport(), returnFlightDate );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
-            Date convertedEndDate = getParsedDate(endDate,sdf);
+            Date convertedEndDate = getParsedDate(returnFlightDate,sdf);
 
             JScrollPane datesScrollerR = new DatesScroller(returnDatesBox);
             SelectedFlight selectedFlightR = new SelectedFlight(defaultFlightReturn);
@@ -134,7 +127,7 @@ public class FlightSelectionDemo2 extends JPanel {
                 String newDate = getChangedDate(convertedEndDate, j);
                 Flight f = null;
                 try {
-                    f = new Flight(arrS, dep, newDate);
+                    f = new Flight(defaultFlight.getArrivalAirport(), defaultFlight.getDepartureAirport(), newDate);
                     differentFlightsR[index2] = f;
                 } catch (Exception ignored) {
                 }
@@ -198,7 +191,7 @@ public class FlightSelectionDemo2 extends JPanel {
     public static void createAndShowGUI() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         try {
-            frame.setContentPane(new FlightSelectionDemo2("Barcelona", "Dublin", true, "2024-12-7", "2024-12-15"));
+            frame.setContentPane(new FlightSelection(new Flight("Dublin", "Barcelona", "2024-12-7"), true, "2024-12-15"));
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -207,7 +200,7 @@ public class FlightSelectionDemo2 extends JPanel {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(FlightSelectionDemo2::createAndShowGUI);
+        SwingUtilities.invokeLater(FlightSelection::createAndShowGUI);
 
     }
 
@@ -243,7 +236,7 @@ public class FlightSelectionDemo2 extends JPanel {
             this.flight = f;
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setMaximumSize(new Dimension(250, 175));
-            setBackground(new Color(0x025C19));
+            setBackground(FlightsConstants.SEAGREEN);
             setBorder(BorderFactory.createEmptyBorder(12, 5, 5, 5));
 
             priceLabel.setFont(new Font("Arial", Font.BOLD, 15));
@@ -258,7 +251,7 @@ public class FlightSelectionDemo2 extends JPanel {
 
             selectFlightBtn.setFont(new Font("Arial", Font.BOLD, 18));
             selectFlightBtn.setFocusable(false);
-            selectFlightBtn.setBackground(new Color(0xFFD816));
+            selectFlightBtn.setBackground(FlightsConstants.MAIZE);
             selectFlightBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
             selectFlightBtn.setMaximumSize(new Dimension(125, 50));
             selectFlightBtn.addActionListener(new ActionListener() {
