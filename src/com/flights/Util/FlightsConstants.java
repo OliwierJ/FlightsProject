@@ -11,5 +11,8 @@ public interface FlightsConstants {
     Color TRUEBLUE = new Color(0x5171a5);
     Color RICHBLACK = new Color(0x00171f);
     Color SELECTEDGRAY = new Color(0xCEC7C7);
+    Color DARKSPRINGGREEN = new Color(0x28753C);
 
+    String DEPARTURE_PLACEHOLDER = "Enter departure airport";
+    String ARRIVAL_PLACEHOLDER = "Enter arrival airport";
 }

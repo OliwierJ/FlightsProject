@@ -83,6 +83,13 @@ public class Flight extends DBConnectivity {
         return str;
     }
 
+    public String getDepartureDate() {
+        return departureTime.toString();
+    }
+    public String getArrivalDate() {
+        return arrivalTime.toString();
+    }
+
     public Aircraft getAircraft() {
         return aircraft;
     }
