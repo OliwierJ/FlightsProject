@@ -1,7 +1,7 @@
 package com.flights.gui;
 
-import com.flights.Util.FlightsConstants;
 import com.flights.objects.Flight;
+import com.flights.util.FlightsConstants;
 
 import javax.swing.*;
 import java.awt.*;

@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import com.flights.util.DBConnectivity;
+
 public class Flight extends DBConnectivity {
     private int flightID;
     private String departureAirport;

@@ -1,4 +1,4 @@
-package com.flights.objects;
+package com.flights.util;
 
 import java.sql.*;
 
@@ -11,7 +11,7 @@ public abstract class DBConnectivity {
     private static final String PASSWORD = "project";
 
     // connects and executes a QUERY (e.g. SELECT) that doesn't modify the database, returns a result set
-    protected static ResultSet connectAndExecuteQuery(String query) throws SQLException {
+    public static ResultSet connectAndExecuteQuery(String query) throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
             con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -23,7 +23,7 @@ public abstract class DBConnectivity {
     }
 
     // converts the next row of a result set into a 1d array and closes connection
-    protected static String[] getRow(ResultSet rs) throws SQLException {
+    public static String[] getRow(ResultSet rs) throws SQLException {
         int colNo = rs.getMetaData().getColumnCount();
         String[] result = new String[colNo];
         rs.next();
@@ -46,7 +46,7 @@ public abstract class DBConnectivity {
     }
 
     // converts all rows of a result set into a 2d array format
-    protected static String[][] getMultipleRows(ResultSet rs) throws SQLException {
+    public static String[][] getMultipleRows(ResultSet rs) throws SQLException {
         int colNo = rs.getMetaData().getColumnCount();
         rs.last();
         int rowNo = rs.getRow();
@@ -61,7 +61,7 @@ public abstract class DBConnectivity {
     }
 
     // closes a connection after executing
-    protected static void closeConnection() {
+    public static void closeConnection() {
         // tries to close either statement or prepared statement, depending on the type of query used
         try {
             stmt.close();
@@ -79,7 +79,7 @@ public abstract class DBConnectivity {
     }
 
     // connects and executes an UPDATE (e.g. INSERT, UPDATE) that modifies the database
-    protected static void connectAndExecuteUpdate(String query) throws SQLException {
+    public static void connectAndExecuteUpdate(String query) throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
             con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -91,7 +91,7 @@ public abstract class DBConnectivity {
     }
 
     // gets entire table from a given table name
-    protected static String[][] getTable(String name) throws SQLException {
+    public static String[][] getTable(String name) throws SQLException {
         return getMultipleRows(connectAndExecuteQuery("SELECT * FROM "+name));
     }
 

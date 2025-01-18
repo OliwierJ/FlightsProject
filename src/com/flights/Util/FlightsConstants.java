@@ -1,4 +1,4 @@
-package com.flights.Util;
+package com.flights.util;
 
 import java.awt.*;
 

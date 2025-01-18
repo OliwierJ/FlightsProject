@@ -1,11 +1,10 @@
 package com.flights.tests;
 
-// imports
-
-import com.flights.Util.FlightsConstants;
 import com.flights.gui.FlightSelection;
 import com.flights.gui.JPlaceHolderTextField;
 import com.flights.objects.Flight;
+import com.flights.util.FlightsConstants;
+
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;

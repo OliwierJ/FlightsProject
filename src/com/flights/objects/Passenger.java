@@ -3,6 +3,8 @@ package com.flights.objects;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.flights.util.DBConnectivity;
+
 public class Passenger extends DBConnectivity {
     private String title;
     private String name;

@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import com.flights.util.DBConnectivity;
+
 public class Booking extends DBConnectivity {
     private String bookingID;
     private String email;

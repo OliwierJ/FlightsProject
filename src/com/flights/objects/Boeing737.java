@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 import javax.swing.*;
 
+import com.flights.util.DBConnectivity;
+
 public class Boeing737 extends Aircraft {
 
     public Boeing737(int aircraftID ,int economySeats, int businessSeats, int firstClassSeats, int flightID) {
