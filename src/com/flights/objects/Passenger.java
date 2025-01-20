@@ -152,7 +152,7 @@ public class Passenger extends DBConnectivity {
             }
             
         } catch (SQLException e) {
-            System.out.println("An error occurred while updating passenger database"+e.getMessage());
+            System.err.println("An error occurred while updating passenger database"+e.getMessage());
         } finally {
             closeConnection();
         }
