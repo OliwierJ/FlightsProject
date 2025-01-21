@@ -1,7 +1,6 @@
 package com.flights.objects;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import javax.swing.*;
 
@@ -9,16 +8,21 @@ import com.flights.util.DBConnectivity;
 
 public class Boeing737 extends Aircraft {
 
-    public Boeing737(int aircraftID ,int economySeats, int businessSeats, int firstClassSeats, int flightID) {
-        super(aircraftID, economySeats, businessSeats, firstClassSeats, "Boeing 737", flightID);
-        generateSeats();
+    public Boeing737(int flightID) {
+        super(189, 0, 0, "Boeing 737-800");
+        generateSeats(flightID);
     }
 
     @Override
-    protected void generateSeats() {
+    protected void generateSeats(int flightID) {
         try {
-             String[][] bookedSeats = DBConnectivity.getMultipleRows(DBConnectivity.connectAndExecuteQuery("SELECT seat_no, class, aircraft_id, flight_id, passenger_id FROM seat WHERE flight_id='"+getFlightID()+"' ORDER BY seat_no"));
-//            String[][] bookedSeats = {{"1C", "Economy", getAircraftID()+"", null, "10"}, {"2A", "Economy", getAircraftID()+"", null, "20"}, {"30D", "Economy", getAircraftID()+"", null, "30"}, {"30E", "Economy", getAircraftID()+"", null, "40"}};
+             String[][] bookedSeats = DBConnectivity.getMultipleRows(DBConnectivity.connectAndExecuteQuery("SELECT seat_no, class, flight_id, passenger_id FROM seat WHERE flight_id='"+flightID+"' ORDER BY seat_no"));
+             // for testing in college PCs
+//           String[][] bookedSeats = {
+//                {"1C", "Economy", "100", "10"},
+//                {"2A", "Economy", "100", "20"},
+//                {"30D", "Economy", "100", "30"},
+//                {"30E", "Economy", "100", "40"}};
             int count = 0;
             int bookedCount = 0;
             int rowNo = 1;
@@ -28,16 +32,17 @@ public class Boeing737 extends Aircraft {
                     if (rowNo == 1 && i >= 3) {
                         break;
                     }
-                    String currentSeat = rowNo+""+alphabet[i];
+                    String currentSeat;
+                    if (rowNo >= 10) {
+                        currentSeat = rowNo + "" + ((char) (65 + i));
+                    } else {
+                        currentSeat = "0" + rowNo + ((char) (65 + i));
+                    }
                     if (bookedCount < bookedSeats.length && currentSeat.equals(bookedSeats[bookedCount][0])) {
-                        System.err.println(Arrays.toString(bookedSeats[bookedCount]));
                         setSeat(bookedSeats[bookedCount], count);
-                        
-                        System.err.print(currentSeat+",,");
                         bookedCount++;
                     } else {
-                        setSeat(new String[]{currentSeat, "Economy", getAircraftID()+"", null, null}, count);
-                        System.out.print(currentSeat+",");
+                        setSeat(new String[]{currentSeat, "Economy", String.valueOf(flightID), null}, count);
                     }
                     count++;
                     if (count >= getSeatCount()) {
@@ -46,12 +51,8 @@ public class Boeing737 extends Aircraft {
                 }
                 rowNo++;
             }
-
-            System.out.println(Arrays.deepToString(getSeats()));
-        // } catch (SQLException e) {
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new IllegalStateException("An error occurred while getting seat details from database!"+e.getMessage());
         }
     }
 

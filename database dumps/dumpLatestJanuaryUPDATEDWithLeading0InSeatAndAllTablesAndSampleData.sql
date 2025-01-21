@@ -39,7 +39,7 @@ CREATE TABLE `booking` (
 
 LOCK TABLES `booking` WRITE;
 /*!40000 ALTER TABLE `booking` DISABLE KEYS */;
-INSERT INTO `booking` VALUES ('123456','johndoe@gmail.com',1,0),('987654','a@a.a',0,2);
+INSERT INTO `booking` VALUES ('123456','johndoe@gmail.com',1,0),('522558','C00296052@setu.ie',1,3),('600920','freedom@gov.usa',1,30),('987654','a@a.a',0,2);
 /*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -56,11 +56,9 @@ CREATE TABLE `flight` (
   `arrival_airport` varchar(255) DEFAULT NULL,
   `departure_time` datetime DEFAULT NULL,
   `arrival_time` datetime DEFAULT NULL,
-  `aircraft_id` int DEFAULT NULL,
-  PRIMARY KEY (`flight_id`),
-  KEY `aircraft_id` (`aircraft_id`),
-  CONSTRAINT `flight_ibfk_1` FOREIGN KEY (`aircraft_id`) REFERENCES `plane` (`aircraft_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `aircraft` varchar(255) NOT NULL,
+  PRIMARY KEY (`flight_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +67,7 @@ CREATE TABLE `flight` (
 
 LOCK TABLES `flight` WRITE;
 /*!40000 ALTER TABLE `flight` DISABLE KEYS */;
-INSERT INTO `flight` VALUES (100,'Dublin','Barcelona','2024-11-01 14:00:00','2024-11-01 16:20:00',100),(101,'Barcelona','Dublin','2024-11-06 11:50:00','2024-11-06 13:20:00',100),(102,'Dublin','Warsaw','2024-12-01 15:50:00','2024-12-01 18:20:00',100),(103,'Warsaw','Vienna','2024-11-23 07:10:00','2024-11-23 09:20:00',100),(104,'Heathrow','Paris','2024-11-29 20:00:00','2024-11-29 22:00:00',100),(105,'Paris','Warsaw','2024-12-05 16:00:00','2024-12-05 17:30:00',100),(106,'Madrid','Vienna','2024-12-01 15:30:00','2024-12-01 17:00:00',100),(107,'Dublin','Barcelona','2024-12-02 11:00:00','2024-12-02 12:30:00',100);
+INSERT INTO `flight` VALUES (100,'Dublin','Barcelona','2025-03-01 14:00:00','2025-03-01 16:20:00','Boeing 737-800'),(101,'Barcelona','Dublin','2025-03-06 11:50:00','2025-03-06 13:20:00','Boeing 737-800'),(102,'Dublin','Warsaw','2025-04-01 15:50:00','2025-04-01 18:20:00','Boeing 737-800'),(103,'Warsaw','Vienna','2025-03-23 07:10:00','2025-03-23 09:20:00','Boeing 737-800'),(104,'Heathrow','Paris','2025-03-29 20:00:00','2025-03-29 22:00:00','Boeing 737-800'),(105,'Paris','Warsaw','2025-04-05 16:00:00','2025-04-05 17:30:00','Boeing 737-800'),(106,'Madrid','Vienna','2025-04-01 15:30:00','2025-04-01 17:00:00','Boeing 737-800'),(107,'Dublin','Barcelona','2025-04-02 11:00:00','2025-04-02 12:30:00','Boeing 737-800'),(108,'Dublin','Barcelona','2025-03-02 11:00:00','2025-03-02 12:30:00','Boeing 737-800'),(109,'Dublin','Barcelona','2025-03-03 11:00:00','2025-03-03 13:30:00','Boeing 737-800'),(110,'Dublin','Barcelona','2025-03-04 12:00:00','2025-03-04 16:30:00','Boeing 737-800'),(111,'Dublin','Barcelona','2025-03-05 14:30:00','2025-03-05 11:30:00','Boeing 737-800'),(112,'Dublin','Barcelona','2025-03-06 09:00:00','2025-03-06 12:30:00','Boeing 737-800'),(113,'Dublin','Barcelona','2025-03-07 11:00:00','2025-03-07 12:30:00','Boeing 737-800'),(114,'Dublin','Barcelona','2025-03-08 11:00:00','2025-03-08 12:30:00','Boeing 737-800'),(115,'Dublin','Barcelona','2025-03-13 16:00:00','2025-03-13 17:30:00','Boeing 737-800'),(116,'Barcelona','Dublin','2025-04-15 19:00:00','2025-04-15 21:00:00','Boeing 737-800');
 /*!40000 ALTER TABLE `flight` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -97,7 +95,7 @@ CREATE TABLE `flight_booking` (
 
 LOCK TABLES `flight_booking` WRITE;
 /*!40000 ALTER TABLE `flight_booking` DISABLE KEYS */;
-INSERT INTO `flight_booking` VALUES (100,'123456',0),(100,'987654',0);
+INSERT INTO `flight_booking` VALUES (100,'123456',0),(100,'522558',0),(100,'600920',0),(100,'987654',0),(101,'123456',1),(101,'522558',1),(101,'600920',1);
 /*!40000 ALTER TABLE `flight_booking` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,10 +111,11 @@ CREATE TABLE `passenger` (
   `first_name` varchar(255) DEFAULT NULL,
   `last_name` varchar(255) DEFAULT NULL,
   `booking_no` varchar(10) DEFAULT NULL,
+  `title` varchar(5) DEFAULT NULL,
   PRIMARY KEY (`passenger_ID`),
   KEY `booking_no` (`booking_no`),
   CONSTRAINT `passenger_ibfk_3` FOREIGN KEY (`booking_no`) REFERENCES `booking` (`booking_no`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,35 +124,8 @@ CREATE TABLE `passenger` (
 
 LOCK TABLES `passenger` WRITE;
 /*!40000 ALTER TABLE `passenger` DISABLE KEYS */;
-INSERT INTO `passenger` VALUES (1,'John','Doe','123456'),(2,'John','Smyth','123456'),(3,'Mary','Smith','123456'),(5,'Brandon','J','987654');
+INSERT INTO `passenger` VALUES (1,'John','Doe','123456','Mr'),(2,'John','Smyth','123456','Mr'),(3,'Mary','Smith','987654','Mrs'),(5,'Brandon','J','987654','Mr'),(6,'Leo','Varadkar','522558','Mr'),(7,'Simon','Harris','522558','Mr'),(10,'Donald','Trump','600920','Mr'),(11,'Kamala','Harris','600920','Mrs');
 /*!40000 ALTER TABLE `passenger` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `plane`
---
-
-DROP TABLE IF EXISTS `plane`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `plane` (
-  `aircraft_id` int NOT NULL AUTO_INCREMENT,
-  `model` varchar(30) DEFAULT NULL,
-  `no_economy_seats` int DEFAULT NULL,
-  `no_business_seats` int DEFAULT NULL,
-  `no_firstclass_seats` int DEFAULT NULL,
-  PRIMARY KEY (`aircraft_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `plane`
---
-
-LOCK TABLES `plane` WRITE;
-/*!40000 ALTER TABLE `plane` DISABLE KEYS */;
-INSERT INTO `plane` VALUES (100,'Boeing 737-800',138,51,0);
-/*!40000 ALTER TABLE `plane` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -166,13 +138,10 @@ DROP TABLE IF EXISTS `seat`;
 CREATE TABLE `seat` (
   `seat_no` varchar(5) NOT NULL,
   `class` varchar(30) DEFAULT NULL,
-  `is_occupied` tinyint(1) DEFAULT NULL,
-  `aircraft_id` int NOT NULL,
   `flight_id` int NOT NULL,
-  PRIMARY KEY (`seat_no`,`aircraft_id`,`flight_id`),
-  KEY `aircraft_id` (`aircraft_id`),
+  `passenger_id` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`seat_no`,`flight_id`),
   KEY `flight_id` (`flight_id`),
-  CONSTRAINT `seat_ibfk_1` FOREIGN KEY (`aircraft_id`) REFERENCES `plane` (`aircraft_id`),
   CONSTRAINT `seat_ibfk_2` FOREIGN KEY (`flight_id`) REFERENCES `flight` (`flight_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -183,36 +152,8 @@ CREATE TABLE `seat` (
 
 LOCK TABLES `seat` WRITE;
 /*!40000 ALTER TABLE `seat` DISABLE KEYS */;
-INSERT INTO `seat` VALUES ('A1','Economy',0,100,100),('A2','Economy',0,100,101);
+INSERT INTO `seat` VALUES ('01A','Economy',100,3),('02A','Economy',100,1),('03A','Economy',100,2),('03A','Economy',101,1),('03B','Economy',100,6),('03C','Economy',100,7),('03D','Economy',100,10),('03E','Economy',100,11),('04A','Economy',100,0),('09F','Economy',101,6),('10A','Economy',101,7),('10B','Economy',101,10),('10C','Economy',101,11);
 /*!40000 ALTER TABLE `seat` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `seat_passenger`
---
-
-DROP TABLE IF EXISTS `seat_passenger`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `seat_passenger` (
-  `seat_no` varchar(5) NOT NULL,
-  `passenger_id` int NOT NULL,
-  `is_return` tinyint(1) NOT NULL,
-  PRIMARY KEY (`seat_no`,`passenger_id`,`is_return`),
-  KEY `passenger_id` (`passenger_id`),
-  CONSTRAINT `seat_passenger_ibfk_1` FOREIGN KEY (`seat_no`) REFERENCES `seat` (`seat_no`),
-  CONSTRAINT `seat_passenger_ibfk_2` FOREIGN KEY (`passenger_id`) REFERENCES `passenger` (`passenger_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `seat_passenger`
---
-
-LOCK TABLES `seat_passenger` WRITE;
-/*!40000 ALTER TABLE `seat_passenger` DISABLE KEYS */;
-INSERT INTO `seat_passenger` VALUES ('A2',1,0),('A1',5,0);
-/*!40000 ALTER TABLE `seat_passenger` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -224,4 +165,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-09 21:24:39
+-- Dump completed on 2025-01-21 20:59:35

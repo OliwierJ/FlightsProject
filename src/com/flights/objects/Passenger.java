@@ -13,8 +13,8 @@ public class Passenger extends DBConnectivity {
     private String bookingID;
     private Seat departureSeat;
     private Seat returnSeat;
-    private Seat newDepartureSeat;
-    private Seat newReturnSeat;
+    private Seat oldDepartureSeat;
+    private Seat oldReturnSeat;
 
     // make a new empty passenger for a new booking
     public Passenger(String title, String name, String surname, String bookingID) {
@@ -24,8 +24,8 @@ public class Passenger extends DBConnectivity {
         this.bookingID = bookingID;
         this.departureSeat = null;
         this.returnSeat = null;
-        this.newDepartureSeat = null;
-        this.newReturnSeat = null;
+        this.oldDepartureSeat = null;
+        this.oldReturnSeat = null;
         this.passengerID = null;
         // passenger ID is created when saving to database for the first time
     }
@@ -41,15 +41,15 @@ public class Passenger extends DBConnectivity {
             this.passengerID = passengerID;
 
             // gets passenger seats
-            String[][] seats = getMultipleRows(connectAndExecuteQuery("SELECT seat_no, class, aircraft_id, seat.flight_id, is_return FROM seat INNER JOIN flights_project.flight_booking fb on seat.flight_id = fb.flight_id WHERE passenger_id="+passengerID+" AND booking_no="+bookingID));
+            String[][] seats = getMultipleRows(connectAndExecuteQuery("SELECT seat_no, class, seat.flight_id, is_return FROM seat INNER JOIN flights_project.flight_booking fb on seat.flight_id = fb.flight_id WHERE passenger_id="+passengerID+" AND booking_no="+bookingID));
             if (seats.length == 0 || seats.length > 2) {
-                throw new IllegalStateException();
+                throw new IllegalStateException(seats.length+" seats found! Must be 1 or 2!");
             } else {
                 for (String[] seat : seats) {
-                    if (seat[4].equals("0")) {
-                        departureSeat = new Seat(seat[0], seat[1], seat[2], seat[3], passengerID);
+                    if (seat[3].equals("0")) {
+                        departureSeat = new Seat(seat[0], seat[1], seat[2], passengerID);
                     } else {
-                        returnSeat = new Seat(seat[0], seat[1], seat[2], seat[3], passengerID);
+                        returnSeat = new Seat(seat[0], seat[1], seat[2], passengerID);
                     }
                 }
             }
@@ -97,13 +97,14 @@ public class Passenger extends DBConnectivity {
         this.surname = surname;
     }
 
-    // TODO: add some way to verify is the seat departure seat or return seat
-    public void setDepartureSeat(Seat newDepartureSeat) {
-        this.newDepartureSeat = newDepartureSeat;
+    public void setDepartureSeat(Seat s) {
+        this.oldDepartureSeat = departureSeat;
+        this.departureSeat = s;
     }
 
-    public void setReturnSeat(Seat newReturnSeat) {
-        this.newReturnSeat = newReturnSeat;
+    public void setReturnSeat(Seat s) {
+        this.oldReturnSeat = returnSeat;
+        this.returnSeat = s;
     }
 
     @Override
@@ -118,18 +119,18 @@ public class Passenger extends DBConnectivity {
                 connectAndExecuteUpdate("UPDATE passenger SET title='"+title+"', first_name='"+name+"', last_name='"+surname+"' WHERE passenger_ID="+passengerID);
 
                 // if seat was changed
-                if (departureSeat != newDepartureSeat) {
-                    departureSeat.setPassengerID(null);
-                    newDepartureSeat.setPassengerID(passengerID);
-                    departureSeat = newDepartureSeat;
-                    connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+departureSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+departureSeat.getFlightID()+"' AND aircraft_id='"+departureSeat.getAircraftID()+"'");
+                if (departureSeat != oldDepartureSeat) {
+                    oldDepartureSeat.setPassengerID(null);
+                    departureSeat.setPassengerID(passengerID);
+                    oldDepartureSeat = departureSeat;
+                    connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+departureSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+departureSeat.getFlightID()+"'");
                 }
                 // if return seat changed
-                if (returnSeat != newReturnSeat && returnSeat != null) {
-                    returnSeat.setPassengerID(null);
-                    newReturnSeat.setPassengerID(passengerID);
-                    returnSeat = newReturnSeat;
-                    connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+returnSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+returnSeat.getFlightID()+"' AND aircraft_id='"+returnSeat.getAircraftID()+"'");
+                if (returnSeat != oldReturnSeat && returnSeat != null) {
+                    oldReturnSeat.setPassengerID(null);
+                    returnSeat.setPassengerID(passengerID);
+                    oldReturnSeat = returnSeat;
+                    connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+returnSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+returnSeat.getFlightID()+"'");
                 }
             } else {
                 // add new passenger to database
@@ -140,14 +141,14 @@ public class Passenger extends DBConnectivity {
 
                 this.passengerID = getRow(connectAndExecuteQuery("SELECT passenger_ID FROM passenger WHERE title='"+title+"' AND first_name='"+name+"' AND last_name='"+surname+"' AND booking_no='"+bookingID+"'"))[0];
             
-                newDepartureSeat.setPassengerID(passengerID);
-                departureSeat = newDepartureSeat;
-                connectAndExecuteUpdate("INSERT INTO seat (seat_no, class, aircraft_id, flight_id, passenger_id) VALUES ('"+departureSeat.getSeatNo()+"', '"+departureSeat.getSeatClass()+"', '"+departureSeat.getAircraftID()+"', '"+departureSeat.getFlightID()+"', '"+passengerID+"')");
+                departureSeat.setPassengerID(passengerID);
+                oldDepartureSeat = departureSeat;
+                connectAndExecuteUpdate("INSERT INTO seat (seat_no, class, flight_id, passenger_id) VALUES ('"+departureSeat.getSeatNo()+"', '"+departureSeat.getSeatClass()+"', '"+departureSeat.getFlightID()+"', '"+passengerID+"')");
                 // if a return seat was selected
-                if (newReturnSeat != null) {
-                    newReturnSeat.setPassengerID(passengerID);
-                    returnSeat = newReturnSeat;
-                    connectAndExecuteUpdate("INSERT INTO seat (seat_no, class, aircraft_id, flight_id, passenger_id) VALUES ('"+returnSeat.getSeatNo()+"', '"+returnSeat.getSeatClass()+"', '"+returnSeat.getAircraftID()+"', '"+returnSeat.getFlightID()+"', '"+passengerID+"')");
+                if (returnSeat != null) {
+                    returnSeat.setPassengerID(passengerID);
+                    oldReturnSeat = returnSeat;
+                    connectAndExecuteUpdate("INSERT INTO seat (seat_no, class, flight_id, passenger_id) VALUES ('"+returnSeat.getSeatNo()+"', '"+returnSeat.getSeatClass()+"', '"+returnSeat.getFlightID()+"', '"+passengerID+"')");
                 }
             }
             
@@ -161,12 +162,15 @@ public class Passenger extends DBConnectivity {
     @Override
     public String toString() {
         return "Passenger{" +
-                "name='" + name + '\'' +
+                "title='" + title + '\'' +
+                ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", passengerID='" + passengerID + '\'' +
                 ", bookingID='" + bookingID + '\'' +
                 ", departureSeat=" + departureSeat +
                 ", returnSeat=" + returnSeat +
+                ", oldDepartureSeat=" + oldDepartureSeat +
+                ", oldReturnSeat=" + oldReturnSeat +
                 '}';
     }
 }

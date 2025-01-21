@@ -163,21 +163,6 @@ public class Booking extends DBConnectivity {
         passengers = tempPassengers;
     }
 
-    // may or may not be used, we shall C
-    public void removePassenger(Passenger passenger) {
-        Passenger[] tempPassengers = new Passenger[passengers.length - 1];
-        int currentIndex = 0;
-        for (Passenger value : passengers) {
-            if (!value.equals(passenger)) {
-                tempPassengers[currentIndex] = value;
-                currentIndex++;
-            }
-        }
-        passengers = tempPassengers;
-    }
-
-    // passenger modification can be done using passenger's setters from the passengers array, no need for separate method
-
     @Override
     public void updateDatabase() {
         try {
@@ -211,6 +196,19 @@ public class Booking extends DBConnectivity {
             System.out.println("An error occurred while updating database! "+e.getMessage());
         } finally {
             closeConnection();
+        }
+    }
+
+    public void deleteEntry() {
+        if (newBooking) {
+            throw new IllegalAccessError("Can't delete a booking that hasn't been inserted into the database yet!");
+        } else {
+            try {
+                // TODO: delete commands, seat then passenger then flightbooking then booking
+                connectAndExecuteUpdate("DELETE FROM seat INNER JOIN p ON passenger.passenger_id = seat.passenger_id WHERE p.booking_id ='"+bookingID+"'");
+            } catch (SQLException e) {
+                System.out.println("An error occured while deleting from the database!");
+            }
         }
     }
 

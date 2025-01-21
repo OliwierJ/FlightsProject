@@ -34,9 +34,9 @@ public abstract class DBConnectivity {
         return result;
     }
 
-    // converts the next row of a result set into a 1d array, method only used by getMultipleRows(), flag is for different signature
-    private static String[] getRow(ResultSet rs, int flag) throws SQLException {
-        int colNo = rs.getMetaData().getColumnCount(); // IGNROE DUPLICATED CODE WARNING FOR NOW
+    // converts the next row of a result set into a 1d array, method only used by getMultipleRows()
+    private static String[] getRowNoClose(ResultSet rs) throws SQLException {
+        int colNo = rs.getMetaData().getColumnCount();
         String[] result = new String[colNo];
         rs.next();
         for (int i = 1; i <= colNo; i++) {
@@ -54,7 +54,7 @@ public abstract class DBConnectivity {
         String[][] result = new String[rowNo][colNo];
 
         for (int i = 0; i < result.length; i++) {
-            result[i] = getRow(rs, 1);
+            result[i] = getRowNoClose(rs);
         }
         closeConnection();
         return result;

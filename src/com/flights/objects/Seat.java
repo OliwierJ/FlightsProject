@@ -4,15 +4,13 @@ public class Seat {
 
     private final String seatNo; 
     private final String seatClass;
-    private final String aircraftID;
     private final String flightID;
     private String passengerID;
 
     // create a new seat object, either from Passenger class when viewing booking, or from Flight/Aircraft class when generating flight seats
-    public Seat(String seatNo, String seatClass, String aircraftID, String flightID, String passengerID) {
+    public Seat(String seatNo, String seatClass, String flightID, String passengerID) {
         this.seatNo = seatNo;
         this.seatClass = seatClass;
-        this.aircraftID = aircraftID;
         this.flightID = flightID;
         this.passengerID = passengerID;
     }
@@ -29,12 +27,12 @@ public class Seat {
         return passengerID;
     }
 
-    public String getAircraftID() {
-        return aircraftID;
-    }
-
     public String getFlightID() {
         return flightID;
+    }
+
+    public boolean isOccupied() {
+        return passengerID != null;
     }
 
     // This should only be used by the Passenger class!!!
@@ -47,7 +45,6 @@ public class Seat {
         return "Seat{" +
                 "seatNo='" + seatNo + '\'' +
                 ", seatClass='" + seatClass + '\'' +
-                ", aircraftID='" + aircraftID + '\'' +
                 ", flightID='" + flightID + '\'' +
                 ", passengerID='" + passengerID + '\'' +
                 '}'+"\n";

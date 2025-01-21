@@ -18,26 +18,19 @@ public class Flight extends DBConnectivity {
     // retrieves a flight from database
     public Flight(int flightID) {
         try {
-            String[] result = getRow(connectAndExecuteQuery("SELECT departure_airport, arrival_airport, departure_time, arrival_time, aircraft_id FROM flight WHERE flight_id="+flightID));
+            String[] result = getRow(connectAndExecuteQuery("SELECT departure_airport, arrival_airport, departure_time, arrival_time, aircraft FROM flight WHERE flight_id="+flightID));
             this.flightID = flightID;
             this.departureAirport = result[0];
             this.arrivalAirport = result[1];
             this.departureTime = Timestamp.valueOf(result[2]);
             this.arrivalTime = Timestamp.valueOf(result[3]);
-
-            // aircraft of flight goes here
-            String[] aircraftResult = getRow(connectAndExecuteQuery("SELECT model, no_economy_seats, no_business_seats, no_firstclass_seats FROM plane WHERE aircraft_id="+result[4]));
-            if (aircraftResult[0].equals("Boeing 737-800")) {
-                this.aircraft = new Boeing737(100, Integer.parseInt(aircraftResult[1]), Integer.parseInt(aircraftResult[2]), Integer.parseInt(aircraftResult[3]), 100);
-            } else {
-                System.out.println("Unknown aircraft");
-            }
+            setAircraft(result[4]);
         } catch (SQLException e) {
             System.out.println("An error occurred!"+e.getMessage());
         }
     }
 
-    // testing purposes
+    // TODO: delete later testing purposes
     public Flight(int flightID, String departureAirport, String arrivalAirport, Timestamp departureTime, Timestamp arrivalTime) {
         this.flightID = flightID;
         this.departureAirport = departureAirport;
@@ -49,17 +42,26 @@ public class Flight extends DBConnectivity {
     // used by flight selection menu
     public Flight(String departureAirport, String arrivalAirport, String date) throws Exception {
         try {
-            String[] aircraftResult = getRow(connectAndExecuteQuery("Select flight_id, " +
-                    "departure_time, arrival_time, aircraft_id FROM flight WHERE departure_airport=\""+departureAirport+"\" AND arrival_airport=\""+arrivalAirport + "\" AND CAST(departure_time AS DATE)=\""+date+"\""));
-
-
+            String[] result = getRow(connectAndExecuteQuery("Select flight_id, departure_time, arrival_time, aircraft FROM flight WHERE departure_airport=\""+departureAirport+"\" AND arrival_airport=\""+arrivalAirport + "\" AND CAST(departure_time AS DATE)=\""+date+"\""));
             this.departureAirport = departureAirport;
             this.arrivalAirport = arrivalAirport;
-            this.flightID = Integer.parseInt(aircraftResult[0]);
-            this.departureTime = Timestamp.valueOf(aircraftResult[1]);
-            this.arrivalTime = Timestamp.valueOf(aircraftResult[2]);
+            this.flightID = Integer.parseInt(result[0]);
+            this.departureTime = Timestamp.valueOf(result[1]);
+            this.arrivalTime = Timestamp.valueOf(result[2]);
+            setAircraft(result[3]);
         } catch (SQLException e) {
-            throw new Exception("No flight found");
+            throw new IllegalArgumentException("No flight found");
+        }
+    }
+
+    private void setAircraft(String name) {
+        // aircraft of flight goes here
+        if (name.equals("Boeing 737-800")) {
+            this.aircraft = new Boeing737(flightID);
+        } else if (name.equals("Boeing 777")) {
+            this.aircraft = new Boeing777(flightID);
+        } else {
+            throw new IllegalArgumentException("Unknown aircraft!");
         }
     }
 
@@ -114,8 +116,12 @@ public class Flight extends DBConnectivity {
 
     }
 
-    public Seat[] getSeats() {
-        return aircraft.getSeats();
+    public Seat[] getAllSeats() {
+        return aircraft.getAllSeats();
+    }
+
+    public Seat getSeat(int i) {
+        return aircraft.getSeat(i);
     }
 
     @Override
