@@ -8,7 +8,8 @@ public class NEWTEST2025 {
     public static void main(String[] args) {
         // only run 1 method for testing purposes
 //        viewBooking();
-        newBooking();
+//        newBooking();
+        updateBooking();
     }
 
     // simulates view booking gui and update booking gui
@@ -95,6 +96,26 @@ public class NEWTEST2025 {
             }
         }
         b.addPassengers(passengers);
+        b.updateDatabase();
+    }
+
+    private static void updateBooking() {
+        Booking b = new Booking("522558", "govie@setu.ie");
+        Passenger[] passengers = b.getPassengers();
+        passengers[0].setTitle("Ms");
+        passengers[0].setName("Norma");
+        passengers[0].setSurname("Foley");
+        passengers[0].setDepartureSeat(b.getDepartureFlight().getSeat(150));
+        passengers[0].setReturnSeat(b.getReturnFlight().getSeat(150));
+
+        // these should throw errors
+//        b.setDepartureFlight(null);
+//        b.setReturnFlight(null);
+
+        b.setEmail("govie@setu.ie");
+        b.setPriorityBoarding(1);
+        b.setLuggage(4);
+
         b.updateDatabase();
     }
 }

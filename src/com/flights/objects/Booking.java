@@ -86,7 +86,7 @@ public class Booking extends DBConnectivity {
                 }
 
             } else {
-                System.out.println("Booking does not exist");
+                throw new IllegalArgumentException("Booking does not exist!");
             }
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println("An error occurred!"+e.getMessage());
@@ -144,11 +144,19 @@ public class Booking extends DBConnectivity {
     }
 
     public void setDepartureFlight(Flight departureFlight) {
-        this.departureFlight = departureFlight;
+        if (newBooking) {
+            this.departureFlight = departureFlight;
+        } else {
+            throw new UnsupportedOperationException("Cannot change departure flight on an existing booking!");
+        }
     }
 
     public void setReturnFlight(Flight returnFlight) {
-        this.returnFlight = returnFlight;
+        if (newBooking) {
+            this.returnFlight = returnFlight;
+        } else {
+            throw new UnsupportedOperationException("Cannot change return flight on an existing booking!");
+        }
     }
 
     public void addPassengers(Passenger... newPassengers) {

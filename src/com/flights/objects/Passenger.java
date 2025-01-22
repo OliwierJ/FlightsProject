@@ -48,8 +48,10 @@ public class Passenger extends DBConnectivity {
                 for (String[] seat : seats) {
                     if (seat[3].equals("0")) {
                         departureSeat = new Seat(seat[0], seat[1], seat[2], passengerID);
+                        oldDepartureSeat = departureSeat;
                     } else {
                         returnSeat = new Seat(seat[0], seat[1], seat[2], passengerID);
+                        oldReturnSeat = returnSeat;
                     }
                 }
             }
