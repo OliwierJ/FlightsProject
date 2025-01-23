@@ -2,14 +2,19 @@ package com.flights.tests;
 
 import com.flights.objects.*;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
+
+import javax.swing.*;
 
 public class NEWTEST2025 {
     public static void main(String[] args) {
         // only run 1 method for testing purposes
 //        viewBooking();
 //        newBooking();
-        updateBooking();
+        // updateBooking();
+        deleteBooking();
     }
 
     // simulates view booking gui and update booking gui
@@ -117,5 +122,31 @@ public class NEWTEST2025 {
         b.setLuggage(4);
 
         b.updateDatabase();
+    }
+
+    public static JFrame f = new JFrame();
+    private static JButton button = new JButton("Click me to delete entry");
+
+    private static void deleteBooking() {
+        
+        // Booking b = new Booking(1);
+        Booking b = new Booking("522558", "govie@setu.ie");
+
+        button.setBounds(50,50,300,50);
+
+        button.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                b.deleteEntry();
+            }
+            
+        });
+        
+        f.add(button);
+        f.setLayout(null);
+        f.setSize(1300,500);
+        f.setVisible(true);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

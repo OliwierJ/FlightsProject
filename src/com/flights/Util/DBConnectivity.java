@@ -18,6 +18,7 @@ public abstract class DBConnectivity {
             stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             return stmt.executeQuery(query);
         } catch (ClassNotFoundException e) {
+            JErrorDialog.showError("A fatal error occurred! Program will now exit", e);
             throw new RuntimeException();
         }
     }
@@ -86,6 +87,7 @@ public abstract class DBConnectivity {
             pstmt = con.prepareStatement(query);
             pstmt.executeUpdate();
         } catch (ClassNotFoundException e) {
+            JErrorDialog.showError("A fatal error occurred! Program will now exit", e);
             throw new RuntimeException();
         }
     }

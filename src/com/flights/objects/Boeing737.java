@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import javax.swing.*;
 
 import com.flights.util.DBConnectivity;
+import com.flights.util.JErrorDialog;
 
 public class Boeing737 extends Aircraft {
 
@@ -52,7 +53,7 @@ public class Boeing737 extends Aircraft {
                 rowNo++;
             }
         } catch (SQLException e) {
-            throw new IllegalStateException("An error occurred while getting seat details from database!"+e.getMessage());
+            JErrorDialog.showError("An error occurred while retrieving seat details from database", e);
         }
     }
 

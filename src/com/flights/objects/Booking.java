@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 import com.flights.util.DBConnectivity;
+import com.flights.util.JErrorDialog;
 
 public class Booking extends DBConnectivity {
     private String bookingID;
@@ -47,7 +48,7 @@ public class Booking extends DBConnectivity {
                     this.bookingID = String.valueOf(bookingNo);
                 }
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                JErrorDialog.showError("An error occured when generating the bookingID", e);
             } finally {
                 closeConnection();
             }
@@ -89,7 +90,7 @@ public class Booking extends DBConnectivity {
                 throw new IllegalArgumentException("Booking does not exist!");
             }
         } catch (SQLException | ClassNotFoundException e) {
-            System.out.println("An error occurred!"+e.getMessage());
+            JErrorDialog.showError("An error occured while retrieving booking from database", e);
         }
     }
 
@@ -201,7 +202,7 @@ public class Booking extends DBConnectivity {
                 passenger.updateDatabase(); // this will work as objects are mutable in a for each loop, however assigning new objects required a standard for loop
             }
         } catch (SQLException e) {
-            System.out.println("An error occurred while updating database! "+e.getMessage());
+            JErrorDialog.showError("An error occurred while updating database!", e);
         } finally {
             closeConnection();
         }
@@ -212,10 +213,14 @@ public class Booking extends DBConnectivity {
             throw new IllegalAccessError("Can't delete a booking that hasn't been inserted into the database yet!");
         } else {
             try {
-                // TODO: delete commands, seat then passenger then flightbooking then booking
-                connectAndExecuteUpdate("DELETE FROM seat INNER JOIN p ON passenger.passenger_id = seat.passenger_id WHERE p.booking_id ='"+bookingID+"'");
+                connectAndExecuteUpdate("DELETE seat FROM seat INNER JOIN passenger ON seat.passenger_id=passenger.passenger_ID WHERE passenger.booking_no='"+bookingID+"'");
+                connectAndExecuteUpdate("DELETE FROM passenger WHERE booking_no='"+bookingID+"'");
+                connectAndExecuteUpdate("DELETE FROM flight_booking WHERE booking_no='"+bookingID+"'");
+                connectAndExecuteUpdate("DELETE FROM booking WHERE booking_no='"+bookingID+"'");
             } catch (SQLException e) {
-                System.out.println("An error occured while deleting from the database!");
+                JErrorDialog.showError("An error occured while deleting from the database!", e);
+            } finally {
+                closeConnection();
             }
         }
     }

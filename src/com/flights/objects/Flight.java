@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import com.flights.util.DBConnectivity;
+import com.flights.util.JErrorDialog;
 
 public class Flight extends DBConnectivity {
     private int flightID;
@@ -26,7 +27,7 @@ public class Flight extends DBConnectivity {
             this.arrivalTime = Timestamp.valueOf(result[3]);
             setAircraft(result[4]);
         } catch (SQLException e) {
-            System.out.println("An error occurred!"+e.getMessage());
+            JErrorDialog.showError("An error occured while retriving flight details", e);
         }
     }
 

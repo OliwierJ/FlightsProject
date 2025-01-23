@@ -19,7 +19,7 @@ import java.util.Calendar;
 import java.util.Properties;
 
 public class MainWindow extends JPanel  implements ItemListener{
-    static JFrame frame = new JFrame();
+    public static JFrame frame = new JFrame();
     static int FRAME_WIDTH = 1300;
     static int FRAME_HEIGHT = 800;
     JPanel northPanel;

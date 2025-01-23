@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.flights.util.DBConnectivity;
+import com.flights.util.JErrorDialog;
 
 public class Passenger extends DBConnectivity {
     private String title;
@@ -56,7 +57,7 @@ public class Passenger extends DBConnectivity {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("An error occurred in passenger database: "+e.getMessage());
+            JErrorDialog.showError("An error occured when retrieving passenger details from database", e);
         }
     }
     public String getTitle() {
@@ -155,7 +156,7 @@ public class Passenger extends DBConnectivity {
             }
             
         } catch (SQLException e) {
-            System.err.println("An error occurred while updating passenger database"+e.getMessage());
+            JErrorDialog.showError("An error occurred while updating passenger database", e);
         } finally {
             closeConnection();
         }
