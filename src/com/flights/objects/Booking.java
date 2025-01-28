@@ -48,7 +48,7 @@ public class Booking extends DBConnectivity {
                     this.bookingID = String.valueOf(bookingNo);
                 }
             } catch (SQLException e) {
-                JErrorDialog.showError("An error occured when generating the bookingID", e);
+                JErrorDialog.showError("An error occurred when generating the bookingID", e);
             } finally {
                 closeConnection();
             }
@@ -90,7 +90,7 @@ public class Booking extends DBConnectivity {
                 throw new IllegalArgumentException("Booking does not exist!");
             }
         } catch (SQLException | ClassNotFoundException e) {
-            JErrorDialog.showError("An error occured while retrieving booking from database", e);
+            JErrorDialog.showError("An error occurred while retrieving booking from database", e);
         }
     }
 
@@ -218,7 +218,7 @@ public class Booking extends DBConnectivity {
                 connectAndExecuteUpdate("DELETE FROM flight_booking WHERE booking_no='"+bookingID+"'");
                 connectAndExecuteUpdate("DELETE FROM booking WHERE booking_no='"+bookingID+"'");
             } catch (SQLException e) {
-                JErrorDialog.showError("An error occured while deleting from the database!", e);
+                JErrorDialog.showError("An error occurred while deleting from the database!", e);
             } finally {
                 closeConnection();
             }

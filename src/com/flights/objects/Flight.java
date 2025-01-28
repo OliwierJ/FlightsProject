@@ -27,7 +27,7 @@ public class Flight extends DBConnectivity {
             this.arrivalTime = Timestamp.valueOf(result[3]);
             setAircraft(result[4]);
         } catch (SQLException e) {
-            JErrorDialog.showError("An error occured while retriving flight details", e);
+            JErrorDialog.showError("An error occurred while retrieving flight details", e);
         }
     }
 

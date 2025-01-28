@@ -18,7 +18,7 @@ public class Boeing737 extends Aircraft {
     protected void generateSeats(int flightID) {
         try {
              String[][] bookedSeats = DBConnectivity.getMultipleRows(DBConnectivity.connectAndExecuteQuery("SELECT seat_no, class, flight_id, passenger_id FROM seat WHERE flight_id='"+flightID+"' ORDER BY seat_no"));
-             // for testing in college PCs
+             //TODO: delete later for testing in college PCs
 //           String[][] bookedSeats = {
 //                {"1C", "Economy", "100", "10"},
 //                {"2A", "Economy", "100", "20"},

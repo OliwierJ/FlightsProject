@@ -11,10 +11,10 @@ import javax.swing.*;
 public class NEWTEST2025 {
     public static void main(String[] args) {
         // only run 1 method for testing purposes
-//        viewBooking();
+       viewBooking();
 //        newBooking();
         // updateBooking();
-        deleteBooking();
+        // deleteBooking();
     }
 
     // simulates view booking gui and update booking gui
@@ -125,7 +125,7 @@ public class NEWTEST2025 {
     }
 
     public static JFrame f = new JFrame();
-    private static JButton button = new JButton("Click me to delete entry");
+    private static final JButton button = new JButton("Click me to delete entry");
 
     private static void deleteBooking() {
         
@@ -134,14 +134,7 @@ public class NEWTEST2025 {
 
         button.setBounds(50,50,300,50);
 
-        button.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                b.deleteEntry();
-            }
-            
-        });
+        button.addActionListener(e -> b.deleteEntry());
         
         f.add(button);
         f.setLayout(null);

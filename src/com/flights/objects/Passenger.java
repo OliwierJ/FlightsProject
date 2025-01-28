@@ -57,7 +57,7 @@ public class Passenger extends DBConnectivity {
                 }
             }
         } catch (SQLException e) {
-            JErrorDialog.showError("An error occured when retrieving passenger details from database", e);
+            JErrorDialog.showError("An error occurred when retrieving passenger details from database", e);
         }
     }
     public String getTitle() {
