@@ -13,6 +13,9 @@ import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,6 +35,12 @@ public class MainWindow extends JPanel  implements ItemListener{
 
     public MainWindow() {
         super(new BorderLayout());
+
+        try {
+            System.setErr(new PrintStream("src/com/flights/logfile.txt"));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
@@ -121,7 +130,9 @@ public class MainWindow extends JPanel  implements ItemListener{
         JPanel departurePanel = new JPanel();
         departurePanel.setLayout(new BoxLayout(departurePanel, BoxLayout.Y_AXIS));
         departurePanel.setOpaque(false);
-        departurePanel.setPreferredSize(new Dimension(300,360));
+        departurePanel.setPreferredSize(new Dimension(420,360));
+        departurePanel.setMaximumSize(new Dimension(500,360));
+        departurePanel.setMinimumSize(new Dimension(420,360));
 
         JPlaceHolderTextField departureField = new JPlaceHolderTextField(FlightsConstants.DEPARTURE_PLACEHOLDER, 20);
 
@@ -204,17 +215,19 @@ public class MainWindow extends JPanel  implements ItemListener{
         departureField.setFocusable(false);
         departureField.setFocusable(true);
 
+        departurePanel.add(Box.createVerticalGlue());
         departurePanel.add(radioPanel);
         departurePanel.add(departureField);
         departurePanel.add(Box.createVerticalStrut(35));
         departurePanel.add(departureLabel);
         departurePanel.add(datePicker);
+        departurePanel.add(Box.createVerticalStrut(45));
 
 
         // Arrival Panel
         JPanel arrivalPanel = new JPanel();
         arrivalPanel.setOpaque(false);
-        arrivalPanel.setMinimumSize(new Dimension(400,360));
+        arrivalPanel.setMinimumSize(new Dimension(300,360));
         arrivalPanel.setPreferredSize(new Dimension(400,360));
         arrivalPanel.setMaximumSize(new Dimension(500,360));
         arrivalPanel.setLayout(new BoxLayout(arrivalPanel,BoxLayout.Y_AXIS));
@@ -244,7 +257,7 @@ public class MainWindow extends JPanel  implements ItemListener{
         datePickerArrival.addAncestorListener(new RequestFocusListener(false));
         datePickerArrival.getJFormattedTextField().setHorizontalAlignment(JTextField.CENTER);
 
-        arrivalPanel.add(Box.createVerticalStrut(123));
+        arrivalPanel.add(Box.createVerticalStrut(122));
         arrivalPanel.add(arrivalField);
         arrivalPanel.add(Box.createVerticalStrut(35));
         arrivalPanel.add(arrivalLabel);
@@ -336,7 +349,7 @@ public class MainWindow extends JPanel  implements ItemListener{
         // button to panel
         searchPanel.add(Box.createVerticalGlue());
         searchPanel.add(searchButton);
-        searchPanel.add(Box.createVerticalStrut(44));
+        searchPanel.add(Box.createVerticalStrut(45));
 
         // add to main selection panel
         mainSelectionPanel.add(departurePanel);
