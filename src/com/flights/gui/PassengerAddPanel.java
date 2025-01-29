@@ -1,4 +1,4 @@
-package com.flights.tests;
+package com.flights.gui;
 
 import com.flights.util.FlightsConstants;
 import com.flights.util.JErrorDialog;

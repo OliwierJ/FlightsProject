@@ -1,7 +1,6 @@
 package com.flights.gui;
 
 import com.flights.objects.Flight;
-import com.flights.tests.PassengerAddPanel;
 import com.flights.util.FileUtilities;
 import com.flights.util.FlightsConstants;
 import org.jdatepicker.impl.JDatePanelImpl;
