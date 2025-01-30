@@ -47,22 +47,21 @@ public class NEWTEST2025 {
         Flight f = new Flight(100);
         Flight f2 = new Flight(101);
 
-        Booking b = new Booking();
+        Booking b = new Booking("Basic");
         System.out.println("Generated booking ID: " + b.getBookingID());
         System.out.print("Enter email: ");
         String email = EasyIn.getString();
-        System.out.print("Enter luggage amount: ");
-        int luggage = EasyIn.getInt();
+        System.out.println("20kg luggage hardcoded to true");
         System.out.print("Enter priority boarding: ");
         int priority = EasyIn.getInt();
         b.setDepartureFlight(f);
         b.setReturnFlight(f2);
         b.setEmail(email);
-        b.setLuggage(luggage);
+        b.set20kgluggage(true);
         b.setPriorityBoarding(priority);
 
         // option 2
-        Booking booking = new Booking(email, luggage, priority, f, f2);
+        Booking booking = new Booking(email, priority, f, f2, true, "Basic");
 
         System.out.print("Enter number of passengers: ");
         int count = EasyIn.getInt();
@@ -119,7 +118,8 @@ public class NEWTEST2025 {
 
         b.setEmail("govie@setu.ie");
         b.setPriorityBoarding(1);
-        b.setLuggage(4);
+        b.set20kgluggage(true);
+        b.setTier("Standard");
 
         b.updateDatabase();
     }

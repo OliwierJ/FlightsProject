@@ -19,8 +19,9 @@ public abstract class DBConnectivity {
             return stmt.executeQuery(query);
         } catch (ClassNotFoundException e) {
             JErrorDialog.showError("A fatal error occurred! Program will now exit", e);
-            throw new RuntimeException();
+            System.exit(1);
         }
+        return null;
     }
 
     // converts the next row of a result set into a 1d array and closes connection
@@ -88,7 +89,7 @@ public abstract class DBConnectivity {
             pstmt.executeUpdate();
         } catch (ClassNotFoundException e) {
             JErrorDialog.showError("A fatal error occurred! Program will now exit", e);
-            throw new RuntimeException();
+            System.exit(1);
         }
     }
 

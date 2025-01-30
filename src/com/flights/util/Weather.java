@@ -96,6 +96,6 @@ public class Weather {
     // testing purposes
     public static void main(String[] args) {
         Weather weather = new Weather("2025-01-24", "Dublin");
-        weather.printData("2025-01-24T05:00");
+        weather.printData("2025-01-24T10:15");
     }
 }

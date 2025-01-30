@@ -12,30 +12,38 @@ public class Booking extends DBConnectivity {
     private String email;
     private int priorityBoarding;
     private int luggage;
+    private boolean luggage20kg;
     private Passenger[] passengers;
     private Flight departureFlight;
     private Flight returnFlight;
     private boolean newBooking;
+    private String tier;
 
     // make new empty booking and add values using setters
-    public Booking() {
+    public Booking(String tier) {
         this.generateBookingID();
         this.newBooking = true;
         this.priorityBoarding = 0; // default initialisation of new booking
         this.luggage = 0;
         this.passengers = new Passenger[0];
+        setTier(tier);
     }
 
-    // make new booking giving values in constructor
-    public Booking(String email, int priorityBoarding, int luggage, Flight departureFlight, Flight returnFlight) {
+    // make new booking giving values in constructor // TODO test maybe delete
+    public Booking(String email, int priorityBoarding, Flight departureFlight, Flight returnFlight, boolean luggage20kg, String tier) {
         this.generateBookingID();
         this.email = email;
         this.priorityBoarding = priorityBoarding;
-        this.luggage = luggage;
         this.departureFlight = departureFlight;
         this.returnFlight = returnFlight;
+        this.luggage = 0;
+        this.luggage20kg = luggage20kg;
+        if (luggage20kg) {
+            luggage++;
+        }
         this.passengers = new Passenger[0];
         this.newBooking = true;
+        setTier(tier);
     }
 
     private void generateBookingID() {
@@ -60,16 +68,18 @@ public class Booking extends DBConnectivity {
         this.newBooking = false;
         try {
             if(verifyBookingDetails(bookingID, email)) {
-                String[] result = getRow(connectAndExecuteQuery("SELECT priority_boarding, luggage_amount FROM booking WHERE booking_no=" + bookingID));
+                String[] result = getRow(connectAndExecuteQuery("SELECT priority_boarding, luggage_amount, tier FROM booking WHERE booking_no=" + bookingID));
 
                 this.bookingID = bookingID;
                 this.email = email;
                 this.priorityBoarding = Integer.parseInt(result[0]);
                 this.luggage = Integer.parseInt(result[1]);
+                this.tier = result[2];
 
                 String[][] passengerIDs = getMultipleRows(connectAndExecuteQuery("SELECT passenger.passenger_ID FROM passenger WHERE booking_no=" + bookingID));
                 int passengerCount = passengerIDs.length;
                 this.passengers = new Passenger[passengerCount];
+                this.luggage20kg = passengerCount < luggage;
                 for (int i = 0; i < passengerCount; i++) {
                     passengers[i] = new Passenger(passengerIDs[i][0]); // this cannot be in a for each loop it has to be in a regular for loop
                 }
@@ -85,23 +95,35 @@ public class Booking extends DBConnectivity {
                         }
                     }
                 }
-
             } else {
-                throw new IllegalArgumentException("Booking does not exist!");
+                JErrorDialog.showWarning("Booking does not exist!");
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             JErrorDialog.showError("An error occurred while retrieving booking from database", e);
         }
     }
 
-    public static boolean verifyBookingDetails(String bookingID, String email) throws SQLException, ClassNotFoundException {
-        boolean valid = connectAndExecuteQuery("SELECT * FROM booking WHERE booking_no='"+bookingID+"' AND email='"+email+"'").next(); // true if entry exists, false otherwise
-        closeConnection();
-        return valid;
+    public static boolean verifyBookingDetails(String bookingID, String email) {
+        try {
+            return connectAndExecuteQuery("SELECT * FROM booking WHERE booking_no='" + bookingID + "' AND email='" + email + "'").next(); // true if entry exists, false otherwise
+        } catch (SQLException e) {
+            JErrorDialog.showError("An error occurred while verifying booking details", e);
+            return false;
+        } finally {
+            closeConnection();
+        }
     }
 
     public int getLuggage() {
         return luggage;
+    }
+
+    public boolean get20kgluggage() {
+        return luggage20kg;
+    }
+
+    public String getTier() {
+        return tier;
     }
 
     public int getPriorityBoarding() {
@@ -140,8 +162,13 @@ public class Booking extends DBConnectivity {
         this.priorityBoarding = priorityBoarding;
     }
 
-    public void setLuggage(int luggage) {
-        this.luggage = luggage;
+    public void set20kgluggage(boolean l) {
+        this.luggage20kg = l;
+        if (luggage20kg && luggage == passengers.length) {
+            luggage++;
+        } else if (!luggage20kg && luggage > passengers.length) {
+            luggage--;
+        }
     }
 
     public void setDepartureFlight(Flight departureFlight) {
@@ -160,6 +187,15 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    public void setTier(String tier) { // TODO: test
+        if (tier.equals("Basic") || tier.equals("Standard") || tier.equals("Deluxe")) { //TODO test
+            this.tier = tier;
+            this.luggage20kg = tier.equals("Standard") || tier.equals("Deluxe");
+        } else {
+            JErrorDialog.showWarning("Invalid tier set!");
+        }
+    }
+
     public void addPassengers(Passenger... newPassengers) {
         Passenger[] tempPassengers = new Passenger[passengers.length + newPassengers.length];
 
@@ -170,6 +206,10 @@ public class Booking extends DBConnectivity {
             i++;
         }
         passengers = tempPassengers;
+        this.luggage = passengers.length;
+        if (luggage20kg) {
+            luggage++;
+        }
     }
 
     @Override
@@ -180,7 +220,7 @@ public class Booking extends DBConnectivity {
                 if (email == null || departureFlight == null || passengers.length == 0) {
                     throw new IllegalStateException("Booking is not complete!");
                 } 
-                connectAndExecuteUpdate("INSERT INTO booking (booking_no, email, priority_boarding, luggage_amount) VALUES ('" + bookingID + "', '" + email + "', " + priorityBoarding + ", " + luggage + ")");
+                connectAndExecuteUpdate("INSERT INTO booking (booking_no, email, priority_boarding, luggage_amount, tier) VALUES ('" + bookingID + "', '" + email + "', " + priorityBoarding + ", " + luggage + ", '" + tier + "')");
                 connectAndExecuteUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES (" + departureFlight.getFlightID() + ", '" + bookingID + "', 0)");
                 if (returnFlight != null) {
                     connectAndExecuteUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES (" + returnFlight.getFlightID() + ", '" + bookingID + "', 1)");
@@ -192,7 +232,7 @@ public class Booking extends DBConnectivity {
                 if (!rs.next()) {
                     throw new IllegalArgumentException("No such booking exists!");
                 }
-                connectAndExecuteUpdate("UPDATE booking SET email='"+email+"', priority_boarding="+priorityBoarding+", luggage_amount="+luggage+" WHERE booking_no="+bookingID);
+                connectAndExecuteUpdate("UPDATE booking SET email='"+email+"', priority_boarding="+priorityBoarding+", luggage_amount="+luggage+", tier='"+tier+"' WHERE booking_no="+bookingID);
             }
             // update each passenger
             for (Passenger passenger : passengers) {
@@ -232,6 +272,8 @@ public class Booking extends DBConnectivity {
                 ", email='" + email + '\'' +
                 ", priorityBoarding=" + priorityBoarding +
                 ", luggage=" + luggage +
+                ", luggage20kg=" + luggage20kg +
+                ", tier=" + tier +
                 ", passengers=" + Arrays.toString(passengers) +
                 ", departureFlight=" + departureFlight +
                 ", returnFlight=" + returnFlight +

@@ -15,4 +15,6 @@ public interface FlightsConstants {
 
     String DEPARTURE_PLACEHOLDER = "Enter departure airport";
     String ARRIVAL_PLACEHOLDER = "Enter arrival airport";
+
+    Font ARIAL20 = new Font("Arial", Font.BOLD, 20);
 }

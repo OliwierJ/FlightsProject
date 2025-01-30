@@ -15,17 +15,19 @@ public class Flight extends DBConnectivity {
     private Timestamp departureTime;
     private Timestamp arrivalTime;
     private Aircraft aircraft;
+    private double basePrice;
 
     // retrieves a flight from database
     public Flight(int flightID) {
         try {
-            String[] result = getRow(connectAndExecuteQuery("SELECT departure_airport, arrival_airport, departure_time, arrival_time, aircraft FROM flight WHERE flight_id="+flightID));
+            String[] result = getRow(connectAndExecuteQuery("SELECT departure_airport, arrival_airport, departure_time, arrival_time, aircraft, base_price FROM flight WHERE flight_id="+flightID));
             this.flightID = flightID;
             this.departureAirport = result[0];
             this.arrivalAirport = result[1];
             this.departureTime = Timestamp.valueOf(result[2]);
             this.arrivalTime = Timestamp.valueOf(result[3]);
             setAircraft(result[4]);
+            this.basePrice = Double.parseDouble(result[5]);
         } catch (SQLException e) {
             JErrorDialog.showError("An error occurred while retrieving flight details", e);
         }
@@ -43,13 +45,14 @@ public class Flight extends DBConnectivity {
     // used by flight selection menu
     public Flight(String departureAirport, String arrivalAirport, String date) throws Exception {
         try {
-            String[] result = getRow(connectAndExecuteQuery("Select flight_id, departure_time, arrival_time, aircraft FROM flight WHERE departure_airport=\""+departureAirport+"\" AND arrival_airport=\""+arrivalAirport + "\" AND CAST(departure_time AS DATE)=\""+date+"\""));
+            String[] result = getRow(connectAndExecuteQuery("Select flight_id, departure_time, arrival_time, aircraft, base_price FROM flight WHERE departure_airport=\""+departureAirport+"\" AND arrival_airport=\""+arrivalAirport + "\" AND CAST(departure_time AS DATE)=\""+date+"\""));
             this.departureAirport = departureAirport;
             this.arrivalAirport = arrivalAirport;
             this.flightID = Integer.parseInt(result[0]);
             this.departureTime = Timestamp.valueOf(result[1]);
             this.arrivalTime = Timestamp.valueOf(result[2]);
             setAircraft(result[3]);
+            this.basePrice = Double.parseDouble(result[4]);
         } catch (SQLException e) {
             throw new IllegalArgumentException("No flight found");
         }
@@ -103,8 +106,8 @@ public class Flight extends DBConnectivity {
         return flightID;
     }
 
-    public int getPrice() {
-        return 0;
+    public double getBasePrice() {
+        return basePrice;
     }
 
     public double getFlightDuration() {
@@ -133,6 +136,7 @@ public class Flight extends DBConnectivity {
                 ", arrivalAirport='" + arrivalAirport + '\'' +
                 ", departureTime='" + departureTime + '\'' +
                 ", arrivalTime='" + arrivalTime + '\'' +
+                ", basePrice=" + basePrice +
                 ", aircraft=" + aircraft +
                 '}';
     }

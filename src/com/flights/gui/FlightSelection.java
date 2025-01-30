@@ -199,11 +199,6 @@ public class FlightSelection extends JPanel {
         frame.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(FlightSelection::createAndShowGUI);
-
-    }
-
     private Date getParsedDate(String unformattedDate, SimpleDateFormat sdf) {
         try {
             return sdf.parse(unformattedDate);
@@ -244,7 +239,7 @@ public class FlightSelection extends JPanel {
             priceLabel.setForeground(Color.WHITE);
 
             flightPriceLabel.setFont(new Font("Arial", Font.BOLD, 35));
-            flightPriceLabel.setText("€" + f.getFlightID());        // TODO getPrice() from the Flight class
+            flightPriceLabel.setText("€" + f.getBasePrice());
             flightPriceLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             flightPriceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             flightPriceLabel.setForeground(Color.white);

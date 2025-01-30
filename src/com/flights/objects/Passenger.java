@@ -101,12 +101,10 @@ public class Passenger extends DBConnectivity {
     }
 
     public void setDepartureSeat(Seat s) {
-        this.oldDepartureSeat = departureSeat;
         this.departureSeat = s;
     }
 
     public void setReturnSeat(Seat s) {
-        this.oldReturnSeat = returnSeat;
         this.returnSeat = s;
     }
 
@@ -123,21 +121,21 @@ public class Passenger extends DBConnectivity {
 
                 // if seat was changed
                 if (departureSeat != oldDepartureSeat) {
-                    oldDepartureSeat.setPassengerID(null);
+                    oldDepartureSeat.setPassengerID(null); // reset object reference to be null
                     departureSeat.setPassengerID(passengerID);
-                    oldDepartureSeat = departureSeat;
+                    oldDepartureSeat = departureSeat; // overwrite this reference with new seat
                     connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+departureSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+departureSeat.getFlightID()+"'");
                 }
                 // if return seat changed
                 if (returnSeat != oldReturnSeat && returnSeat != null) {
-                    oldReturnSeat.setPassengerID(null);
+                    oldReturnSeat.setPassengerID(null); // reset object reference to be null
                     returnSeat.setPassengerID(passengerID);
-                    oldReturnSeat = returnSeat;
+                    oldReturnSeat = returnSeat; // overwrite this reference with new seat
                     connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+returnSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+returnSeat.getFlightID()+"'");
                 }
             } else {
                 // add new passenger to database
-                if (name == null || surname == null || title == null || departureSeat == null || bookingID == null) {
+                if (name == null || surname == null || departureSeat == null || bookingID == null) {
                     throw new IllegalStateException("Passenger details are not complete!");
                 }
                 connectAndExecuteUpdate("INSERT INTO passenger (title, first_name, last_name, booking_no) VALUES ('"+title+"', '"+name+"', '"+surname+"', '"+bookingID+"')");
