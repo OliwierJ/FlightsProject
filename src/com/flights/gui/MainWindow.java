@@ -1,8 +1,8 @@
 package com.flights.gui;
 
+import com.flights.objects.Flight;
 import com.flights.util.FileUtilities;
 import com.flights.util.FlightsConstants;
-import com.flights.objects.Flight;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -13,17 +13,16 @@ import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainWindow extends JPanel  implements ItemListener, FlightsConstants{
     public static JFrame frame = new JFrame();
-    public static int FRAME_WIDTH = 1350;
-    public static int FRAME_HEIGHT = 800;
+    static int FRAME_WIDTH = 1350;
+    static int FRAME_HEIGHT = 800;
     JPanel northPanel;
     JPanel logoPanel;
     JPanel toolbarAndSelection;
@@ -31,14 +30,16 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
     JDatePickerImpl datePickerArrival;
     JDatePickerImpl datePicker;
     JLabel arrivalLabel;
+    int[] passArray = {1, 0, 0, 0};
 
     public MainWindow() {
         super(new BorderLayout());
-        try {
-            System.setErr(new PrintStream("src/com/flights/logfile.txt"));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+
+//        try {
+//            System.setErr(new PrintStream("src/com/flights/logfile.txt"));
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
         setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
@@ -138,31 +139,6 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         departureField.setFont(new Font("Arial", Font.PLAIN, 25));
         departureField.setMaximumSize(new Dimension(300,55));
 
-        class RequestFocusListener implements AncestorListener {
-            private final boolean removeListener;
-
-            public RequestFocusListener(boolean removeListener)
-            {
-                this.removeListener = removeListener;
-            }
-
-            @Override
-            public void ancestorAdded(AncestorEvent e)
-            {
-                JComponent component = e.getComponent();
-                component.requestFocusInWindow();
-
-                if (removeListener){
-                    component.removeAncestorListener( this );
-                }
-            }
-
-            @Override
-            public void ancestorMoved(AncestorEvent e) {}
-
-            @Override
-            public void ancestorRemoved(AncestorEvent e) {}
-        }
 
         UtilDateModel model = new UtilDateModel();
         JDatePanelImpl datePanel = new JDatePanelImpl(model, new Properties());
@@ -261,15 +237,52 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         arrivalPanel.add(Box.createVerticalStrut(35));
         arrivalPanel.add(arrivalLabel);
         arrivalPanel.add(datePickerArrival);
-//        departureField.add(Box.createGlue());
+
 
         // Search Panel
-        JPanel searchPanel = new JPanel();
+        JLayeredPane searchPanel = new JLayeredPane();
         searchPanel.setLayout(new BoxLayout(searchPanel,BoxLayout.Y_AXIS));
         searchPanel.setOpaque(false);
         searchPanel.setMinimumSize(new Dimension(300,360));
         searchPanel.setPreferredSize(new Dimension(300,360));
         searchPanel.setMaximumSize(new Dimension(500,360));
+
+        JLabel passengerLabel = new JLabel("Passengers");
+        passengerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        passengerLabel.setForeground(Color.WHITE);
+        passengerLabel.setFont(ARIAL20);
+
+        JButton passengerBtn = new JButton("1 Passenger");
+        passengerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        passengerBtn.setFocusable(false);
+        passengerBtn.setFont(new Font("Arial", Font.PLAIN, 20));
+        passengerBtn.setMinimumSize(new Dimension(200, 60));
+        passengerBtn.setPreferredSize(new Dimension(200, 60));
+        passengerBtn.setMaximumSize(new Dimension(200, 60));
+        passengerBtn.setBackground(Color.WHITE);
+
+        PopupFactory popupFactory = new PopupFactory();
+        PassengerAddPanel selectPassengerPanel = new PassengerAddPanel(passArray);
+//        selectPassengerPanel.setBorder(BorderFactory.createLineBorder(FlightsConstants.RICHBLACK));
+        AtomicReference<Popup> p = new AtomicReference<>(popupFactory.getPopup(frame, selectPassengerPanel, 0, 0));
+        selectPassengerPanel.getDoneButton().addActionListener(e -> {
+            p.get().hide();
+            passArray = selectPassengerPanel.getPassType();
+            if (selectPassengerPanel.getPassCount() == 1) {
+                passengerBtn.setText(selectPassengerPanel.getPassCount() + " Passenger");
+            } else {
+                passengerBtn.setText(selectPassengerPanel.getPassCount() + " Passengers");
+            }
+            p.set(popupFactory.getPopup(frame, selectPassengerPanel, passengerBtn.getLocationOnScreen().x, passengerBtn.getLocationOnScreen().y));
+        });
+        passengerBtn.addActionListener(e -> {
+            p.get().hide();
+            p.set(popupFactory.getPopup(frame, selectPassengerPanel, passengerBtn.getLocationOnScreen().x, passengerBtn.getLocationOnScreen().y));
+            p.get().show();
+
+
+        });
+
 
         JButton searchButton = new JButton("Search");
         searchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -281,6 +294,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         searchButton.setMaximumSize(new Dimension(250,60));
         searchButton.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         searchButton.setFocusable(false);
+
 
         searchButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -347,6 +361,9 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
 
         // button to panel
         searchPanel.add(Box.createVerticalGlue());
+        searchPanel.add(passengerLabel);
+        searchPanel.add(passengerBtn);
+        searchPanel.add(Box.createVerticalStrut(75));
         searchPanel.add(searchButton);
         searchPanel.add(Box.createVerticalStrut(45));
 
@@ -362,6 +379,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         northPanel.add(logoPanel);
         northPanel.add(toolbarAndSelection);
         add(northPanel, BorderLayout.NORTH);
+        add(new JPanel(), BorderLayout.CENTER);
     }
     //  checks which radio button is selected
     public void itemStateChanged(ItemEvent e)
@@ -383,39 +401,63 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             }
         }
     }
-public static void createAndShowGUI(JPanel panel) {
-    frame.setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    // catch if any panel throws exception e.g. FlightSelection
-    try {
-        frame.setContentPane(panel);
-    } catch (Exception e) {
-        System.err.println(e.getMessage());
-    }
-    frame.pack();
-    frame.setVisible(true);
-}
-
-//    Date label formatter will format the Object to a String
-private static class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
-
-    private final String datePattern = "yyyy-MM-dd";
-    private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
-
-    @Override
-    public Object stringToValue(String text) throws ParseException {
-        return dateFormatter.parseObject(text);
+    public static void createAndShowGUI(JPanel panel) {
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // catch if any panel throws exception e.g. FlightSelection
+        try {
+            frame.setContentPane(panel);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        frame.pack();
+        frame.setVisible(true);
     }
 
-    @Override
-    public String valueToString(Object value) {
-        if (value != null) {
-            Calendar cal = (Calendar) value;
-            return dateFormatter.format(cal.getTime());
+    private static class RequestFocusListener implements AncestorListener {
+        private final boolean removeListener;
+
+        public RequestFocusListener(boolean removeListener) {
+            this.removeListener = removeListener;
         }
 
-        return "";
+        @Override
+        public void ancestorAdded(AncestorEvent e) {
+            JComponent component = e.getComponent();
+            component.requestFocusInWindow();
+
+            if (removeListener)
+                component.removeAncestorListener(this);
+        }
+
+        @Override
+        public void ancestorMoved(AncestorEvent e) {
+        }
+
+        @Override
+        public void ancestorRemoved(AncestorEvent e) {
+        }
     }
 
-}
+    //    Date label formatter will format the Object to a String
+    private static class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
+
+        private final String datePattern = "yyyy-MM-dd";
+        private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+        @Override
+        public Object stringToValue(String text) throws ParseException {
+            return dateFormatter.parseObject(text);
+        }
+
+        @Override
+        public String valueToString(Object value) {
+            if (value != null) {
+                Calendar cal = (Calendar) value;
+                return dateFormatter.format(cal.getTime());
+            }
+
+            return "";
+        }
+
+    }
 }
