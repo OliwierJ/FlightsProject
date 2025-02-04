@@ -20,9 +20,9 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MainWindow extends JPanel  implements ItemListener, FlightsConstants{
-    public static JFrame frame = new JFrame();
-    static int FRAME_WIDTH = 1350;
-    static int FRAME_HEIGHT = 800;
+    public static final JFrame frame = new JFrame();
+    public static final int FRAME_WIDTH = 1350;
+    public static final int FRAME_HEIGHT = 800;
     JPanel northPanel;
     JPanel logoPanel;
     JPanel toolbarAndSelection;
@@ -58,68 +58,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         toolbarAndSelection = new JPanel(new BorderLayout());
         toolbarAndSelection.setBackground(FlightsConstants.SEAGREEN);
 
-        JPanel toolBarPanel = new JPanel();
-        toolBarPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        toolBarPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        toolBarPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        toolBarPanel.setBackground(FlightsConstants.TRUEBLUE);
-        toolBarPanel.setMinimumSize(new Dimension(toolbarAndSelection.getWidth(), 40));
-        toolBarPanel.setPreferredSize(new Dimension(toolbarAndSelection.getWidth(), 40));
-        toolBarPanel.setBorder(BorderFactory.createMatteBorder(0,3,3,0,FlightsConstants.MAIZE));
-
-        JLabel loginLabel = new JLabel("Login");
-        loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loginLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-        loginLabel.setForeground(Color.WHITE);
-        loginLabel.setFont(ARIAL20);
-
-        JLabel myBookingLabel = new JLabel("My Bookings");
-        myBookingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        myBookingLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-        myBookingLabel.setForeground(Color.WHITE);
-        myBookingLabel.setFont(ARIAL20);
-
-
-        JLabel FAQLabel = new JLabel("FAQ");
-        FAQLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        FAQLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-        FAQLabel.setForeground(Color.WHITE);
-        FAQLabel.setFont(ARIAL20);
-
-        class TextMouseAdapter implements MouseListener {
-            @Override
-            public void mouseClicked(MouseEvent e) {}
-            @Override
-            public void mousePressed(MouseEvent e) {}
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                // TODO run specific method based on e.getComponent()
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                e.getComponent().setForeground(FlightsConstants.SELECTEDGRAY);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                e.getComponent().setForeground(Color.WHITE);
-            }
-        }
-
-        myBookingLabel.addMouseListener(new TextMouseAdapter());
-        loginLabel.addMouseListener(new TextMouseAdapter());
-        FAQLabel.addMouseListener(new TextMouseAdapter());
-
-        toolBarPanel.add(loginLabel);
-        toolBarPanel.add(Box.createHorizontalStrut(20));
-        toolBarPanel.add(myBookingLabel);
-        toolBarPanel.add(Box.createHorizontalStrut(20));
-        toolBarPanel.add(FAQLabel);
-
+        JPanel toolBarPanel = new JTopBar();
 
         JPanel mainSelectionPanel = new JPanel();
         mainSelectionPanel.setLayout(new BoxLayout(mainSelectionPanel, BoxLayout.X_AXIS));
@@ -279,8 +218,6 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             p.get().hide();
             p.set(popupFactory.getPopup(frame, selectPassengerPanel, passengerBtn.getLocationOnScreen().x, passengerBtn.getLocationOnScreen().y));
             p.get().show();
-
-
         });
 
 
@@ -328,7 +265,6 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             }
             // check first if the return flight is selected before checking if its empty
             if (returnFlight.isSelected()) {
-
                 if (datePickerArrival.getJFormattedTextField().getText().isEmpty()) {
                     JOptionPane.showMessageDialog(frame, "Please enter the arrival date.","Warning", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -345,7 +281,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             arrivalTime = datePicker.getJFormattedTextField().getText();
             datePicker.getJFormattedTextField().setText("");
 
-            // print statements for debugging :D
+            // TODO delete print statements for debugging :D
             System.out.println(arrival);
             System.out.println(arrivalTime);
             System.out.println(departure);
@@ -375,15 +311,13 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         toolbarAndSelection.add(toolBarPanel, BorderLayout.PAGE_START);
         toolbarAndSelection.add(mainSelectionPanel,BorderLayout.SOUTH);
 
-
         northPanel.add(logoPanel);
         northPanel.add(toolbarAndSelection);
         add(northPanel, BorderLayout.NORTH);
         add(new JPanel(), BorderLayout.CENTER);
     }
     //  checks which radio button is selected
-    public void itemStateChanged(ItemEvent e)
-    {
+    public void itemStateChanged(ItemEvent e) {
         if (e.getSource() == returnFlight) {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 datePickerArrival.setVisible(true);
@@ -391,7 +325,6 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             }
         }
         else {
-
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 System.out.println("Hello");
                 // hide the return flight date if one way flight is selected
@@ -405,38 +338,38 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // catch if any panel throws exception e.g. FlightSelection
         try {
-            frame.setContentPane(panel);
+            if (panel.getClass().isInstance(frame.getContentPane())) {
+                System.out.println("Current panel is already an instance of "+panel.getClass().getSimpleName());
+            } else {
+                frame.setContentPane(panel);
+            }
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
         frame.pack();
+        frame.setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         frame.setVisible(true);
     }
 
-    private static class RequestFocusListener implements AncestorListener {
-        private final boolean removeListener;
-
-        public RequestFocusListener(boolean removeListener) {
-            this.removeListener = removeListener;
-        }
+    private record RequestFocusListener(boolean removeListener) implements AncestorListener {
 
         @Override
-        public void ancestorAdded(AncestorEvent e) {
-            JComponent component = e.getComponent();
-            component.requestFocusInWindow();
+            public void ancestorAdded(AncestorEvent e) {
+                JComponent component = e.getComponent();
+                component.requestFocusInWindow();
 
-            if (removeListener)
-                component.removeAncestorListener(this);
-        }
+                if (removeListener)
+                    component.removeAncestorListener(this);
+            }
 
-        @Override
-        public void ancestorMoved(AncestorEvent e) {
-        }
+            @Override
+            public void ancestorMoved(AncestorEvent e) {
+            }
 
-        @Override
-        public void ancestorRemoved(AncestorEvent e) {
+            @Override
+            public void ancestorRemoved(AncestorEvent e) {
+            }
         }
-    }
 
     //    Date label formatter will format the Object to a String
     private static class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
@@ -455,9 +388,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
                 Calendar cal = (Calendar) value;
                 return dateFormatter.format(cal.getTime());
             }
-
             return "";
         }
-
     }
 }
