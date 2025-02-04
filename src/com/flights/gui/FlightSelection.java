@@ -1,12 +1,10 @@
 package com.flights.gui;
 
+
 import com.flights.objects.Flight;
 import com.flights.util.FlightsConstants;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
@@ -23,11 +21,14 @@ public class FlightSelection extends JPanel {
     int dateWidth = 125;
     int dateCount = 25;
     JLabel returnLabel = new JLabel("Return Flight");
+    int[] passengerTypes;
+    SelectedFlight selectedFlightR;
 
-    public FlightSelection(Flight defaultFlight, boolean showReturns, String returnFlightDate) {
+    public FlightSelection(Flight defaultFlight, boolean showReturns, String returnFlightDate, int[] passArray) {
         setPreferredSize(new Dimension(1300, 800));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        this.passengerTypes = passArray;
         departureLabel.setFont(new Font("Arial", Font.BOLD, 20));
         departureLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         departureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -117,7 +118,7 @@ public class FlightSelection extends JPanel {
             Date convertedEndDate = getParsedDate(returnFlightDate,sdf);
 
             JScrollPane datesScrollerR = new DatesScroller(returnDatesBox);
-            SelectedFlight selectedFlightR = new SelectedFlight(defaultFlightReturn);
+            selectedFlightR = new SelectedFlight(defaultFlightReturn);
 
             JPanel[] returnDate = new JPanel[dateCount];
             Flight[] differentFlightsR = new Flight[dateCount];
@@ -144,6 +145,7 @@ public class FlightSelection extends JPanel {
                         selectedDateIndex[0] = finalI;
                         if (differentFlightsR[selectedDateIndex[0]] != null) {
                             SwingUtilities.invokeLater(() -> selectedFlightR.changeFlight(differentFlightsR[selectedDateIndex[0]]));
+
                         }
                     }
 
@@ -172,11 +174,20 @@ public class FlightSelection extends JPanel {
             add(datesScrollerR);
             add(Box.createVerticalStrut(50));
             add(selectedFlightR);
+        } else {
+            add(Box.createVerticalStrut(500));
         }
 
-
+        JButton selectFlights = new JButton("Select Flights");
+        selectFlights.addActionListener(e -> {
+            if (!showReturns) {
+                MainWindow.createAndShowGUI(new FlightFareSelectionMenu(selectedFlight.getFlight(), null, passengerTypes));
+            } else {
+                MainWindow.createAndShowGUI(new FlightFareSelectionMenu(selectedFlight.getFlight(), selectedFlightR.getFlight(), passengerTypes));
+            }
+        });
+        add(selectFlights);
     }
-
 
     private static void centerScrollBarThumb(JScrollBar scrollBar) {
         // Calculate the center value
@@ -191,7 +202,7 @@ public class FlightSelection extends JPanel {
     public static void createAndShowGUI() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         try {
-            frame.setContentPane(new FlightSelection(new Flight("Dublin", "Barcelona", "2024-12-7"), true, "2024-12-15"));
+            frame.setContentPane(new FlightSelection(new Flight("Dublin", "Barcelona", "2025-3-4"), true, "2025-3-13", new int[]{2,1,1,1}));
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -199,6 +210,9 @@ public class FlightSelection extends JPanel {
         frame.setVisible(true);
     }
 
+//    public static void main(String[] args) {
+//        createAndShowGUI();
+//    }
     private Date getParsedDate(String unformattedDate, SimpleDateFormat sdf) {
         try {
             return sdf.parse(unformattedDate);
@@ -216,15 +230,11 @@ public class FlightSelection extends JPanel {
         return sdf.format(cal.getTime());
     }
 
-    static class PriceAndSelectBtn extends JPanel {
+    private static class PriceAndSelectBtn extends JPanel {
         JLabel priceLabel = new JLabel("Starting from ");
         JLabel flightPriceLabel = new JLabel("€65");
         JButton selectFlightBtn = new JButton("Select");
         Flight flight;
-
-        public Flight getFlight() {
-            return flight;
-        }
 
         public PriceAndSelectBtn(Flight f) {
             super();
@@ -249,14 +259,7 @@ public class FlightSelection extends JPanel {
             selectFlightBtn.setBackground(FlightsConstants.MAIZE);
             selectFlightBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
             selectFlightBtn.setMaximumSize(new Dimension(125, 50));
-            selectFlightBtn.addActionListener(new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println(flight);
-                }
-
-            });
             add(priceLabel);
             add(flightPriceLabel);
             add(Box.createVerticalStrut(10));
@@ -319,20 +322,26 @@ public class FlightSelection extends JPanel {
         }
     }
 
-    static class SelectedFlight extends JPanel {
+    private static class SelectedFlight extends JPanel {
         JPanel priceAndSelectPanel;
         JPanel depTimeAndPlace;
         JPanel flightDuration;
         JPanel arrTimeAndPlace;
+        Flight flight;
 
         public SelectedFlight(Flight f) {
             super();
+            flight = f;
             setBackground(Color.WHITE);
             this.setBorder(BorderFactory.createLineBorder(Color.lightGray, 2));
             this.setMaximumSize(new Dimension(900, 175));
             this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
             addSelectedFlightsComponents(f);
+        }
+
+        public Flight getFlight() {
+            return flight;
         }
 
         public void changeFlight(Flight f) {

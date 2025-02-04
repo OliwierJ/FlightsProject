@@ -13,6 +13,7 @@ import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -289,9 +290,13 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
 
             try {
                 Flight f = new Flight(departure,arrival,arrivalTime);
-                createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime));
-            } catch (Exception ex) {
+                System.out.println(f);
+                createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime, passArray));
+            } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(frame,"No available flights found!", "No flights found", JOptionPane.WARNING_MESSAGE);
+            } catch (Exception ex) {
+                System.err.println(ex.getMessage());
+                JOptionPane.showMessageDialog(frame,"An error has occured, " + ex.getCause());
             }
         });
 
