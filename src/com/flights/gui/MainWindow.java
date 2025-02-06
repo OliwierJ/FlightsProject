@@ -13,7 +13,6 @@ import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,6 +30,8 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
     JDatePickerImpl datePickerArrival;
     JDatePickerImpl datePicker;
     JLabel arrivalLabel;
+    JPlaceHolderTextField departureField;
+    JPlaceHolderTextField arrivalField;
     int[] passArray = {1, 0, 0, 0};
 
     public MainWindow() {
@@ -73,7 +74,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         departurePanel.setMaximumSize(new Dimension(500,360));
         departurePanel.setMinimumSize(new Dimension(420,360));
 
-        JPlaceHolderTextField departureField = new JPlaceHolderTextField(FlightsConstants.DEPARTURE_PLACEHOLDER, 20);
+        departureField = new JPlaceHolderTextField(FlightsConstants.DEPARTURE_PLACEHOLDER, 20);
 
         departureField.setPreferredSize(new Dimension(300,55));
         departureField.setFont(new Font("Arial", Font.PLAIN, 25));
@@ -147,7 +148,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         arrivalPanel.setMaximumSize(new Dimension(500,360));
         arrivalPanel.setLayout(new BoxLayout(arrivalPanel,BoxLayout.Y_AXIS));
 
-        JPlaceHolderTextField arrivalField = new JPlaceHolderTextField(FlightsConstants.ARRIVAL_PLACEHOLDER, 20);
+        arrivalField = new JPlaceHolderTextField(FlightsConstants.ARRIVAL_PLACEHOLDER, 20);
         arrivalField.setPreferredSize(new Dimension(300,55));
         arrivalField.setFont(new Font("Arial", Font.PLAIN, 25));
         arrivalField.setMaximumSize(new Dimension(300,55));
@@ -222,83 +223,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         });
 
 
-        JButton searchButton = new JButton("Search");
-        searchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        searchButton.setBackground(FlightsConstants.MAIZE);
-        searchButton.setForeground(FlightsConstants.RICHBLACK);
-        searchButton.setFont(new Font("Arial", Font.BOLD, 30));
-        searchButton.setPreferredSize(new Dimension(250,60));
-        searchButton.setMinimumSize(new Dimension(250,60));
-        searchButton.setMaximumSize(new Dimension(250,60));
-        searchButton.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-        searchButton.setFocusable(false);
-
-
-        searchButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                searchButton.setBackground(searchButton.getBackground().darker());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                searchButton.setBackground(FlightsConstants.MAIZE);
-            }
-        });
-        searchButton.addActionListener(e -> {
-            String arrivalTime;
-            String arrival;
-            String departureTime = "";
-            String departure;
-
-            // check if any of the fields are empty
-            if (departureField.getText().equals(FlightsConstants.DEPARTURE_PLACEHOLDER)) {
-                JOptionPane.showMessageDialog(frame, "Please enter the departure airport.","Warning", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            if (arrivalField.getText().equals(FlightsConstants.ARRIVAL_PLACEHOLDER)) {
-                JOptionPane.showMessageDialog(frame, "Please enter the arrival airport.","Warning", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            if (datePicker.getJFormattedTextField().getText().isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Please enter the departure date.","Warning", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            // check first if the return flight is selected before checking if its empty
-            if (returnFlight.isSelected()) {
-                if (datePickerArrival.getJFormattedTextField().getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(frame, "Please enter the arrival date.","Warning", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                departureTime = datePickerArrival.getJFormattedTextField().getText();
-                datePickerArrival.getJFormattedTextField().setText("");
-            }
-
-            // store the field data and clear them after submitting
-            arrival = arrivalField.getText();
-            departure = departureField.getText();
-            departureField.setText(FlightsConstants.DEPARTURE_PLACEHOLDER);
-            arrivalField.setText(FlightsConstants.ARRIVAL_PLACEHOLDER);
-            arrivalTime = datePicker.getJFormattedTextField().getText();
-            datePicker.getJFormattedTextField().setText("");
-
-            // TODO delete print statements for debugging :D
-            System.out.println(arrival);
-            System.out.println(arrivalTime);
-            System.out.println(departure);
-            System.out.println(departureTime);
-
-            try {
-                Flight f = new Flight(departure,arrival,arrivalTime);
-                System.out.println(f);
-                createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime, passArray));
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(frame,"No available flights found!", "No flights found", JOptionPane.WARNING_MESSAGE);
-            } catch (Exception ex) {
-                System.err.println(ex.getMessage());
-                JOptionPane.showMessageDialog(frame,"An error has occured, " + ex.getCause());
-            }
-        });
+        JButton searchButton = new SubmitButton("Search");
 
         // button to panel
         searchPanel.add(Box.createVerticalGlue());
@@ -356,8 +281,11 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         frame.setVisible(true);
     }
 
-    private record RequestFocusListener(boolean removeListener) implements AncestorListener {
-
+    private static class RequestFocusListener implements AncestorListener {
+        private final boolean removeListener;
+        public RequestFocusListener(boolean removeListener) {
+            this.removeListener = removeListener;
+        }
         @Override
             public void ancestorAdded(AncestorEvent e) {
                 JComponent component = e.getComponent();
@@ -376,6 +304,85 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             }
         }
 
+    private class SubmitButton extends JButton implements ActionListener, MouseListener{
+        public SubmitButton(String text) {
+            super(text);
+            setAlignmentX(Component.CENTER_ALIGNMENT);
+            setBackground(FlightsConstants.MAIZE);
+            setForeground(FlightsConstants.RICHBLACK);
+            setFont(new Font("Arial", Font.BOLD, 30));
+            setPreferredSize(new Dimension(250,60));
+            setMinimumSize(new Dimension(250,60));
+            setMaximumSize(new Dimension(250,60));
+            setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+            setFocusable(false);
+            addMouseListener(this);
+            addActionListener(this);
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            setBackground(getBackground().darker());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            setBackground(FlightsConstants.MAIZE);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (departureField.getText().equals(FlightsConstants.DEPARTURE_PLACEHOLDER)) {
+                JOptionPane.showMessageDialog(frame, "Please enter the departure airport.","Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (arrivalField.getText().equals(FlightsConstants.ARRIVAL_PLACEHOLDER)) {
+                JOptionPane.showMessageDialog(frame, "Please enter the arrival airport.","Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (datePicker.getJFormattedTextField().getText().isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Please enter the departure date.","Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            // check first if the return flight is selected before checking if its empty
+            String departureTime = "";
+            if (returnFlight.isSelected()) {
+                if (datePickerArrival.getJFormattedTextField().getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "Please enter the arrival date.","Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                departureTime = datePickerArrival.getJFormattedTextField().getText();
+                datePickerArrival.getJFormattedTextField().setText("");
+            }
+
+            // store the field data and clear them after submitting
+            String departure = departureField.getText();
+            String arrival = arrivalField.getText();
+            departureField.setText(FlightsConstants.DEPARTURE_PLACEHOLDER);
+            arrivalField.setText(FlightsConstants.ARRIVAL_PLACEHOLDER);
+            String arrivalTime = datePicker.getJFormattedTextField().getText();
+            datePicker.getJFormattedTextField().setText("");
+
+            // TODO delete print statements for debugging :D
+            System.out.println(arrival);
+            System.out.println(arrivalTime);
+            System.out.println(departure);
+            System.out.println(departureTime);
+
+            try {
+                Flight f = new Flight(departure,arrival,arrivalTime);
+                createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime, passArray));
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame,"An error has occurred " + ex.getMessage() + " " + ex.getCause());
+            }
+        }
+
+        public void mouseClicked(MouseEvent e) {}
+        public void mousePressed(MouseEvent e) {}
+        public void mouseReleased(MouseEvent e) {}
+
+
+    }
     //    Date label formatter will format the Object to a String
     private static class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
 
