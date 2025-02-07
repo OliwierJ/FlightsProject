@@ -5,19 +5,22 @@ import com.flights.objects.Flight;
 import com.flights.objects.Passenger;
 
 import javax.swing.*;
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 import com.flights.util.FlightsConstants;
 
 public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionListener {
     private final Booking booking;
-    JPanel passengersPanel = new JPanel(new CardLayout());
-    JButton back = new JButton("Back");
-    JButton next = new JButton("Next");
-    int currentPassenger = 0;
-    private final Font DEFAULT_FONT = new JLabel().getFont();
+    private final JPanel passengersPanel = new JPanel(new CardLayout());
+    private final JButton back = new JButton("Back");
+    private final JButton next = new JButton("Next");
+    private int currentPassenger = 0;
+    private final JPanel[] passengerPanels;
 
     public ViewBookingMenu(Booking booking) {
         this.booking = booking;
@@ -102,11 +105,20 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
         add(Box.createVerticalStrut(30));
 
         int i = 0;
+        passengerPanels = new JPanel[booking.getPassengerCount()];
         for (Passenger p : booking.getPassengers()) {
+            JPanel cardPanel = new JPanel();
+            cardPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
             JPanel pp = new JPanel();
             pp.setLayout(new BoxLayout(pp, BoxLayout.Y_AXIS));
-            JLabel p1 = new JLabel("Passenger ID: " + p.getPassengerID());
-            JLabel p2 = new JLabel(p.getTitle() + " " + p.getName() + " " + p.getSurname());
+            JLabel p1 = new JLabel("Passenger #"+(i+1)+":");
+            String p2String;
+            if (p.getTitle() == null || p.getTitle().isEmpty()) {
+                p2String = p.getName() + " " + p.getSurname();
+            } else {
+                p2String = p.getTitle() + " " + p.getName() + " " + p.getSurname();
+            }
+            JLabel p2 = new JLabel(p2String);
             JLabel p3 = new JLabel("Departure seat: " + p.getDepartureSeat().getSeatNo());
             JLabel p4 = new JLabel("Class: " + p.getDepartureSeat().getSeatClass());
             pp.add(p1);
@@ -119,14 +131,58 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 pp.add(p5);
                 pp.add(p6);
             }
-            JButton test = new JButton("Test");
-            test.addActionListener(e -> {
-                p.setName("Test");
-                p2.setText(p.getTitle() + " " + p.getName() + " " + p.getSurname());
-                System.out.println(p.getName());
+            JPanel bp = new JPanel();
+            bp.setLayout(new BoxLayout(bp, BoxLayout.Y_AXIS));
+            JButton b1 = new JButton("Edit");
+            b1.addActionListener(e -> {
+                JPanel popup = new JPanel();
+                popup.setLayout(new GridLayout(6, 1));
+                JLabel l1 = new JLabel("Title:");
+                JComboBox<String> titles = new JComboBox<>(new String[]{"Mr", "Mrs", "Ms", "Prefer not to say"});
+                if (p.getTitle() == null || p.getTitle().isEmpty()) {
+                    titles.setSelectedIndex(3);
+                } else {
+                    titles.setSelectedItem(p.getTitle());
+                }
+                JLabel l2 = new JLabel("Name:");
+                JTextField name = new JTextField(p.getName(), 20);
+                JLabel l3 = new JLabel("Surname:");
+                JTextField surname = new JTextField(p.getSurname(),20);
+
+                popup.add(l1);
+                popup.add(titles);
+                popup.add(l2);
+                popup.add(name);
+                popup.add(l3);
+                popup.add(surname);
+                titles.setFont(ARIAL20);
+                setAllFonts(popup);
+                String[] options = {"Cancel", "Confirm"};
+                int n = JOptionPane.showOptionDialog(MainWindow.frame, popup, "Amend details", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                if (n == 1) {
+                    if (Objects.equals(titles.getSelectedItem(), "Prefer not to say")) {
+                        p.setTitle(null);
+                    } else {
+                        p.setTitle(Objects.requireNonNull(titles.getSelectedItem()).toString());
+                    }
+                    p.setName(name.getText());
+                    p.setSurname(surname.getText());
+                    refreshText();
+                }
             });
-            pp.add(test);
-            passengersPanel.add(pp, String.valueOf(i));
+            bp.add(b1);
+            JButton b2 = new JButton("Change departure seat");
+            b2.addActionListener(e -> MainWindow.createAndShowGUI(booking.getDepartureFlight().getAircraft().renderSeats(p, true)));
+            bp.add(b2);
+            if (booking.getReturnFlight() != null) {
+                JButton b3 = new JButton("Change return seat");
+                b3.addActionListener(e -> MainWindow.createAndShowGUI(booking.getDepartureFlight().getAircraft().renderSeats(p, false)));
+                bp.add(b3);
+            }
+            cardPanel.add(pp);
+            cardPanel.add(bp);
+            passengersPanel.add(cardPanel, String.valueOf(i));
+            passengerPanels[i] = pp;
             i++;
         }
         add(passengersPanel);
@@ -144,14 +200,37 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
         setAllFonts(this);
     }
 
+    public void refreshText() {
+        JPanel cp = passengerPanels[currentPassenger];
+        Passenger p = booking.getPassengers()[currentPassenger];
+        JLabel p2 = (JLabel) cp.getComponent(1);
+        JLabel p3 = (JLabel) cp.getComponent(2);
+        JLabel p4 = (JLabel) cp.getComponent(3);
+        String p2String;
+        if (p.getTitle() == null || p.getTitle().isEmpty()) {
+            p2String = p.getName() + " " + p.getSurname();
+        } else {
+            p2String = p.getTitle() + " " + p.getName() + " " + p.getSurname();
+        }
+        p2.setText(p2String);
+        p3.setText("Departure seat: "+p.getDepartureSeat().getSeatNo());
+        p4.setText("Class: " + p.getDepartureSeat().getSeatClass());
+        if (booking.getReturnFlight() != null) {
+            JLabel p5 = (JLabel) cp.getComponent(4);
+            JLabel p6 = (JLabel) cp.getComponent(5);
+            p5.setText("Return seat: " + p.getReturnSeat().getSeatNo());
+            p6.setText("Class: " + p.getReturnSeat().getSeatClass());
+        }
+    }
+
     private void setAllFonts(JPanel p) {
         for (Component c : p.getComponents()) {
-            if (c instanceof JLabel || c instanceof JButton) {
-                if (c.getFont().equals(DEFAULT_FONT)) {
-                    c.setFont(ARIAL20);
-                }
+            if (c instanceof JLabel || c instanceof JButton && c.getFont().equals(DEFAULT_FONT)) {
+                c.setFont(ARIAL20);
             } else if (c instanceof JPanel) {
                 setAllFonts((JPanel) c);
+            } else if (c instanceof JTextField && c.getFont().equals(DEFAULT_FONT_TEXTFIELD)) {
+                c.setFont(ARIAL20);
             }
         }
     }
@@ -162,7 +241,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
             currentPassenger--;
         } else if (e.getSource() == next) {
             currentPassenger++;
-        }
+        } 
         back.setEnabled(currentPassenger > 0);
         next.setEnabled(currentPassenger != booking.getPassengerCount()-1);
         CardLayout cl = (CardLayout)(passengersPanel.getLayout());
@@ -170,6 +249,6 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
     }
 
     public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new ViewBookingMenu(new Booking("522558", "C00296052@setu.ie")));
+        MainWindow.createAndShowGUI(new ViewBookingMenu(new Booking("522558", "govie@setu.ie"))); // TODO debug delete later
     }
 }

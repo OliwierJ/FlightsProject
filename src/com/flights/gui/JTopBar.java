@@ -37,7 +37,8 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         add(home);
 
         for (Component c : getComponents()) {
-            if (c instanceof JLabel l) {
+            if (c instanceof JLabel) {
+                JLabel l = (JLabel) c;
                 l.setAlignmentX(Component.CENTER_ALIGNMENT);
                 l.setAlignmentY(Component.CENTER_ALIGNMENT);
                 l.setForeground(Color.WHITE);
@@ -59,7 +60,7 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         } else if (e.getSource().equals(FAQLabel)) {
             //TODO switch windows
         } else if (e.getSource().equals(loginLabel)) {
-            //TODO switch windows
+            MainWindow.createAndShowGUI(new LoginMenu());
         } else if (e.getSource().equals(home)) {
             MainWindow.createAndShowGUI(new MainWindow());
         }

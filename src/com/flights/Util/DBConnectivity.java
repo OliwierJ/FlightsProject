@@ -1,5 +1,7 @@
 package com.flights.util;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 
 public abstract class DBConnectivity {
@@ -96,6 +98,28 @@ public abstract class DBConnectivity {
     // gets entire table from a given table name
     public static String[][] getTable(String name) throws SQLException {
         return getMultipleRows(connectAndExecuteQuery("SELECT * FROM "+name));
+    }
+
+    public static JTable getTableFromQuery(String query) throws SQLException {
+        ResultSet rs = connectAndExecuteQuery(query);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        String[][] data = getMultipleRows(rs);
+        String[] colNames = new String[rsmd.getColumnCount()];
+        for (int i = 0; i < rsmd.getColumnCount(); i++) {
+            colNames[i] = rsmd.getColumnLabel(i+1);
+        }
+        return new JTable(data, colNames);
+    }
+
+    public static DefaultTableModel getTableModelFromQuery(String query) throws SQLException {
+        ResultSet rs = connectAndExecuteQuery(query);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        String[][] data = getMultipleRows(rs);
+        String[] colNames = new String[rsmd.getColumnCount()];
+        for (int i = 0; i < rsmd.getColumnCount(); i++) {
+            colNames[i] = rsmd.getColumnLabel(i+1);
+        }
+        return new DefaultTableModel(data, colNames);
     }
 
     protected abstract void updateDatabase(); // override this method to implement updating the database based on the contents of the class

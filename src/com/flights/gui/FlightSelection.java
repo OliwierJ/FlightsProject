@@ -109,11 +109,7 @@ public class FlightSelection extends JPanel {
             returnDatesBox.setLayout(new BoxLayout(returnDatesBox, BoxLayout.X_AXIS));
 
             Flight defaultFlightReturn;
-            try {
-                defaultFlightReturn = new Flight(defaultFlight.getArrivalAirport(), defaultFlight.getDepartureAirport(), returnFlightDate );
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            defaultFlightReturn = new Flight(defaultFlight.getArrivalAirport(), defaultFlight.getDepartureAirport(), returnFlightDate );
 
             Date convertedEndDate = getParsedDate(returnFlightDate,sdf);
 
@@ -378,7 +374,7 @@ public class FlightSelection extends JPanel {
             dateLabel = new JLabel(newDate);
             dateLabel.setFont(new Font("Arial", Font.PLAIN, 20));
             dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            costLabel = new JLabel(f == null ? "" : "€##");
+            costLabel = new JLabel(f == null ? "" : "€"+f.getBasePrice());
             costLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             costLabel.setFont(new Font("Arial", Font.PLAIN, 20));
 

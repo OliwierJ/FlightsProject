@@ -3,6 +3,7 @@ package com.flights.gui;
 import com.flights.objects.Flight;
 import com.flights.util.FileUtilities;
 import com.flights.util.FlightsConstants;
+import com.flights.util.JErrorDialog;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -13,7 +14,6 @@ import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -253,26 +253,26 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
 
             // check if any of the fields are empty
             if (departureField.getText().equals(FlightsConstants.DEPARTURE_PLACEHOLDER)) {
-                JOptionPane.showMessageDialog(frame, "Please enter the departure airport.","Warning", JOptionPane.WARNING_MESSAGE);
+                JErrorDialog.showWarning("Please enter the departure airport");
                 return;
             }
             if (arrivalField.getText().equals(FlightsConstants.ARRIVAL_PLACEHOLDER)) {
-                JOptionPane.showMessageDialog(frame, "Please enter the arrival airport.","Warning", JOptionPane.WARNING_MESSAGE);
+                JErrorDialog.showWarning("Please enter the arrival airport");
                 return;
             }
             if (datePicker.getJFormattedTextField().getText().isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Please enter the departure date.","Warning", JOptionPane.WARNING_MESSAGE);
+                JErrorDialog.showWarning("Please enter the departure date");
                 return;
             }
             // check first if the return flight is selected before checking if its empty
             if (returnFlight.isSelected()) {
                 if (datePickerArrival.getJFormattedTextField().getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(frame, "Please enter the arrival date.","Warning", JOptionPane.WARNING_MESSAGE);
+                    JErrorDialog.showWarning("Please enter the arrival date");
                     return;
                 }
                 departureTime = datePickerArrival.getJFormattedTextField().getText();
                 datePickerArrival.getJFormattedTextField().setText("");
-            }
+            } 
 
             // store the field data and clear them after submitting
             arrival = arrivalField.getText();
@@ -288,16 +288,8 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             System.out.println(departure);
             System.out.println(departureTime);
 
-            try {
-                Flight f = new Flight(departure,arrival,arrivalTime);
-                System.out.println(f);
-                createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime, passArray));
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(frame,"No available flights found!", "No flights found", JOptionPane.WARNING_MESSAGE);
-            } catch (Exception ex) {
-                System.err.println(ex.getMessage());
-                JOptionPane.showMessageDialog(frame,"An error has occured, " + ex.getCause());
-            }
+            Flight f = new Flight(departure,arrival,arrivalTime);
+            createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime, passArray));
         });
 
         // button to panel
@@ -331,7 +323,6 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         }
         else {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                System.out.println("Hello");
                 // hide the return flight date if one way flight is selected
                 datePickerArrival.setVisible(false);
                 datePicker.requestFocus();
@@ -339,14 +330,18 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             }
         }
     }
+    private static JPanel previousPanel = new MainWindow();
     public static void createAndShowGUI(JPanel panel) {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // catch if any panel throws exception e.g. FlightSelection
         try {
-            if (panel.getClass().isInstance(frame.getContentPane())) {
-                System.out.println("Current panel is already an instance of "+panel.getClass().getSimpleName());
-            } else {
+            if (!panel.getClass().isInstance(frame.getContentPane())) {
+                if (panel instanceof ViewBookingMenu){
+                    ((ViewBookingMenu) panel).refreshText();
+                }
+                previousPanel = (JPanel) frame.getContentPane();
                 frame.setContentPane(panel);
+                frame.setTitle(panel.getClass().getSimpleName());
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -356,7 +351,16 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         frame.setVisible(true);
     }
 
-    private record RequestFocusListener(boolean removeListener) implements AncestorListener {
+    public static void returnToPreviousMenu() {
+        createAndShowGUI(previousPanel);
+    }
+
+    private static class RequestFocusListener implements AncestorListener {
+        private final boolean removeListener;
+
+        public RequestFocusListener(boolean removeListener) {
+            this.removeListener = removeListener;
+        }
 
         @Override
             public void ancestorAdded(AncestorEvent e) {

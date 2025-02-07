@@ -43,7 +43,7 @@ public class Flight extends DBConnectivity {
     }
 
     // used by flight selection menu
-    public Flight(String departureAirport, String arrivalAirport, String date) throws Exception {
+    public Flight(String departureAirport, String arrivalAirport, String date) {
         try {
             String[] result = getRow(connectAndExecuteQuery("Select flight_id, departure_time, arrival_time, aircraft, base_price FROM flight WHERE departure_airport=\""+departureAirport+"\" AND arrival_airport=\""+arrivalAirport + "\" AND CAST(departure_time AS DATE)=\""+date+"\""));
             this.departureAirport = departureAirport;
@@ -142,7 +142,7 @@ public class Flight extends DBConnectivity {
     }
 
     // copied from deleted DBUtil class
-    public static String[][] getFlightInfo(String dep, String arr) throws Exception {
+    public static String[][] getFlightInfo(String dep, String arr) throws SQLException {
         return getMultipleRows(connectAndExecuteQuery("SELECT * FROM flight WHERE departure_airport='"+dep+"' AND arrival_airport='"+arr+"'"));
     }
 
