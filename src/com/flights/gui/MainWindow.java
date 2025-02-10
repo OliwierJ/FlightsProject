@@ -35,12 +35,6 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
 
     public MainWindow() {
         super(new BorderLayout());
-
-//        try {
-//            System.setErr(new PrintStream("src/com/flights/logfile.txt"));
-//        } catch (FileNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
         setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
@@ -53,7 +47,8 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         logoPanel.setMinimumSize(new Dimension(300, 400));
         logoPanel.setPreferredSize(new Dimension(300, 400));
 
-        BufferedImage logo = FileUtilities.loadImage("src\\com\\flights\\gui\\images\\logo.png");
+        BufferedImage logo = FileUtilities.loadImage("/com/flights/gui/images/logo.png");
+        assert logo != null;
         logoPanel.add(new JLabel(new ImageIcon(logo)));
 
         toolbarAndSelection = new JPanel(new BorderLayout());
