@@ -1,9 +1,12 @@
 package com.flights.objects;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.sql.SQLException;
 
 import javax.swing.*;
 
+import com.flights.gui.MainWindow;
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
 
@@ -17,13 +20,7 @@ public class Boeing737 extends Aircraft {
     @Override
     protected void generateSeats(int flightID) {
         try {
-             String[][] bookedSeats = DBConnectivity.getMultipleRows(DBConnectivity.connectAndExecuteQuery("SELECT seat_no, class, flight_id, passenger_id FROM seat WHERE flight_id='"+flightID+"' ORDER BY seat_no"));
-             //TODO: delete later for testing in college PCs
-//           String[][] bookedSeats = {
-//                {"1C", "Economy", "100", "10"},
-//                {"2A", "Economy", "100", "20"},
-//                {"30D", "Economy", "100", "30"},
-//                {"30E", "Economy", "100", "40"}};
+            String[][] bookedSeats = DBConnectivity.getMultipleRows(DBConnectivity.connectAndExecuteQuery("SELECT seat_no, class, flight_id, passenger_id FROM seat WHERE flight_id='"+flightID+"' ORDER BY seat_no"));
             int count = 0;
             int bookedCount = 0;
             int rowNo = 1;
@@ -58,7 +55,36 @@ public class Boeing737 extends Aircraft {
     }
 
     @Override
-    public JPanel renderSeats() {
-        return null;
+    public JPanel renderSeats(Passenger p, boolean isDepartureSeat) {
+        return new Boeing737Seats(getAllSeats(), p, isDepartureSeat);
+    }
+
+    static class Boeing737Seats extends JPanel {
+        private Boeing737Seats(Seat[] seats, Passenger p, boolean isDepartureSeat) {
+            setLayout(new FlowLayout());
+            setMinimumSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
+            add(new JLabel("Boeing 737"));
+
+            JComboBox<String> selector = new JComboBox<>();
+            for (Seat s: seats) {
+                selector.addItem(s.getSeatNo());
+            }
+            add(selector);
+            JButton confirm = new JButton("Confirm choice");
+            confirm.addActionListener(e -> {
+                int choice = selector.getSelectedIndex();
+                if (seats[choice].isOccupied()) {
+                    JErrorDialog.showWarning("Seat is already occupied");
+                } else {
+                    if (isDepartureSeat) {
+                        p.setDepartureSeat(seats[choice]);
+                    } else {
+                        p.setReturnSeat(seats[choice]);
+                    }
+                    MainWindow.returnToPreviousMenu();
+                }
+            });
+            add(confirm);
+        }
     }
 }

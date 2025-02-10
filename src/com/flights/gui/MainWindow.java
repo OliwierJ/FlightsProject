@@ -3,6 +3,7 @@ package com.flights.gui;
 import com.flights.objects.Flight;
 import com.flights.util.FileUtilities;
 import com.flights.util.FlightsConstants;
+import com.flights.util.JErrorDialog;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -256,7 +257,6 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         }
         else {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                System.out.println("Hello");
                 // hide the return flight date if one way flight is selected
                 datePickerArrival.setVisible(false);
                 datePicker.requestFocus();
@@ -264,14 +264,18 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             }
         }
     }
+    private static JPanel previousPanel = new MainWindow();
     public static void createAndShowGUI(JPanel panel) {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // catch if any panel throws exception e.g. FlightSelection
         try {
-            if (panel.getClass().isInstance(frame.getContentPane())) {
-                System.out.println("Current panel is already an instance of "+panel.getClass().getSimpleName());
-            } else {
+            if (!panel.getClass().isInstance(frame.getContentPane())) {
+                if (panel instanceof ViewBookingMenu){
+                    ((ViewBookingMenu) panel).refreshText();
+                }
+                previousPanel = (JPanel) frame.getContentPane();
                 frame.setContentPane(panel);
+                frame.setTitle(panel.getClass().getSimpleName());
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -281,11 +285,17 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         frame.setVisible(true);
     }
 
+    public static void returnToPreviousMenu() {
+        createAndShowGUI(previousPanel);
+    }
+
     private static class RequestFocusListener implements AncestorListener {
         private final boolean removeListener;
+
         public RequestFocusListener(boolean removeListener) {
             this.removeListener = removeListener;
         }
+
         @Override
             public void ancestorAdded(AncestorEvent e) {
                 JComponent component = e.getComponent();

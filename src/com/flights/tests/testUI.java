@@ -137,7 +137,7 @@ public class testUI extends JPanel implements ItemListener{
 
             try {
                 Flight f = new Flight(departure,arrival,arrivalTime);
-                createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime));
+//                createAndShowGUI(new FlightSelection(f, returnFlight.isSelected(), departureTime));
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame,"No available flights found!", "No flights found", JOptionPane.WARNING_MESSAGE);
             }

@@ -16,7 +16,7 @@ public class Boeing777 extends Aircraft {
     }
 
     @Override
-    public JPanel renderSeats() {
+    public JPanel renderSeats(Passenger p, boolean isDepartureSeat) {
         return null;
     }
 }

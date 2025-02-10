@@ -2,6 +2,9 @@ package com.flights.util;
 
 import java.awt.*;
 
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
 public interface FlightsConstants {
 
     Color DARKSPRINGGREEN = new Color(0x28753C);
@@ -19,4 +22,6 @@ public interface FlightsConstants {
     String ARRIVAL_PLACEHOLDER = "Enter arrival airport";
 
     Font ARIAL20 = new Font("Arial", Font.BOLD, 20);
+    Font DEFAULT_FONT = new JLabel().getFont();
+    Font DEFAULT_FONT_TEXTFIELD = new JTextField().getFont();
 }
