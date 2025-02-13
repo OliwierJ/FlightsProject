@@ -1,0 +1,7 @@
+TODO: choose aircraft #2 not beoing 777
+seat selection
+view booking menu
+generate flights
+generate bookings
+finish off gui
+duplicate seat selection before update
