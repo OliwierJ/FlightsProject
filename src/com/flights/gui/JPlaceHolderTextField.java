@@ -7,7 +7,7 @@ import java.awt.event.FocusListener;
 
 // JPlaceHolderTextField is alike a regular JTextField however it has a placeholder associated with it
 // Placeholder is stored as a string in each instance of JPlaceHolderTextField
-public class JPlaceHolderTextField extends JTextField {
+public class JPlaceHolderTextField extends JTextField implements FocusListener {
 
     // placeholder
     private String placeholder;
@@ -17,21 +17,21 @@ public class JPlaceHolderTextField extends JTextField {
         super();
         setForeground(Color.GRAY);     // set the color to gray for the placeholder
         setText(placeholder);
-        this.addFocusListener(new PlaceholderFocus());     // add the focus listener
+        this.addFocusListener(this);     // add the focus listener
     }
 
     public JPlaceHolderTextField(String placeholder) {
         super(placeholder);
         setForeground(Color.GRAY);
         this.placeholder = placeholder;
-        this.addFocusListener(new PlaceholderFocus());
+        this.addFocusListener(this);
     }
 
     public JPlaceHolderTextField(String placeholder, int columns) {
         super(placeholder, columns);
         setForeground(Color.GRAY);
         this.placeholder = placeholder;
-        this.addFocusListener(new PlaceholderFocus());
+        this.addFocusListener(this);
     }
 
     // get placeholder
@@ -44,28 +44,33 @@ public class JPlaceHolderTextField extends JTextField {
         this.placeholder = placeholder;
     }
 
-    // FocusListener class that checks to whether the textfield is selected or unselected
-    class PlaceholderFocus implements FocusListener {
+    // return get text only if the placeholder isnt the same as the text
+    @Override
+    public String getText() {
+        String s = super.getText();
+        return s.equals(placeholder) ? "" : s;
+    }
+
 
         // Check if the focus gained and the placeholder is still in place
         // if placeholder is in place then clear the textfield
-        @Override
-        public void focusGained(FocusEvent e) {
-            if (((JPlaceHolderTextField) e.getSource()).getText().equals(placeholder)) {
-                setForeground(Color.BLACK);
-                setText("");
+    @Override
+    public void focusGained(FocusEvent e) {
+        if (super.getText().equals(placeholder)) {
+            setForeground(Color.BLACK);
+            setText("");
 
-            }
-        }
-
-        // Check if focus is lost and if nothing is typed, replace with placeholder
-        // if there is text entered, textfield is not cleared
-        @Override
-        public void focusLost(FocusEvent e) {
-            if (((JPlaceHolderTextField) e.getSource()).getText().isEmpty()) {
-                setForeground(Color.GRAY);
-                setText(placeholder);
-            }
         }
     }
+
+    // Check if focus is lost and if nothing is typed, replace with placeholder
+    // if there is text entered, textfield is not cleared
+    @Override
+    public void focusLost(FocusEvent e) {
+        if (super.getText().isEmpty()) {
+            setForeground(Color.GRAY);
+            setText(placeholder);
+        }
+    }
+
 }
