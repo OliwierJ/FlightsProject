@@ -5,13 +5,14 @@ import com.flights.util.DBConnectivity;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Objects;
 
 import static com.flights.gui.MainWindow.*;
@@ -31,6 +32,7 @@ public class AdminMenu extends JPanel {
         JPanel tablePanel = new JPanel();
         JComboBox<String> comboBox = new JComboBox<>(new String[]{"Booking", "Flight", "Passenger", "Seat", "FlightBooking"});
         JButton viewTable = new JButton("View table");
+        ConnectDB connectDB = new ConnectDB();
         viewTable.addActionListener(e -> {
             String selectedTable = (String) comboBox.getSelectedItem();
             selectedTable = Objects.requireNonNull(selectedTable).toLowerCase();
@@ -38,7 +40,7 @@ public class AdminMenu extends JPanel {
                 selectedTable = "flight_booking";
             }
             try {
-                runQuery("SELECT * FROM "+selectedTable);
+                connectDB.runQuery("SELECT * FROM "+selectedTable);
                 System.out.println(selectedTable);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -49,7 +51,7 @@ public class AdminMenu extends JPanel {
         contentPanel.add(tablePanel);
 
         try {
-            runQuery("SELECT * FROM booking");
+            connectDB.runQuery("SELECT * FROM booking");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -120,15 +122,45 @@ public class AdminMenu extends JPanel {
 //            System.exit(1);
 //        }
     }
-    private void runQuery(String query) throws SQLException {
-        DefaultTableModel model = DBConnectivity.getTableModelFromQuery(query);
-        resultTable = new JTable(model);
-//        resultTable = DBConnectivity.getTableFromQuery(query);
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(resultTable.getModel());
-        resultTable.setRowSorter(sorter);
+
+    private class ConnectDB extends DBConnectivity {
+        private void runQuery(String query) throws SQLException {
+            ResultSet rs = connectAndExecuteQuery(query);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            String[][] data = getMultipleRows(rs);
+            String[] colNames = new String[rsmd.getColumnCount()];
+            for (int i = 0; i < rsmd.getColumnCount(); i++) {
+                colNames[i] = rsmd.getColumnLabel(i + 1);
+            }
+            resultTable = new JTable(data, colNames);
+            TableRowSorter<TableModel> sorter = new TableRowSorter<>(resultTable.getModel());
+            resultTable.setRowSorter(sorter);
+            add(resultTable, BorderLayout.CENTER);
+        }
+        @Override
+        protected void updateDatabase() {
+
+        }
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> MainWindow.createAndShowGUI(new AdminMenu()));
+    }
+
+    private class ResultSetTableModel extends AbstractTableModel {
+        @Override
+        public int getRowCount() {
+            return 0;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 0;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return null;
+        }
     }
 }

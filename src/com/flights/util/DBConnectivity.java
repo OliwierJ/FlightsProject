@@ -1,45 +1,73 @@
 package com.flights.util;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 
 public abstract class DBConnectivity {
     private static Connection con;
-    private static Statement stmt;
     private static PreparedStatement pstmt;
+    private static PreparedStatement pstmt2;
     private static final String URL = "jdbc:mysql://localhost:3306/flights_project";
     private static final String USERNAME = "project";
     private static final String PASSWORD = "project";
 
-    // connects and executes a QUERY (e.g. SELECT) that doesn't modify the database, returns a result set
-    public static ResultSet connectAndExecuteQuery(String query) throws SQLException {
+    // This will always close the database connection even if the program crashes or uses System.exit()
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(System.err);
+            }
+        }));
+    }
+
+    // private method for creating the database connection
+    private static void connectToDB() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
-            con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            return stmt.executeQuery(query);
+            if (con == null || con.isClosed()) {
+                con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            }
         } catch (ClassNotFoundException e) {
             JErrorDialog.showError("A fatal error occurred! Program will now exit", e);
             System.exit(1);
         }
-        return null;
+    }
+
+    // closes all database connection (also resets PreparedStatement)
+    public static void closeConnection() {
+        try {
+            pstmt.close();
+        } catch (Exception ignored) {
+        } finally {
+            try {
+                pstmt2.close();
+            } catch (Exception ignored) {
+            } finally {
+                try {
+                    con.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Connects and executes a QUERY (e.g. SELECT) that doesn't modify the database, returns a result set
+     * @param query the query to execute
+     * @return the ResultSet of the query
+     * @throws SQLException if anything goes wrong
+     */
+    public static ResultSet connectAndExecuteQuery(String query) throws SQLException {
+        connectToDB();
+        pstmt2 = con.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        return pstmt2.executeQuery();
     }
 
     // converts the next row of a result set into a 1d array and closes connection
     public static String[] getRow(ResultSet rs) throws SQLException {
-        int colNo = rs.getMetaData().getColumnCount();
-        String[] result = new String[colNo];
-        rs.next();
-        for (int i = 1; i <= colNo; i++) {
-            result[i-1] = rs.getString(i);
-        }
-        closeConnection();
-        return result;
-    }
-
-    // converts the next row of a result set into a 1d array, method only used by getMultipleRows()
-    private static String[] getRowNoClose(ResultSet rs) throws SQLException {
         int colNo = rs.getMetaData().getColumnCount();
         String[] result = new String[colNo];
         rs.next();
@@ -56,43 +84,32 @@ public abstract class DBConnectivity {
         int rowNo = rs.getRow();
         rs.beforeFirst();
         String[][] result = new String[rowNo][colNo];
-
         for (int i = 0; i < result.length; i++) {
-            result[i] = getRowNoClose(rs);
+            rs.next();
+            for (int j = 1; j <= colNo; j++) {
+                result[i][j-1] = rs.getString(j);
+            }
         }
-        closeConnection();
         return result;
     }
 
-    // closes a connection after executing
-    public static void closeConnection() {
-        // tries to close either statement or prepared statement, depending on the type of query used
-        try {
-            stmt.close();
-        } catch (Exception e) {
-            try {
-                pstmt.close();
-            } catch (Exception ignored) {
-            }
-        } finally {
-            try {
-                con.close();
-            } catch (Exception ignored) {
-            }
+    // connects (if needed) and adds an UPDATE (e.g. INSERT, UPDATE) that modifies the database to the batch of commands to be run when executeUpdates() is called
+    public static void addQueryToUpdate(String query) throws SQLException {
+        if (con.isClosed()) {
+            connectToDB();
+        }
+        if (pstmt == null || pstmt.isClosed()) {
+            pstmt = con.prepareStatement(query);
+            pstmt.addBatch();
+        } else {
+            pstmt.addBatch(query);
         }
     }
 
-    // connects and executes an UPDATE (e.g. INSERT, UPDATE) that modifies the database
-    public static void connectAndExecuteUpdate(String query) throws SQLException {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver"); // import jar file if error
-            con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            pstmt = con.prepareStatement(query);
-            pstmt.executeUpdate();
-        } catch (ClassNotFoundException e) {
-            JErrorDialog.showError("A fatal error occurred! Program will now exit", e);
-            System.exit(1);
-        }
+    // executes all updates in batch and close all connections
+    public static void executeUpdates() throws SQLException {
+        pstmt.executeBatch();
+        closeConnection();
     }
 
     // gets entire table from a given table name
@@ -100,26 +117,10 @@ public abstract class DBConnectivity {
         return getMultipleRows(connectAndExecuteQuery("SELECT * FROM "+name));
     }
 
-    public static JTable getTableFromQuery(String query) throws SQLException {
-        ResultSet rs = connectAndExecuteQuery(query);
-        ResultSetMetaData rsmd = rs.getMetaData();
-        String[][] data = getMultipleRows(rs);
-        String[] colNames = new String[rsmd.getColumnCount()];
-        for (int i = 0; i < rsmd.getColumnCount(); i++) {
-            colNames[i] = rsmd.getColumnLabel(i+1);
-        }
-        return new JTable(data, colNames);
-    }
-
-    public static DefaultTableModel getTableModelFromQuery(String query) throws SQLException {
-        ResultSet rs = connectAndExecuteQuery(query);
-        ResultSetMetaData rsmd = rs.getMetaData();
-        String[][] data = getMultipleRows(rs);
-        String[] colNames = new String[rsmd.getColumnCount()];
-        for (int i = 0; i < rsmd.getColumnCount(); i++) {
-            colNames[i] = rsmd.getColumnLabel(i+1);
-        }
-        return new DefaultTableModel(data, colNames);
+    public static PreparedStatement getPreparedStatement(String query) throws SQLException {
+        connectToDB();
+        pstmt = con.prepareStatement(query);
+        return pstmt;
     }
 
     protected abstract void updateDatabase(); // override this method to implement updating the database based on the contents of the class

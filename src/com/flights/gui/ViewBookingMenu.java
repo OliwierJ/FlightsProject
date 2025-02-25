@@ -225,7 +225,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
 
     private void setAllFonts(JPanel p) {
         for (Component c : p.getComponents()) {
-            if (c instanceof JLabel || c instanceof JButton && c.getFont().equals(DEFAULT_FONT)) {
+            if ((c instanceof JLabel || c instanceof JButton) && c.getFont().equals(DEFAULT_FONT)) {
                 c.setFont(ARIAL20);
             } else if (c instanceof JPanel) {
                 setAllFonts((JPanel) c);
