@@ -1,5 +1,7 @@
 package com.flights.gui;
 
+import com.flights.gui.components.BackgroundImagePanel;
+import com.flights.gui.components.JTopBar;
 import com.flights.objects.Flight;
 import com.flights.objects.Seat;
 
@@ -284,7 +286,7 @@ public class SelectSeats extends JPanel {
                 public void mousePressed(MouseEvent e) {
 
                 }
-
+                
                 public void mouseReleased(MouseEvent e) {
                     System.out.println("mousePressed" + name + " isbooked " + isBooked);
                     if (isBooked) {

@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.gui.components.JTopBar;
 import com.flights.util.JErrorDialog;
 
 import javax.swing.*;

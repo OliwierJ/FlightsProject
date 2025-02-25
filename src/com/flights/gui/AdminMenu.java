@@ -1,6 +1,6 @@
 package com.flights.gui;
 
-import com.flights.tests.ResultSetTableModel;
+import com.flights.gui.components.JTopBar;
 import com.flights.util.DBConnectivity;
 
 import javax.swing.*;
@@ -9,8 +9,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.Objects;
 

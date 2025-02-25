@@ -1,9 +1,11 @@
 package com.flights.gui;
 
+import com.flights.gui.components.JPlaceHolderTextField;
+import com.flights.gui.components.JTopBar;
+import com.flights.gui.components.PassengerAddPanel;
 import com.flights.objects.Flight;
 import com.flights.util.FileUtilities;
 import com.flights.util.FlightsConstants;
-import com.flights.util.JErrorDialog;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;

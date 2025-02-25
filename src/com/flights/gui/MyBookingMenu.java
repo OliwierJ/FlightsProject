@@ -4,6 +4,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import com.flights.gui.components.JTopBar;
 import com.flights.objects.Booking;
 import com.flights.util.FlightsConstants;
 import com.flights.util.JErrorDialog;

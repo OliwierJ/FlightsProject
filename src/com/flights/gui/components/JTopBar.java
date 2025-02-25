@@ -1,4 +1,4 @@
-package com.flights.gui;
+package com.flights.gui.components;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -11,6 +11,9 @@ import java.awt.event.MouseListener;
 
 import javax.swing.*;
 
+import com.flights.gui.LoginMenu;
+import com.flights.gui.MainWindow;
+import com.flights.gui.MyBookingMenu;
 import com.flights.util.FlightsConstants;
 
 public class JTopBar extends JPanel implements FlightsConstants, MouseListener {

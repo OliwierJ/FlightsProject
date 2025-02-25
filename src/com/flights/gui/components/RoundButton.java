@@ -1,4 +1,4 @@
-package com.flights.gui;
+package com.flights.gui.components;
 
 import javax.swing.*;
 import java.awt.*;

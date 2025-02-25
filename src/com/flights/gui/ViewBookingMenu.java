@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.gui.components.JTopBar;
 import com.flights.objects.Booking;
 import com.flights.objects.Flight;
 import com.flights.objects.Passenger;

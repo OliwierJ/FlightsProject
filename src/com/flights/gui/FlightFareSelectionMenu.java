@@ -31,7 +31,6 @@ public class FlightFareSelectionMenu extends JPanel {
         add(standardPanel);
         add(deluxePanel);
         add(Box.createGlue());
-//        registerKeyboardAction(new escapeMenu(), KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), WHEN_FOCUSED);
     }
 //    static JFrame frame = new JFrame();
 //    public static void createAndShowGUI(JPanel panel) {
