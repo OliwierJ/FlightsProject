@@ -192,9 +192,9 @@ public class Booking extends DBConnectivity {
     }
 
     public void setTier(String tier) {
-        if (tier.equals("Basic") || tier.equals("Standard") || tier.equals("Deluxe")) {
+        if (tier.equals("Basic") || tier.equals("Standard") || tier.equals("Premium+")) {
             this.tier = tier;
-            this.luggage20kg = tier.equals("Standard") || tier.equals("Deluxe");
+            this.luggage20kg = tier.equals("Standard") || tier.equals("Premium+");
         } else {
             JErrorDialog.showWarning("Invalid tier set!");
         }

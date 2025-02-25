@@ -2,27 +2,22 @@ package com.flights.gui;
 
 import com.flights.gui.components.BackgroundImagePanel;
 import com.flights.gui.components.JTopBar;
-import com.flights.objects.Flight;
+import com.flights.objects.Passenger;
 import com.flights.objects.Seat;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Arrays;
 
-public class SelectSeats extends JPanel {
+public class SelectSeatBoeing737 extends JPanel {
 
     char[] seatLetters = {'A', 'B', 'C', 'D', 'E', 'F'};
     String selectedSeat;
     Seat[] seatsFromDB;
 
-    public SelectSeats(Flight flight) {
-        Flight f = new Flight(100);
-//        System.out.println(Arrays.toString(f.getAllSeats()));
-        seatsFromDB = f.getAllSeats();
-
-
+    public SelectSeatBoeing737(Seat[] seatsFromDB, Passenger p, boolean isReturn) {
+        this.seatsFromDB = seatsFromDB;
         setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
         setLayout(new BorderLayout());
 
@@ -113,7 +108,6 @@ public class SelectSeats extends JPanel {
                 seatsIndex++;
             }
             leftSeatsPanel.add(seatRow);
-
         }
 /*
         Right seats
@@ -175,7 +169,6 @@ public class SelectSeats extends JPanel {
                 seatsIndex++;
             }
             rightSeatsPanel.add(seatRow);
-
         }
 
         // end right seats
@@ -199,15 +192,30 @@ public class SelectSeats extends JPanel {
 
         mainPanel.add(text);
         mainPanel.add(image);
+        JButton confirmButton = new JButton("Confirm");
+        confirmButton.addActionListener(e -> {
+            if (selectedSeat != null) {
+                System.out.println(selectedSeat);
+                for (Seat seat : seatsFromDB) {
+                    if (seat.getSeatNo().equals(selectedSeat)) {
+                        if (isReturn) {
+                            p.setReturnSeat(seat);
+                        } else {
+                            p.setDepartureSeat(seat);
+                        }
+                        MainWindow.returnToPreviousMenu();
+                        break; // just in case
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a seat");
+            }
+        });
+        mainPanel.add(confirmButton);
+
         JScrollPane scrollPane = new JScrollPane(mainPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-
-
         add(scrollPane, BorderLayout.CENTER);
-    }
-
-    public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new SelectSeats(new Flight(100)));
     }
 
     private String createSeatName(int col, int seatIndex) {
@@ -244,15 +252,13 @@ public class SelectSeats extends JPanel {
         }
     }
 
-    class SeatPanel extends JPanel {
+    private class SeatPanel extends JPanel {
         JPanel transparentPanel = new TransparentPanel();
         boolean isSelected = false;
         boolean isBooked;
-//        boolean pickedPrevious;
-
         String name;
 
-        SeatPanel(SeatPanel[] seats, int i, String name) {
+        private SeatPanel(SeatPanel[] seats, int i, String name) {
             int individualSeatHeight = 72;
             this.name = name;
             setPreferredSize(new Dimension(49, individualSeatHeight));
@@ -279,15 +285,8 @@ public class SelectSeats extends JPanel {
             }
 
             addMouseListener(new MouseListener() {
-
-                public void mouseClicked(MouseEvent e) {
-
-                }
-
-                public void mousePressed(MouseEvent e) {
-
-                }
-                
+                public void mouseClicked(MouseEvent e) {}
+                public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {
                     System.out.println("mousePressed" + name + " isbooked " + isBooked);
                     if (isBooked) {
@@ -295,14 +294,12 @@ public class SelectSeats extends JPanel {
                     }
                     for (SeatPanel seat : seats) {
                         if (seat != null && !seat.isBooked) {
-
                             seat.transparentPanel.setOpaque(false);
                             seat.transparentPanel.setBackground(new Color(0, 0, 255, 0));
                             seat.transparentPanel.repaint();
                             seat.transparentPanel.revalidate();
                             seat.isSelected = false;
                             seat.setBorder(null);
-
                         }
                     }
                     transparentPanel.setBackground(new Color(0, 0, 255, 150));
@@ -310,7 +307,6 @@ public class SelectSeats extends JPanel {
                     transparentPanel.revalidate();
                     isSelected = true;
                     selectedSeat = seats[i].name;
-                    System.out.println(selectedSeat);
                 }
 
                 @Override
@@ -335,7 +331,6 @@ public class SelectSeats extends JPanel {
                         transparentPanel.setBackground(new Color(0, 0, 255, 0));
                         transparentPanel.repaint();
                         transparentPanel.revalidate();
-
                     }
                 }
             });

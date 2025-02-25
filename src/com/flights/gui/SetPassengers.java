@@ -1,6 +1,7 @@
 package com.flights.gui;
 
 import com.flights.gui.components.JTopBar;
+import com.flights.objects.Booking;
 import com.flights.objects.Flight;
 import com.flights.util.FlightsConstants;
 import com.flights.objects.Passenger;
@@ -9,20 +10,20 @@ import com.flights.gui.components.JPlaceHolderTextField;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SetPassengers extends JPanel {
 
     JPanel progressPanel;
     private final PassengerAdditionPanel[] passengersPanels = new PassengerAdditionPanel[6];
-    private ArrayList<Passenger> passengers = new ArrayList<>();
-    private PassengerAdditionPanel primaryAdult;
+    private final ArrayList<Passenger> passengers = new ArrayList<>();
     private int count = 0;
 
-    public SetPassengers(Flight flight, Flight returnFlight, int[] passengerType, double price) {
+    public SetPassengers(Booking b, int[] passengerType, double price) {
         setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
         setLayout(new BorderLayout());
-
         add(new JTopBar(), BorderLayout.NORTH);
+
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
@@ -33,7 +34,7 @@ public class SetPassengers extends JPanel {
             for (int j = 0; j < passengerType[i]; j++) {
 
                 if (i == 0 && j == 0) {
-                    primaryAdult = new PassengerAdditionPanel("Adult", true);
+                    PassengerAdditionPanel primaryAdult = new PassengerAdditionPanel("Adult", true);
                     passengersPanels[0] = primaryAdult;
                 } else {
                     switch (i) {
@@ -53,7 +54,6 @@ public class SetPassengers extends JPanel {
                             break;
                     }
                 }
-
             }
         }
 
@@ -61,7 +61,6 @@ public class SetPassengers extends JPanel {
         for (int i = 0; i < count; i++) {
             contentPanel.add(passengersPanels[i]);
             contentPanel.add(Box.createVerticalStrut(50));
-//            passengers.add(new Passenger(passengersPanels[i].get,null,null,null));
         }
 
         JButton submitButton = new JButton("Confirm passengers");
@@ -76,23 +75,21 @@ public class SetPassengers extends JPanel {
                 return;
             }
 
-            for (int i = 0; i < count; i++) {
-                PassengerAdditionPanel panel = passengersPanels[i];
-                if (i == 0) {
-                    passengers.add(new Passenger(panel.getTitle(),panel.getFname(),panel.getSname(),panel.getEmail()));
-                } else if (panel.getTitlePanel() == null) {
-                    passengers.add(new Passenger(null,panel.getFname(),panel.getSname(),null));
-                } else {
-                    passengers.add(new Passenger(panel.getTitle(),panel.getFname(),panel.getSname(),null));
-                }
-//                System.out.println(passengers.get(i));
-            }
-            System.out.println(passengers.toString());
-            System.out.println("Correct");
             int choice = JOptionPane.showConfirmDialog(this, "Confirm passengers?");
-
             if (choice == JOptionPane.OK_OPTION) {
-                MainWindow.createAndShowGUI(new SelectSeats(flight));
+                for (int i = 0; i < count; i++) {
+                    PassengerAdditionPanel panel = passengersPanels[i];
+                    if (i == 0) {
+                        passengers.add(new Passenger(panel.getTitle(),panel.getFname(),panel.getSname(), b.getBookingID()));
+                        b.setEmail(panel.getEmail());
+                    } else if (panel.getTitlePanel() == null) {
+                        passengers.add(new Passenger(null,panel.getFname(),panel.getSname(), b.getBookingID()));
+                    } else {
+                        passengers.add(new Passenger(panel.getTitle(),panel.getFname(),panel.getSname(), b.getBookingID()));
+                    }
+                }
+                b.addPassengers(passengers.toArray(new Passenger[0]));
+                MainWindow.createAndShowGUI(new PassengerSeatSelectionMenu(b));
             }
         });
 
@@ -102,7 +99,6 @@ public class SetPassengers extends JPanel {
 
     private boolean verifyPassengerFields(PassengerAdditionPanel[] array) {
         for (int i = 0; i < count; i++) {
-            System.out.println(i);
             if (i == 0) {
                 if (array[i].getTitle().isEmpty() || array[i].getFname().isEmpty() ||
                         array[i].getSname().isEmpty() || array[i].getEmail().isEmpty()) {
@@ -110,9 +106,7 @@ public class SetPassengers extends JPanel {
                 }
             }
             if (array[i].getTitlePanel() == null) {
-                System.out.println(array[i].getFname());
                 if (array[i].getFname().isEmpty() || array[i].getSname().isEmpty()) {
-
                     return false;
                 }
             }
@@ -120,18 +114,15 @@ public class SetPassengers extends JPanel {
                     array[i].getSname().isEmpty()) {
                 return false;
             }
-//            System.out.println(3);
         }
         return true;
     }
 
-    class PassengerAdditionPanel extends JPanel {
-
+    private class PassengerAdditionPanel extends JPanel {
         TextBoxPanel passengerTitle;
         TextBoxPanel firstName;
         TextBoxPanel lastName;
         TextBoxPanel email;
-        TextBoxPanel seat;
 
         PassengerAdditionPanel(String name, boolean isPrimary) {
             setBackground(Color.BLUE);
@@ -207,10 +198,8 @@ public class SetPassengers extends JPanel {
         }
     }
 
-    static class TextBoxPanel extends JPanel {
-
+    private static class TextBoxPanel extends JPanel {
         private final Component field;
-        String text;
 
         public TextBoxPanel(int width, String name) {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -243,8 +232,6 @@ public class SetPassengers extends JPanel {
             add(field);
             add(Box.createVerticalGlue());
             add(Box.createVerticalStrut(20));
-
-
         }
 
         public String getText() {
@@ -252,13 +239,16 @@ public class SetPassengers extends JPanel {
 //                System.out.println(((JPlaceHolderTextField) field).getText());
                 return ((JPlaceHolderTextField) field).getText();
             } else {
-                return ((JComboBox<String>) field).getSelectedItem().toString();
+                return Objects.requireNonNull(((JComboBox<String>) field).getSelectedItem()).toString();
             }
         }
     }
 
     public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new SetPassengers(null, null, new int[] { 1, 1, 1, 0 }, 0));
+        Booking b = new Booking("Basic");
+        b.setDepartureFlight(new Flight(100));
+        b.setReturnFlight(new Flight(101));
+        MainWindow.createAndShowGUI(new SetPassengers(b, new int[] { 1, 1, 1, 0 }, 50));
     }
 
 }

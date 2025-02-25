@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import javax.swing.*;
 
 import com.flights.gui.MainWindow;
+import com.flights.gui.SelectSeatBoeing737;
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
 
@@ -56,7 +57,8 @@ public class Boeing737 extends Aircraft {
 
     @Override
     public JPanel renderSeats(Passenger p, boolean isDepartureSeat) {
-        return new Boeing737Seats(getAllSeats(), p, isDepartureSeat);
+        return new SelectSeatBoeing737(getAllSeats(), p, isDepartureSeat);
+//        return new Boeing737Seats(getAllSeats(), p, isDepartureSeat);
     }
 
     static class Boeing737Seats extends JPanel {

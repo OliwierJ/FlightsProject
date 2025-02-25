@@ -269,6 +269,8 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             if (!panel.getClass().isInstance(frame.getContentPane())) {
                 if (panel instanceof ViewBookingMenu){
                     ((ViewBookingMenu) panel).refreshText();
+                } else if (panel instanceof PassengerSeatSelectionMenu) {
+                    ((PassengerSeatSelectionMenu) panel).refreshText();
                 }
                 previousPanel = (JPanel) frame.getContentPane();
                 frame.setContentPane(panel);
