@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.objects.Booking;
 import com.flights.objects.Flight;
 import com.flights.util.FlightsConstants;
 
@@ -32,22 +33,6 @@ public class FlightFareSelectionMenu extends JPanel {
         add(deluxePanel);
         add(Box.createGlue());
     }
-//    static JFrame frame = new JFrame();
-//    public static void createAndShowGUI(JPanel panel) {
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        // catch if any panel throws exception e.g. FlightSelection
-//        try {
-//            frame.setContentPane(panel);
-//        } catch (Exception e) {
-//            System.err.println(e.getMessage());
-//        }
-//        frame.pack();
-//        frame.setVisible(true);
-//    }
-//
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> createAndShowGUI(new FlightFareSelectionMenu(null, null, new int[]{2, 1, 1, 1})));
-//    }
 
     private double calculateFarePrice(Flight flight, Flight flight2, int priceMultiplier, int[] passengerTypes) {
         // TODO method to calculate price
@@ -146,13 +131,6 @@ public class FlightFareSelectionMenu extends JPanel {
 
     }
 
-//    private static class escapeMenu implements ActionListener {
-//        public void actionPerformed(ActionEvent e) {
-//            frame.dispose();
-//            System.exit(0);
-//        }
-//    }
-
     private static class TickLabel extends JLabel {
         TickLabel(String text) {
             super(text);
@@ -198,9 +176,10 @@ public class FlightFareSelectionMenu extends JPanel {
             select.setFocusable(false);
             select.addActionListener(e -> {
                 // TODO Pricing
-                MainWindow.createAndShowGUI(
-                        new SetPassengers(flight, returnFlight, passengerTypes,
-                                calculateFarePrice(flight,returnFlight,0,passengerTypes)));
+                Booking b = new Booking(fareType);
+                b.setDepartureFlight(flight);
+                b.setReturnFlight(returnFlight);
+                MainWindow.createAndShowGUI(new SetPassengers(b, passengerTypes, calculateFarePrice(flight,returnFlight,0,passengerTypes)));
             });
 
             basicTitle.add(Box.createVerticalGlue());
