@@ -17,10 +17,11 @@ public class SelectSeats extends JPanel {
     String selectedSeat;
     Seat[] seatsFromDB;
 
-    public SelectSeats() {
+    public SelectSeats(Flight flight) {
         Flight f = new Flight(100);
-        System.out.println(Arrays.toString(f.getAllSeats()));
+//        System.out.println(Arrays.toString(f.getAllSeats()));
         seatsFromDB = f.getAllSeats();
+
 
         setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
         setLayout(new BorderLayout());
@@ -43,7 +44,7 @@ public class SelectSeats extends JPanel {
         seatsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         seatsPanel.setLayout(new BoxLayout(seatsPanel, BoxLayout.X_AXIS));
         setEqualSizes(seatsPanel, 400, 2400);
-//        seatsPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
+        seatsPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
         seatsPanel.setOpaque(false);
 
         int seatsWidth = 150;
@@ -206,7 +207,7 @@ public class SelectSeats extends JPanel {
     }
 
     public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new SelectSeats());
+        MainWindow.createAndShowGUI(new SelectSeats(new Flight(100)));
     }
 
     private String createSeatName(int col, int seatIndex) {

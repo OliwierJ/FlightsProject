@@ -32,29 +32,29 @@ public class AdminMenu extends JPanel {
         JPanel tablePanel = new JPanel();
         JComboBox<String> comboBox = new JComboBox<>(new String[]{"Booking", "Flight", "Passenger", "Seat", "FlightBooking"});
         JButton viewTable = new JButton("View table");
-        ConnectDB connectDB = new ConnectDB();
+//        ConnectDB connectDB = new ConnectDB();
         viewTable.addActionListener(e -> {
             String selectedTable = (String) comboBox.getSelectedItem();
             selectedTable = Objects.requireNonNull(selectedTable).toLowerCase();
             if (selectedTable.equals("flightbooking")) {
                 selectedTable = "flight_booking";
             }
-            try {
-                connectDB.runQuery("SELECT * FROM "+selectedTable);
-                System.out.println(selectedTable);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+//            try {
+////                connectDB.runQuery("SELECT * FROM "+selectedTable);
+//                System.out.println(selectedTable);
+//            } catch (SQLException ex) {
+//                throw new RuntimeException(ex);
+//            }
         });
         tablePanel.add(comboBox);
         tablePanel.add(viewTable);
         contentPanel.add(tablePanel);
 
-        try {
-            connectDB.runQuery("SELECT * FROM booking");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+////            connectDB.runQuery("SELECT * FROM booking");
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
         resultPanel.add(resultTable.getTableHeader(), BorderLayout.NORTH);
         resultPanel.add(resultTable, BorderLayout.CENTER);
         resultPanel.setBorder(new EmptyBorder(0,50,0,50));
@@ -123,8 +123,8 @@ public class AdminMenu extends JPanel {
 //        }
     }
     private void runQuery(String query) throws SQLException {
-        DefaultTableModel model = DBConnectivity.getTableModelFromQuery(query);
-        resultTable = new JTable(model);
+//        DefaultTableModel model = DBConnectivity.getTableModelFromQuery(query);
+//        resultTable = new JTable(model);
 //        resultTable = DBConnectivity.getTableFromQuery(query);
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(resultTable.getModel());
         resultTable.setRowSorter(sorter);

@@ -1,10 +1,11 @@
 package com.flights.gui;
 
+import com.flights.gui.components.JTopBar;
 import com.flights.objects.Flight;
 import com.flights.util.FlightsConstants;
 import com.flights.objects.Passenger;
 import com.flights.util.JErrorDialog;
-
+import com.flights.gui.components.JPlaceHolderTextField;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class SetPassengers extends JPanel {
             int choice = JOptionPane.showConfirmDialog(this, "Confirm passengers?");
 
             if (choice == JOptionPane.OK_OPTION) {
-                MainWindow.createAndShowGUI(new SelectSeats());
+                MainWindow.createAndShowGUI(new SelectSeats(flight));
             }
         });
 
@@ -130,21 +131,22 @@ public class SetPassengers extends JPanel {
         TextBoxPanel firstName;
         TextBoxPanel lastName;
         TextBoxPanel email;
+        TextBoxPanel seat;
 
         PassengerAdditionPanel(String name, boolean isPrimary) {
             setBackground(Color.BLUE);
 
-            setPreferredSize(new Dimension(800, 180));
-            setMinimumSize(new Dimension(800, 180));
-            setMaximumSize(new Dimension(800, 180));
+            setPreferredSize(new Dimension(1000, 180));
+            setMinimumSize(new Dimension(1000, 180));
+            setMaximumSize(new Dimension(1000, 180));
             setLayout(new BorderLayout());
 
             JPanel titleFlowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             titleFlowPanel.setBackground(FlightsConstants.APPLEGREEN);
             int titleHeight = 60;
-            titleFlowPanel.setPreferredSize(new Dimension(800, titleHeight));
-            titleFlowPanel.setMinimumSize(new Dimension(800, titleHeight));
-            titleFlowPanel.setMaximumSize(new Dimension(800, titleHeight));
+            titleFlowPanel.setPreferredSize(new Dimension(1000, titleHeight));
+            titleFlowPanel.setMinimumSize(new Dimension(1000, titleHeight));
+            titleFlowPanel.setMaximumSize(new Dimension(1000, titleHeight));
 
             JLabel title = new JLabel("Passenger " + ++count);
             title.setFont(new Font("Arial", Font.BOLD, 35));
@@ -164,8 +166,8 @@ public class SetPassengers extends JPanel {
             passengerInfoPanel.setPreferredSize(new Dimension(800, 180 - titleHeight));
 
 
-            firstName = new TextBoxPanel(200, "First name");
-            lastName = new TextBoxPanel(200, "Last name");
+            firstName = new TextBoxPanel(175, "First name");
+            lastName = new TextBoxPanel(175, "Last name");
 
             passengerInfoPanel.add(Box.createHorizontalGlue());
 
@@ -177,9 +179,10 @@ public class SetPassengers extends JPanel {
             passengerInfoPanel.add(lastName);
 
             if (isPrimary) {
-                email = new TextBoxPanel(200, "Email");
+                email = new TextBoxPanel(175, "Email");
                 passengerInfoPanel.add(email);
             }
+
             passengerInfoPanel.add(Box.createHorizontalGlue());
             add(titleFlowPanel, BorderLayout.NORTH);
             add(passengerInfoPanel, BorderLayout.CENTER);
@@ -234,11 +237,13 @@ public class SetPassengers extends JPanel {
             field.setMaximumSize(new Dimension(width - 10, 35));
             field.setMinimumSize(new Dimension(width, 35));
             field.setFont(new Font("Arial", Font.PLAIN, 18));
+
             add(Box.createVerticalGlue());
             add(panel);
             add(field);
             add(Box.createVerticalGlue());
             add(Box.createVerticalStrut(20));
+
 
         }
 
