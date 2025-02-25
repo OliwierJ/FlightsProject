@@ -3,6 +3,7 @@ package com.flights.objects;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Random;
 
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
@@ -48,8 +49,9 @@ public class Booking extends DBConnectivity {
 
     private void generateBookingID() {
         boolean exists = true;
+        Random r = new Random();
         do {
-            int bookingNo = (int) (Math.random() * 999999);
+            int bookingNo = r.nextInt(100000, 1000000); // AKA 100000 - 999999 inclusive
             try {
                 exists = connectAndExecuteQuery("SELECT * FROM booking WHERE booking_no="+bookingNo).next();
                 if (!exists) {
@@ -100,6 +102,8 @@ public class Booking extends DBConnectivity {
             }
         } catch (SQLException e) {
             JErrorDialog.showError("An error occurred while retrieving booking from database", e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -187,8 +191,8 @@ public class Booking extends DBConnectivity {
         }
     }
 
-    public void setTier(String tier) { // TODO: test
-        if (tier.equals("Basic") || tier.equals("Standard") || tier.equals("Deluxe")) { //TODO test
+    public void setTier(String tier) {
+        if (tier.equals("Basic") || tier.equals("Standard") || tier.equals("Deluxe")) {
             this.tier = tier;
             this.luggage20kg = tier.equals("Standard") || tier.equals("Deluxe");
         } else {
@@ -220,10 +224,10 @@ public class Booking extends DBConnectivity {
                 if (email == null || departureFlight == null || passengers.length == 0) {
                     throw new IllegalStateException("Booking is not complete!");
                 } 
-                connectAndExecuteUpdate("INSERT INTO booking (booking_no, email, priority_boarding, luggage_amount, tier) VALUES ('" + bookingID + "', '" + email + "', " + priorityBoarding + ", " + luggage + ", '" + tier + "')");
-                connectAndExecuteUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES (" + departureFlight.getFlightID() + ", '" + bookingID + "', 0)");
+                addQueryToUpdate("INSERT INTO booking (booking_no, email, priority_boarding, luggage_amount, tier) VALUES ('" + bookingID + "', '" + email + "', " + priorityBoarding + ", " + luggage + ", '" + tier + "')");
+                addQueryToUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES (" + departureFlight.getFlightID() + ", '" + bookingID + "', 0)");
                 if (returnFlight != null) {
-                    connectAndExecuteUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES (" + returnFlight.getFlightID() + ", '" + bookingID + "', 1)");
+                    addQueryToUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES (" + returnFlight.getFlightID() + ", '" + bookingID + "', 1)");
                 }
                 this.newBooking = false;
             } else {
@@ -232,7 +236,7 @@ public class Booking extends DBConnectivity {
                 if (!rs.next()) {
                     throw new IllegalArgumentException("No such booking exists!");
                 }
-                connectAndExecuteUpdate("UPDATE booking SET email='"+email+"', priority_boarding="+priorityBoarding+", luggage_amount="+luggage+", tier='"+tier+"' WHERE booking_no="+bookingID);
+                addQueryToUpdate("UPDATE booking SET email='"+email+"', priority_boarding="+priorityBoarding+", luggage_amount="+luggage+", tier='"+tier+"' WHERE booking_no="+bookingID);
             }
             // update each passenger
             for (Passenger passenger : passengers) {
@@ -241,26 +245,33 @@ public class Booking extends DBConnectivity {
                 }
                 passenger.updateDatabase(); // this will work as objects are mutable in a for each loop, however assigning new objects required a standard for loop
             }
+            executeUpdates(); // automatically closes connection
+            // now update the seats for each passenger, this needs to be done because the passengerIDs are generated in MYSQL so a batch must be executed first to then retrieve the passenger IDs to then update the seat database accordingly
+            for (Passenger passenger : passengers) {
+                passenger.updateSeatsDatabase();
+            }
+            executeUpdates(); // automatically closes connection
         } catch (SQLException e) {
             JErrorDialog.showError("An error occurred while updating database!", e);
         } finally {
-            closeConnection();
+            closeConnection(); // in case something goes wrong not needed here in normal operations
         }
     }
 
     public void deleteEntry() {
         if (newBooking) {
-            throw new IllegalAccessError("Can't delete a booking that hasn't been inserted into the database yet!");
+            throw new UnsupportedOperationException("Can't delete a booking that hasn't been inserted into the database yet!");
         } else {
             try {
-                connectAndExecuteUpdate("DELETE seat FROM seat INNER JOIN passenger ON seat.passenger_id=passenger.passenger_ID WHERE passenger.booking_no='"+bookingID+"'");
-                connectAndExecuteUpdate("DELETE FROM passenger WHERE booking_no='"+bookingID+"'");
-                connectAndExecuteUpdate("DELETE FROM flight_booking WHERE booking_no='"+bookingID+"'");
-                connectAndExecuteUpdate("DELETE FROM booking WHERE booking_no='"+bookingID+"'");
+                addQueryToUpdate("DELETE seat FROM seat INNER JOIN passenger ON seat.passenger_id=passenger.passenger_ID WHERE passenger.booking_no='"+bookingID+"'");
+                addQueryToUpdate("DELETE FROM passenger WHERE booking_no='"+bookingID+"'");
+                addQueryToUpdate("DELETE FROM flight_booking WHERE booking_no='"+bookingID+"'");
+                addQueryToUpdate("DELETE FROM booking WHERE booking_no='"+bookingID+"'");
+                executeUpdates(); // automatically closes connection
             } catch (SQLException e) {
                 JErrorDialog.showError("An error occurred while deleting from the database!", e);
             } finally {
-                closeConnection();
+                closeConnection(); // in case something goes wrong not needed here in normal operations
             }
         }
     }

@@ -27,7 +27,7 @@ public class Passenger extends DBConnectivity {
         this.returnSeat = null;
         this.oldDepartureSeat = null;
         this.oldReturnSeat = null;
-        this.passengerID = null;
+        this.passengerID = "-1";
         // passenger ID is created when saving to database for the first time
     }
 
@@ -58,6 +58,8 @@ public class Passenger extends DBConnectivity {
             }
         } catch (SQLException e) {
             JErrorDialog.showError("An error occurred when retrieving passenger details from database", e);
+        } finally {
+            closeConnection();
         }
     }
     public String getTitle() {
@@ -101,62 +103,76 @@ public class Passenger extends DBConnectivity {
     }
 
     public void setDepartureSeat(Seat s) {
+        if (departureSeat != null && !departureSeat.equals(oldDepartureSeat)) {
+            departureSeat.setPassengerID(null);
+        }
         this.departureSeat = s;
+        departureSeat.setPassengerID(passengerID);
     }
 
     public void setReturnSeat(Seat s) {
+        if (returnSeat != null && !returnSeat.equals(oldReturnSeat)) {
+            returnSeat.setPassengerID(null);
+        }
         this.returnSeat = s;
+        returnSeat.setPassengerID(passengerID);
     }
 
     @Override
     protected void updateDatabase() {
         try {
             // update existing passenger in database
-            if (passengerID != null) {
+            if (!passengerID.equals("-1")) {
                 ResultSet rs = connectAndExecuteQuery("SELECT * FROM passenger WHERE passenger_ID="+passengerID);
                 if (!rs.next()) {
                     throw new IllegalArgumentException("No such passenger exists!");
                 }
-                connectAndExecuteUpdate("UPDATE passenger SET title='"+title+"', first_name='"+name+"', last_name='"+surname+"' WHERE passenger_ID="+passengerID);
+                addQueryToUpdate("UPDATE passenger SET title='"+title+"', first_name='"+name+"', last_name='"+surname+"' WHERE passenger_ID="+passengerID);
 
                 // if seat was changed
                 if (departureSeat != oldDepartureSeat) {
                     oldDepartureSeat.setPassengerID(null); // reset object reference to be null
                     departureSeat.setPassengerID(passengerID);
                     oldDepartureSeat = departureSeat; // overwrite this reference with new seat
-                    connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+departureSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+departureSeat.getFlightID()+"'");
+                    addQueryToUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+departureSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+departureSeat.getFlightID()+"'");
                 }
                 // if return seat changed
                 if (returnSeat != oldReturnSeat && returnSeat != null) {
                     oldReturnSeat.setPassengerID(null); // reset object reference to be null
                     returnSeat.setPassengerID(passengerID);
                     oldReturnSeat = returnSeat; // overwrite this reference with new seat
-                    connectAndExecuteUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+returnSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+returnSeat.getFlightID()+"'");
+                    addQueryToUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+returnSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+returnSeat.getFlightID()+"'");
                 }
             } else {
                 // add new passenger to database
                 if (name == null || surname == null || departureSeat == null || bookingID == null) {
                     throw new IllegalStateException("Passenger details are not complete!");
                 }
-                connectAndExecuteUpdate("INSERT INTO passenger (title, first_name, last_name, booking_no) VALUES ('"+title+"', '"+name+"', '"+surname+"', '"+bookingID+"')");
-
-                this.passengerID = getRow(connectAndExecuteQuery("SELECT passenger_ID FROM passenger WHERE title='"+title+"' AND first_name='"+name+"' AND last_name='"+surname+"' AND booking_no='"+bookingID+"'"))[0];
-            
-                departureSeat.setPassengerID(passengerID);
-                oldDepartureSeat = departureSeat;
-                connectAndExecuteUpdate("INSERT INTO seat (seat_no, class, flight_id, passenger_id) VALUES ('"+departureSeat.getSeatNo()+"', '"+departureSeat.getSeatClass()+"', '"+departureSeat.getFlightID()+"', '"+passengerID+"')");
-                // if a return seat was selected
-                if (returnSeat != null) {
-                    returnSeat.setPassengerID(passengerID);
-                    oldReturnSeat = returnSeat;
-                    connectAndExecuteUpdate("INSERT INTO seat (seat_no, class, flight_id, passenger_id) VALUES ('"+returnSeat.getSeatNo()+"', '"+returnSeat.getSeatClass()+"', '"+returnSeat.getFlightID()+"', '"+passengerID+"')");
-                }
+                addQueryToUpdate("INSERT INTO passenger (title, first_name, last_name, booking_no) VALUES ('"+title+"', '"+name+"', '"+surname+"', '"+bookingID+"')");
             }
-            
         } catch (SQLException e) {
             JErrorDialog.showError("An error occurred while updating passenger database", e);
-        } finally {
-            closeConnection();
+        }
+    }
+
+    protected void updateSeatsDatabase() {
+        if (!passengerID.equals("-1")) {
+            throw new UnsupportedOperationException("Cannot update passenger seats database on an already existing passenger!");
+        }
+        try {
+            this.passengerID = getRow(connectAndExecuteQuery("SELECT passenger_ID FROM passenger WHERE title='"+title+"' AND first_name='"+name+"' AND last_name='"+surname+"' AND booking_no='"+bookingID+"'"))[0];
+
+            departureSeat.setPassengerID(passengerID);
+            oldDepartureSeat = departureSeat;
+            addQueryToUpdate("INSERT INTO seat (seat_no, class, flight_id, passenger_id) VALUES ('"+departureSeat.getSeatNo()+"', '"+departureSeat.getSeatClass()+"', '"+departureSeat.getFlightID()+"', '"+passengerID+"')");
+            // if a return seat was selected
+            if (returnSeat != null) {
+                returnSeat.setPassengerID(passengerID);
+                oldReturnSeat = returnSeat;
+                addQueryToUpdate("INSERT INTO seat (seat_no, class, flight_id, passenger_id) VALUES ('"+returnSeat.getSeatNo()+"', '"+returnSeat.getSeatClass()+"', '"+returnSeat.getFlightID()+"', '"+passengerID+"')");
+            }
+        } catch (SQLException e) {
+            JErrorDialog.showError("An error occurred while updating passenger database", e);
         }
     }
 

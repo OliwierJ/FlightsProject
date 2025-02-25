@@ -30,6 +30,8 @@ public class Flight extends DBConnectivity {
             this.basePrice = Double.parseDouble(result[5]);
         } catch (SQLException e) {
             JErrorDialog.showError("An error occurred while retrieving flight details", e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -55,6 +57,8 @@ public class Flight extends DBConnectivity {
             this.basePrice = Double.parseDouble(result[4]);
         } catch (SQLException e) {
             throw new IllegalArgumentException("No flight found");
+        } finally {
+            closeConnection();
         }
     }
 
@@ -62,8 +66,8 @@ public class Flight extends DBConnectivity {
         // aircraft of flight goes here
         if (name.equals("Boeing 737-800")) {
             this.aircraft = new Boeing737(flightID);
-        } else if (name.equals("Boeing 777")) {
-            this.aircraft = new Boeing777(flightID);
+        } else if (name.equals("Airbus A320")) {
+            this.aircraft = new AirbusA320(flightID);
         } else {
             throw new IllegalArgumentException("Unknown aircraft!");
         }

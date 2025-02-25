@@ -1,6 +1,7 @@
 package com.flights.gui;
 
 import com.flights.gui.components.JTopBar;
+import com.flights.tests.ResultSetTableModel;
 import com.flights.util.DBConnectivity;
 
 import javax.swing.*;
@@ -9,7 +10,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.sql.SQLException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.*;
 import java.util.Objects;
 
 import static com.flights.gui.MainWindow.*;
@@ -29,6 +32,7 @@ public class AdminMenu extends JPanel {
         JPanel tablePanel = new JPanel();
         JComboBox<String> comboBox = new JComboBox<>(new String[]{"Booking", "Flight", "Passenger", "Seat", "FlightBooking"});
         JButton viewTable = new JButton("View table");
+        ConnectDB connectDB = new ConnectDB();
         viewTable.addActionListener(e -> {
             String selectedTable = (String) comboBox.getSelectedItem();
             selectedTable = Objects.requireNonNull(selectedTable).toLowerCase();
@@ -36,7 +40,7 @@ public class AdminMenu extends JPanel {
                 selectedTable = "flight_booking";
             }
             try {
-                runQuery("SELECT * FROM "+selectedTable);
+                connectDB.runQuery("SELECT * FROM "+selectedTable);
                 System.out.println(selectedTable);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -47,7 +51,7 @@ public class AdminMenu extends JPanel {
         contentPanel.add(tablePanel);
 
         try {
-            runQuery("SELECT * FROM booking");
+            connectDB.runQuery("SELECT * FROM booking");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

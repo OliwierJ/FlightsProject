@@ -55,7 +55,7 @@ public abstract class Aircraft {
 
     protected abstract void generateSeats(int flightID);
 
-    public abstract JPanel renderSeats(Passenger p, boolean isDepartureSeat); // TODO: method for rendering complex seating layouts (see Boeing 777 layout online)
+    public abstract JPanel renderSeats(Passenger p, boolean isDepartureSeat);
 
     @Override
     public String toString() {
@@ -65,7 +65,7 @@ public abstract class Aircraft {
                 ", firstClassSeats=" + firstClassSeats +
                 ", seatAmount=" + seatAmount +
                 ", name='" + name + '\'' +
-                ", seats=\n'" + Arrays.toString(seats) + '\'' +
+                // ", seats=\n'" + Arrays.toString(seats) + '\'' +
                 '}';
     }
 }

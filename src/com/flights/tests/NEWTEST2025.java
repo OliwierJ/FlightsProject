@@ -11,8 +11,8 @@ import javax.swing.*;
 public class NEWTEST2025 {
     public static void main(String[] args) {
         // only run 1 method for testing purposes
-       viewBooking();
-//        newBooking();
+//       viewBooking();
+        newBooking();
         // updateBooking();
         // deleteBooking();
     }
