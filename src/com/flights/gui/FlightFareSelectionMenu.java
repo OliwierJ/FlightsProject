@@ -6,7 +6,7 @@ import com.flights.util.FlightsConstants;
 
 import javax.swing.*;
 import java.awt.*;
-public class FlightFareSelectionMenu extends JPanel {
+public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
 
     Flight flight;
     Flight returnFlight;
@@ -22,9 +22,9 @@ public class FlightFareSelectionMenu extends JPanel {
 
         JPanel infoPanel = new InfoPanel();
         // TODO priceMultiplier will be changed
-        JPanel basicPanel = new PerkPanel(FlightsConstants.SEAGREEN, 1, "Basic", Color.WHITE, 0);
-        JPanel standardPanel = new PerkPanel(FlightsConstants.DARKSPRINGGREEN, 4, "Standard", Color.WHITE, 0);
-        JPanel deluxePanel = new PerkPanel(FlightsConstants.MAIZE, 8, "Premium+", Color.WHITE, 0);
+        JPanel basicPanel = new PerkPanel(SEAGREEN, 1, "Basic", Color.WHITE, 0);
+        JPanel standardPanel = new PerkPanel(DARKSPRINGGREEN, 4, "Standard", Color.WHITE, 0);
+        JPanel deluxePanel = new PerkPanel(MAIZE, 8, "Premium+", Color.WHITE, 0);
 
         add(Box.createGlue());
         add(infoPanel);
@@ -49,7 +49,7 @@ public class FlightFareSelectionMenu extends JPanel {
 
         InfoPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setBackground(FlightsConstants.ASPARAGUS);
+            setBackground(ASPARAGUS);
             setPreferredSize(new Dimension(400, MainWindow.FRAME_HEIGHT));
             setMaximumSize(new Dimension(400, MainWindow.FRAME_HEIGHT));
             setMinimumSize(new Dimension(350, 700));
@@ -82,12 +82,12 @@ public class FlightFareSelectionMenu extends JPanel {
             setMaximumSize(new Dimension(400, 525));
             setPreferredSize(new Dimension(400, 525));
             setAlignmentX(Component.CENTER_ALIGNMENT);
-            setBackground(FlightsConstants.LIGHTGRAY);
+            setBackground(LIGHTGRAY);
 
             JLabel perk1 = new JLabel("1 small bag");
             perk1.setAlignmentX(Component.RIGHT_ALIGNMENT);
             perk1.setFont(new Font("Arial", Font.BOLD, 18));
-            perk1.setBackground(FlightsConstants.SELECTEDGRAY);
+            perk1.setBackground(SELECTEDGRAY);
             perk1.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
             JLabel perk2 = new JLabel("Reserved seats");
             perk2.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -137,7 +137,7 @@ public class FlightFareSelectionMenu extends JPanel {
             setAlignmentX(Component.CENTER_ALIGNMENT);
             setAlignmentY(Component.CENTER_ALIGNMENT);
             setFont(new Font(null, Font.BOLD, 32));
-            setForeground(FlightsConstants.DARKSPRINGGREEN);
+            setForeground(DARKSPRINGGREEN);
             setBorder(BorderFactory.createEmptyBorder(10, 30, 11, 30));
         }
     }
@@ -177,6 +177,16 @@ public class FlightFareSelectionMenu extends JPanel {
             select.addActionListener(e -> {
                 // TODO Pricing
                 Booking b = new Booking(fareType);
+                if (fareType.equals("Basic")) {
+                    b.setPriorityBoarding(0);
+                    b.set20kgluggage(false);
+                } else if (fareType.equals("Standard")) {
+                    b.setPriorityBoarding(1);
+                    b.set20kgluggage(false);
+                } else {
+                    b.setPriorityBoarding(1);
+                    b.set20kgluggage(true);
+                }
                 b.setDepartureFlight(flight);
                 b.setReturnFlight(returnFlight);
                 MainWindow.createAndShowGUI(new SetPassengers(b, passengerTypes, calculateFarePrice(flight,returnFlight,0,passengerTypes)));

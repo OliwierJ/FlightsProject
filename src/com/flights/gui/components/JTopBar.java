@@ -61,7 +61,7 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         if (e.getSource().equals(myBookingLabel)) {
             MainWindow.createAndShowGUI(new MyBookingMenu());
         } else if (e.getSource().equals(FAQLabel)) {
-            //TODO switch windows
+            //TODO switch windows or delete
         } else if (e.getSource().equals(loginLabel)) {
             MainWindow.createAndShowGUI(new LoginMenu());
         } else if (e.getSource().equals(home)) {
@@ -72,7 +72,7 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
     @Override
     public void mouseEntered(MouseEvent e) {
         e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        e.getComponent().setForeground(FlightsConstants.SELECTEDGRAY);
+        e.getComponent().setForeground(SELECTEDGRAY);
     }
 
     @Override

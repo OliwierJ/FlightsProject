@@ -6,7 +6,7 @@ import com.flights.util.JErrorDialog;
 import javax.swing.*;
 import java.awt.*;
 
-public class PassengerAddPanel extends JPanel {
+public class PassengerAddPanel extends JPanel implements FlightsConstants{
 
     int[] passType;
     int passCount = 0;
@@ -33,7 +33,7 @@ public class PassengerAddPanel extends JPanel {
         JPanel infantPanel = new JPanel();
         infantPanel.setLayout(new BoxLayout(infantPanel, BoxLayout.X_AXIS));
         JPanel southPanel = new JPanel();
-        southPanel.setBackground(FlightsConstants.APPLEGREEN);
+        southPanel.setBackground(APPLEGREEN);
         southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
         doneButton = new JButton("Done");
         JLabel adultCount = new JLabel(passType[0] + "");
@@ -54,7 +54,7 @@ public class PassengerAddPanel extends JPanel {
         infantLabel.setFont(f);
 
         RoundButton increase1 = new RoundButton(true);
-        increase1.setForeground(FlightsConstants.SEAGREEN);
+        increase1.setForeground(SEAGREEN);
         increase1.setMaximumSize(new Dimension(35, 35));
         increase1.setPreferredSize(new Dimension(35, 35));
         increase1.setFocusable(false);
@@ -69,7 +69,7 @@ public class PassengerAddPanel extends JPanel {
         });
 
         RoundButton increase2 = new RoundButton(true);
-        increase2.setForeground(FlightsConstants.SEAGREEN);
+        increase2.setForeground(SEAGREEN);
         increase2.setMaximumSize(new Dimension(35, 35));
         increase2.setPreferredSize(new Dimension(35, 35));
         increase2.setFocusable(false);
@@ -84,7 +84,7 @@ public class PassengerAddPanel extends JPanel {
         });
 
         RoundButton increase3 = new RoundButton(true);
-        increase3.setForeground(FlightsConstants.SEAGREEN);
+        increase3.setForeground(SEAGREEN);
         increase3.setMaximumSize(new Dimension(35, 35));
         increase3.setPreferredSize(new Dimension(35, 35));
         increase3.setFocusable(false);
@@ -99,7 +99,7 @@ public class PassengerAddPanel extends JPanel {
         });
 
         RoundButton increase4 = new RoundButton(true);
-        increase4.setForeground(FlightsConstants.SEAGREEN);
+        increase4.setForeground(SEAGREEN);
         increase4.setMaximumSize(new Dimension(35, 35));
         increase4.setPreferredSize(new Dimension(35, 35));
         increase4.setFocusable(false);
@@ -205,7 +205,7 @@ public class PassengerAddPanel extends JPanel {
         southPanel.add(Box.createHorizontalStrut(15));
         doneButton.setFocusable(false);
         doneButton.setFont(new Font("Arial", Font.BOLD, 15));
-        doneButton.setForeground(FlightsConstants.TRUEBLUE);
+        doneButton.setForeground(TRUEBLUE);
         doneButton.setPreferredSize(new Dimension(100, 35));
         doneButton.setMaximumSize(new Dimension(100, 35));
         southPanel.add(doneButton);

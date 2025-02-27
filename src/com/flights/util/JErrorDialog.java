@@ -4,8 +4,6 @@ import java.time.LocalTime;
 
 import javax.swing.JOptionPane;
 
-import com.flights.gui.MainWindow;
-
 public class JErrorDialog {
 
     public static void showError(String message, Exception e) {

@@ -30,23 +30,6 @@ public class Booking extends DBConnectivity {
         setTier(tier);
     }
 
-    // make new booking giving values in constructor // TODO test maybe delete
-    public Booking(String email, int priorityBoarding, Flight departureFlight, Flight returnFlight, boolean luggage20kg, String tier) {
-        this.generateBookingID();
-        this.email = email;
-        this.priorityBoarding = priorityBoarding;
-        this.departureFlight = departureFlight;
-        this.returnFlight = returnFlight;
-        this.luggage = 0;
-        this.luggage20kg = luggage20kg;
-        if (luggage20kg) {
-            luggage++;
-        }
-        this.passengers = new Passenger[0];
-        this.newBooking = true;
-        setTier(tier);
-    }
-
     private void generateBookingID() {
         boolean exists = true;
         Random r = new Random();

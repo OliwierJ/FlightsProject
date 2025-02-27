@@ -53,7 +53,6 @@ public class SelectSeatBoeing737 extends JPanel {
         leftSeatsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         leftSeatsPanel.setLayout(new BoxLayout(leftSeatsPanel, BoxLayout.Y_AXIS));
         setEqualSizes(leftSeatsPanel, seatsWidth, seatsHeight);
-//        leftSeatsPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
         leftSeatsPanel.setOpaque(false);
 
         leftSeatsPanel.add(Box.createVerticalStrut(15));
@@ -116,7 +115,6 @@ public class SelectSeatBoeing737 extends JPanel {
         rightSeatsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         rightSeatsPanel.setLayout(new BoxLayout(rightSeatsPanel, BoxLayout.Y_AXIS));
         setEqualSizes(rightSeatsPanel, seatsWidth, seatsHeight);
-//        rightSeatsPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         rightSeatsPanel.setOpaque(false);
         int rightSeatsIndex = 3;
         individualSeatHeight = 71;

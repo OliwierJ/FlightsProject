@@ -43,10 +43,10 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.X_AXIS));
         northPanel.setPreferredSize(new Dimension(1300, 400));
-        northPanel.setBackground(FlightsConstants.SEAGREEN);
+        northPanel.setBackground(SEAGREEN);
 
         logoPanel = new JPanel(new BorderLayout());
-        logoPanel.setBackground(FlightsConstants.DARKSPRINGGREEN);
+        logoPanel.setBackground(DARKSPRINGGREEN);
         logoPanel.setMaximumSize(new Dimension(300, 400));
         logoPanel.setMinimumSize(new Dimension(300, 400));
         logoPanel.setPreferredSize(new Dimension(300, 400));
@@ -56,14 +56,14 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         logoPanel.add(new JLabel(new ImageIcon(logo)));
 
         toolbarAndSelection = new JPanel(new BorderLayout());
-        toolbarAndSelection.setBackground(FlightsConstants.SEAGREEN);
+        toolbarAndSelection.setBackground(SEAGREEN);
 
         JPanel toolBarPanel = new JTopBar();
 
         JPanel mainSelectionPanel = new JPanel();
         mainSelectionPanel.setLayout(new BoxLayout(mainSelectionPanel, BoxLayout.X_AXIS));
-        mainSelectionPanel.setBackground(FlightsConstants.SEAGREEN);
-        mainSelectionPanel.setBorder(BorderFactory.createMatteBorder(0,3,0,0,FlightsConstants.MAIZE));
+        mainSelectionPanel.setBackground(SEAGREEN);
+        mainSelectionPanel.setBorder(BorderFactory.createMatteBorder(0,3,0,0,MAIZE));
 
         JPanel departurePanel = new JPanel();
         departurePanel.setLayout(new BoxLayout(departurePanel, BoxLayout.Y_AXIS));
@@ -72,7 +72,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         departurePanel.setMaximumSize(new Dimension(500,360));
         departurePanel.setMinimumSize(new Dimension(420,360));
 
-        departureField = new JPlaceHolderTextField(FlightsConstants.DEPARTURE_PLACEHOLDER, 20);
+        departureField = new JPlaceHolderTextField(DEPARTURE_PLACEHOLDER, 20);
 
         departureField.setPreferredSize(new Dimension(300,55));
         departureField.setFont(new Font("Arial", Font.PLAIN, 25));
@@ -101,13 +101,13 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         // TODO add custom icons to radio buttons to make them larger
         returnFlight = new JRadioButton("Return Flight");
         returnFlight.setSelected(true);     // selected by default
-        returnFlight.setBackground(FlightsConstants.SEAGREEN);
+        returnFlight.setBackground(SEAGREEN);
         returnFlight.setForeground(Color.WHITE);
         returnFlight.setFont(ARIAL20);
         returnFlight.setFocusable(false);
 
         JRadioButton oneWayFlight = new JRadioButton("One Way Flight");
-        oneWayFlight.setBackground(FlightsConstants.SEAGREEN);
+        oneWayFlight.setBackground(SEAGREEN);
         oneWayFlight.setForeground(Color.WHITE);
         oneWayFlight.setFocusable(false);
         oneWayFlight.setFont(ARIAL20);
@@ -146,7 +146,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         arrivalPanel.setMaximumSize(new Dimension(500,360));
         arrivalPanel.setLayout(new BoxLayout(arrivalPanel,BoxLayout.Y_AXIS));
 
-        arrivalField = new JPlaceHolderTextField(FlightsConstants.ARRIVAL_PLACEHOLDER, 20);
+        arrivalField = new JPlaceHolderTextField(ARRIVAL_PLACEHOLDER, 20);
         arrivalField.setPreferredSize(new Dimension(300,55));
         arrivalField.setFont(new Font("Arial", Font.PLAIN, 25));
         arrivalField.setMaximumSize(new Dimension(300,55));
@@ -202,7 +202,6 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
 
         PopupFactory popupFactory = new PopupFactory();
         PassengerAddPanel selectPassengerPanel = new PassengerAddPanel(passArray);
-//        selectPassengerPanel.setBorder(BorderFactory.createLineBorder(FlightsConstants.RICHBLACK));
         AtomicReference<Popup> p = new AtomicReference<>(popupFactory.getPopup(frame, selectPassengerPanel, 0, 0));
         selectPassengerPanel.getDoneButton().addActionListener(e -> {
             p.get().hide();
@@ -261,32 +260,7 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             }
         }
     }
-    private static JPanel previousPanel = new MainWindow();
-    public static void createAndShowGUI(JPanel panel) {
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // catch if any panel throws exception e.g. FlightSelection
-        try {
-            if (!panel.getClass().isInstance(frame.getContentPane())) {
-                if (panel instanceof ViewBookingMenu){
-                    ((ViewBookingMenu) panel).refreshText();
-                } else if (panel instanceof PassengerSeatSelectionMenu) {
-                    ((PassengerSeatSelectionMenu) panel).refreshText();
-                }
-                previousPanel = (JPanel) frame.getContentPane();
-                frame.setContentPane(panel);
-                frame.setTitle(panel.getClass().getSimpleName());
-            }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-        frame.pack();
-        frame.setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-        frame.setVisible(true);
-    }
 
-    public static void returnToPreviousMenu() {
-        createAndShowGUI(previousPanel);
-    }
 
     private static class RequestFocusListener implements AncestorListener {
         private final boolean removeListener;
@@ -317,8 +291,8 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
         public SubmitButton(String text) {
             super(text);
             setAlignmentX(Component.CENTER_ALIGNMENT);
-            setBackground(FlightsConstants.MAIZE);
-            setForeground(FlightsConstants.RICHBLACK);
+            setBackground(MAIZE);
+            setForeground(RICHBLACK);
             setFont(new Font("Arial", Font.BOLD, 30));
             setPreferredSize(new Dimension(250,60));
             setMinimumSize(new Dimension(250,60));
@@ -336,16 +310,16 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
 
         @Override
         public void mouseExited(MouseEvent e) {
-            setBackground(FlightsConstants.MAIZE);
+            setBackground(MAIZE);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (departureField.getText().equals(FlightsConstants.DEPARTURE_PLACEHOLDER)) {
+            if (departureField.getText().equals(DEPARTURE_PLACEHOLDER)) {
                 JOptionPane.showMessageDialog(frame, "Please enter the departure airport.","Warning", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            if (arrivalField.getText().equals(FlightsConstants.ARRIVAL_PLACEHOLDER)) {
+            if (arrivalField.getText().equals(ARRIVAL_PLACEHOLDER)) {
                 JOptionPane.showMessageDialog(frame, "Please enter the arrival airport.","Warning", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -367,16 +341,10 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             // store the field data and clear them after submitting
             String departure = departureField.getText();
             String arrival = arrivalField.getText();
-            departureField.setText(FlightsConstants.DEPARTURE_PLACEHOLDER);
-            arrivalField.setText(FlightsConstants.ARRIVAL_PLACEHOLDER);
+            departureField.setText(DEPARTURE_PLACEHOLDER);
+            arrivalField.setText(ARRIVAL_PLACEHOLDER);
             String arrivalTime = datePicker.getJFormattedTextField().getText();
             datePicker.getJFormattedTextField().setText("");
-
-            // TODO delete print statements for debugging :D
-            System.out.println(arrival);
-            System.out.println(arrivalTime);
-            System.out.println(departure);
-            System.out.println(departureTime);
 
             try {
                 Flight f = new Flight(departure,arrival,arrivalTime);
@@ -411,5 +379,32 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
             }
             return "";
         }
+    }
+
+    private static JPanel previousPanel = new MainWindow();
+    public static void createAndShowGUI(JPanel panel) {
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // catch if any panel throws exception e.g. FlightSelection
+        try {
+            if (!panel.getClass().isInstance(frame.getContentPane())) {
+                if (panel instanceof ViewBookingMenu){
+                    ((ViewBookingMenu) panel).refreshText();
+                } else if (panel instanceof PassengerSeatSelectionMenu) {
+                    ((PassengerSeatSelectionMenu) panel).refreshText();
+                }
+                previousPanel = (JPanel) frame.getContentPane();
+                frame.setContentPane(panel);
+                frame.setTitle(panel.getClass().getSimpleName());
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        frame.pack();
+        frame.setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
+        frame.setVisible(true);
+    }
+
+    public static void returnToPreviousMenu() {
+        createAndShowGUI(previousPanel);
     }
 }

@@ -2,8 +2,6 @@ package com.flights.tests;
 
 import com.flights.objects.*;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 
 import javax.swing.*;
@@ -59,9 +57,6 @@ public class NEWTEST2025 {
         b.setEmail(email);
         b.set20kgluggage(true);
         b.setPriorityBoarding(priority);
-
-        // option 2
-        Booking booking = new Booking(email, priority, f, f2, true, "Basic");
 
         System.out.print("Enter number of passengers: ");
         int count = EasyIn.getInt();

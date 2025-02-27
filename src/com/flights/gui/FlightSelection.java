@@ -4,6 +4,8 @@ package com.flights.gui;
 import com.flights.objects.Flight;
 import com.flights.util.FlightsConstants;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,7 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class FlightSelection extends JPanel {
+public class FlightSelection extends JPanel implements FlightsConstants {
     static JFrame frame = new JFrame();
     final int[] selectedDateIndex = {0};
     JLabel departureLabel = new JLabel("Departure Flight");
@@ -53,11 +55,8 @@ public class FlightSelection extends JPanel {
 
             String newDate = getChangedDate(convertedStartDate, j);
             Flight f = null;
-            try {
-                f = new Flight(defaultFlight.getDepartureAirport(), defaultFlight.getArrivalAirport(), newDate);
-                differentFlights[index] = f;
-            } catch (Exception ignored) {
-            }
+            f = new Flight(defaultFlight.getDepartureAirport(), defaultFlight.getArrivalAirport(), newDate);
+            differentFlights[index] = f;
             date[index] = new DateSelections(f, dateWidth, newDate);
             int finalI = index;
             date[index].addMouseListener(new MouseAdapter() {
@@ -77,7 +76,7 @@ public class FlightSelection extends JPanel {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     if (selectedDateIndex[0] != finalI) {
-                        e.getComponent().setBackground(FlightsConstants.SELECTEDGRAY);
+                        e.getComponent().setBackground(SELECTEDGRAY);
                     }
                 }
 
@@ -175,6 +174,11 @@ public class FlightSelection extends JPanel {
         }
 
         JButton selectFlights = new JButton("Select Flights");
+        selectFlights.setBorder(new EmptyBorder(5,20,5,20));
+        selectFlights.setBackground(MAIZE);
+        selectFlights.setFocusable(false);
+        selectFlights.setFont(new Font("Arial", Font.PLAIN, 18));
+        selectFlights.setAlignmentX(CENTER_ALIGNMENT);
         selectFlights.addActionListener(e -> {
             if (!showReturns) {
                 MainWindow.createAndShowGUI(new FlightFareSelectionMenu(selectedFlight.getFlight(), null, passengerTypes));
@@ -195,20 +199,6 @@ public class FlightSelection extends JPanel {
         scrollBar.setValue(centerValue);
     }
 
-    public static void createAndShowGUI() {
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        try {
-            frame.setContentPane(new FlightSelection(new Flight("Dublin", "Barcelona", "2025-3-4"), true, "2025-3-13", new int[]{2,1,1,1}));
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-//    public static void main(String[] args) {
-//        createAndShowGUI();
-//    }
     private Date getParsedDate(String unformattedDate, SimpleDateFormat sdf) {
         try {
             return sdf.parse(unformattedDate);
@@ -230,14 +220,12 @@ public class FlightSelection extends JPanel {
         JLabel priceLabel = new JLabel("Starting from ");
         JLabel flightPriceLabel = new JLabel("€65");
         JButton selectFlightBtn = new JButton("Select");
-        Flight flight;
 
         public PriceAndSelectBtn(Flight f) {
             super();
-            this.flight = f;
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setMaximumSize(new Dimension(250, 175));
-            setBackground(FlightsConstants.SEAGREEN);
+            setBackground(SEAGREEN);
             setBorder(BorderFactory.createEmptyBorder(12, 5, 5, 5));
 
             priceLabel.setFont(new Font("Arial", Font.BOLD, 15));
@@ -252,7 +240,7 @@ public class FlightSelection extends JPanel {
 
             selectFlightBtn.setFont(new Font("Arial", Font.BOLD, 18));
             selectFlightBtn.setFocusable(false);
-            selectFlightBtn.setBackground(FlightsConstants.MAIZE);
+            selectFlightBtn.setBackground(MAIZE);
             selectFlightBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
             selectFlightBtn.setMaximumSize(new Dimension(125, 50));
 
@@ -261,7 +249,6 @@ public class FlightSelection extends JPanel {
             add(Box.createVerticalStrut(10));
             add(selectFlightBtn);
         }
-
     }
 
     static class TimeAndPlacePanel extends JPanel {
@@ -380,7 +367,6 @@ public class FlightSelection extends JPanel {
 
             add(dateLabel);
             add(costLabel);
-
         }
     }
 
@@ -395,8 +381,6 @@ public class FlightSelection extends JPanel {
             SwingUtilities.invokeLater(() -> centerScrollBarThumb(hBar));
 
             hBar.setBlockIncrement(dateWidth);
-
         }
     }
-
 }

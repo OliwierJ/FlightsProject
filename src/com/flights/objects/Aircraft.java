@@ -53,6 +53,10 @@ public abstract class Aircraft {
         this.seats[i] = new Seat(s[0], s[1], s[2], s[3]);
     }
 
+    public void printSeats() {
+        System.out.println(Arrays.toString(seats));
+    }
+
     protected abstract void generateSeats(int flightID);
 
     public abstract JPanel renderSeats(Passenger p, boolean isDepartureSeat);
@@ -65,7 +69,6 @@ public abstract class Aircraft {
                 ", firstClassSeats=" + firstClassSeats +
                 ", seatAmount=" + seatAmount +
                 ", name='" + name + '\'' +
-                // ", seats=\n'" + Arrays.toString(seats) + '\'' +
                 '}';
     }
 }

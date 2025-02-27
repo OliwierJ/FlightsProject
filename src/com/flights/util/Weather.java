@@ -93,7 +93,7 @@ public class Weather {
         
     }
 
-    // testing purposes
+    // TODO finish off class testing purposes
     public static void main(String[] args) {
         Weather weather = new Weather("2025-01-24", "Dublin");
         weather.printData("2025-01-24T10:15");

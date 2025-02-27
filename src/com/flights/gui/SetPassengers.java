@@ -12,7 +12,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class SetPassengers extends JPanel {
+public class SetPassengers extends JPanel implements FlightsConstants {
 
     JPanel progressPanel;
     private final PassengerAdditionPanel[] passengersPanels = new PassengerAdditionPanel[6];
@@ -133,7 +133,7 @@ public class SetPassengers extends JPanel {
             setLayout(new BorderLayout());
 
             JPanel titleFlowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            titleFlowPanel.setBackground(FlightsConstants.APPLEGREEN);
+            titleFlowPanel.setBackground(APPLEGREEN);
             int titleHeight = 60;
             titleFlowPanel.setPreferredSize(new Dimension(1000, titleHeight));
             titleFlowPanel.setMinimumSize(new Dimension(1000, titleHeight));
@@ -153,7 +153,7 @@ public class SetPassengers extends JPanel {
 
             JPanel passengerInfoPanel = new JPanel();
             passengerInfoPanel.setLayout(new BoxLayout(passengerInfoPanel, BoxLayout.X_AXIS));
-            passengerInfoPanel.setBackground(FlightsConstants.ASPARAGUS);
+            passengerInfoPanel.setBackground(ASPARAGUS);
             passengerInfoPanel.setPreferredSize(new Dimension(800, 180 - titleHeight));
 
 
@@ -236,7 +236,6 @@ public class SetPassengers extends JPanel {
 
         public String getText() {
             if (field instanceof JPlaceHolderTextField) {
-//                System.out.println(((JPlaceHolderTextField) field).getText());
                 return ((JPlaceHolderTextField) field).getText();
             } else {
                 return Objects.requireNonNull(((JComboBox<String>) field).getSelectedItem()).toString();
@@ -244,7 +243,7 @@ public class SetPassengers extends JPanel {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { // TODO delete later
         Booking b = new Booking("Basic");
         b.setDepartureFlight(new Flight(100));
         b.setReturnFlight(new Flight(101));
