@@ -4,36 +4,57 @@ import com.flights.objects.Booking;
 import com.flights.objects.Flight;
 import com.flights.objects.Passenger;
 
-import javax.swing.*;
 import java.util.Arrays;
 
+import javax.swing.*;
+
 public class PassengerSeatSelectionMenu extends JPanel {
-    private final JLabel testLabel = new JLabel();
     private final Booking b;
+    private final JPanel[] passengerPanels;
+
     public PassengerSeatSelectionMenu(Booking b) {
         this.b = b;
-        // TODO: basically identical screen to the previous one but with buttons to choose passenger seats
+        this.passengerPanels = new JPanel[b.getPassengerCount()];
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        // TODO: refactor layout to look similar to the previous passenger screen
         // for testing purposes ONLY
-        JButton test = new JButton("Test");
-        System.out.println(Arrays.toString(b.getPassengers()));
-        // some buttons will set departure while others set return seat
-        test.addActionListener(e -> {
-            MainWindow.createAndShowGUI(b.getDepartureFlight().getAircraft().renderSeats(b.getPassengers()[0], false));
-        });
-        add(test);
-        refreshText(); // render text
-        add(testLabel);
+        int i = 0;
+        for (Passenger p: b.getPassengers()) {
+            JPanel pp = new JPanel();
+            JLabel p1 = new JLabel("Passenger #"+(i+1)+": "+p.getDepartureSeat()+", "+p.getReturnSeat());
+            JButton setDeparture = new JButton("Set departure seat");
+            setDeparture.addActionListener(e -> {
+                MainWindow.createAndShowGUI(b.getDepartureFlight().getAircraft().renderSeats(p, false));
+            });
+            pp.add(p1);
+            pp.add(setDeparture);
+            if (b.getReturnFlight() != null) {
+                JButton setReturn = new JButton("Set return seat");
+                setReturn.addActionListener(e -> {
+                    MainWindow.createAndShowGUI(b.getReturnFlight().getAircraft().renderSeats(p, true));
+                });
+                pp.add(setReturn);
+            }
+            add(pp);
+            passengerPanels[i] = pp;
+            i++;
+        }
     }
 
     public void refreshText() {
-        testLabel.setText("Passenger departure seat="+b.getPassengers()[0].getDepartureSeat());
-        // TODO: refresh/render any labels that contain seatNos by using setText again
+        for (int i = 0; i < passengerPanels.length; i++) {
+            JPanel jp = passengerPanels[i];
+            JLabel l = (JLabel) jp.getComponent(0);
+            Passenger p = b.getPassengers()[i];
+            l.setText("Passenger #"+(i+1)+": "+p.getDepartureSeat()+", "+p.getReturnSeat());
+        }
     }
 
     public static void main(String[] args) {
         Booking b = new Booking("Basic");
         b.setDepartureFlight(new Flight(100));
-        b.addPassengers(new Passenger("Mr", "Brandon", "Jaroszczak", b.getBookingID()));
+        b.setReturnFlight(new Flight(101));
+        b.addPassengers(new Passenger("Mr", "Brandon", "Jaroszczak", b.getBookingID()), new Passenger(null, "Other", "Guy", b.getBookingID()), new Passenger("Mrs", "Some random", "woman", b.getBookingID()));
         MainWindow.createAndShowGUI(new PassengerSeatSelectionMenu(b));
     }
 }

@@ -1,12 +1,9 @@
 package com.flights.objects;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.sql.SQLException;
 
 import javax.swing.*;
 
-import com.flights.gui.MainWindow;
 import com.flights.gui.SelectSeatBoeing737;
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
@@ -14,7 +11,7 @@ import com.flights.util.JErrorDialog;
 public class Boeing737 extends Aircraft {
 
     public Boeing737(int flightID) {
-        super(189, 0, 0, "Boeing 737-800");
+        super(195, 0, 0, "Boeing 737-800");
         generateSeats(flightID);
     }
 
@@ -58,35 +55,5 @@ public class Boeing737 extends Aircraft {
     @Override
     public JPanel renderSeats(Passenger p, boolean isDepartureSeat) {
         return new SelectSeatBoeing737(getAllSeats(), p, isDepartureSeat);
-//        return new Boeing737Seats(getAllSeats(), p, isDepartureSeat);
-    }
-
-    static class Boeing737Seats extends JPanel {
-        private Boeing737Seats(Seat[] seats, Passenger p, boolean isDepartureSeat) {
-            setLayout(new FlowLayout());
-            setMinimumSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
-            add(new JLabel("Boeing 737"));
-
-            JComboBox<String> selector = new JComboBox<>();
-            for (Seat s: seats) {
-                selector.addItem(s.getSeatNo());
-            }
-            add(selector);
-            JButton confirm = new JButton("Confirm choice");
-            confirm.addActionListener(e -> {
-                int choice = selector.getSelectedIndex();
-                if (seats[choice].isOccupied()) {
-                    JErrorDialog.showWarning("Seat is already occupied");
-                } else {
-                    if (isDepartureSeat) {
-                        p.setDepartureSeat(seats[choice]);
-                    } else {
-                        p.setReturnSeat(seats[choice]);
-                    }
-                    MainWindow.returnToPreviousMenu();
-                }
-            });
-            add(confirm);
-        }
     }
 }
