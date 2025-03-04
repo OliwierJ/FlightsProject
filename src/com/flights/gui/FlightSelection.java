@@ -55,7 +55,10 @@ public class FlightSelection extends JPanel implements FlightsConstants {
 
             String newDate = getChangedDate(convertedStartDate, j);
             Flight f = null;
-            f = new Flight(defaultFlight.getDepartureAirport(), defaultFlight.getArrivalAirport(), newDate);
+            try {
+
+                f = new Flight(defaultFlight.getDepartureAirport(), defaultFlight.getArrivalAirport(), newDate);
+            } catch (Exception ignored) {}
             differentFlights[index] = f;
             date[index] = new DateSelections(f, dateWidth, newDate);
             int finalI = index;
