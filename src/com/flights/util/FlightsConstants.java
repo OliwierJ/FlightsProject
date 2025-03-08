@@ -22,6 +22,7 @@ public interface FlightsConstants {
     String ARRIVAL_PLACEHOLDER = "Enter arrival airport";
 
     Font ARIAL20 = new Font("Arial", Font.BOLD, 20);
+    Font ARIAL20PLAIN = new Font("Arial", Font.PLAIN, 20);
     Font DEFAULT_FONT = new JLabel().getFont();
     Font DEFAULT_FONT_TEXTFIELD = new JTextField().getFont();
 }

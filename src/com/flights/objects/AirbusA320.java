@@ -64,12 +64,12 @@ public class AirbusA320 extends Aircraft {
     }
 
     @Override
-    public JPanel renderSeats(Passenger p, boolean isDepartureSeat) {
-        return new AirbusA320Seats(getAllSeats(), p, isDepartureSeat);
+    public JPanel renderSeats(Passenger p, boolean isReturn) {
+        return new AirbusA320Seats(getAllSeats(), p, isReturn);
     }
 
     static class AirbusA320Seats extends JPanel {
-        private AirbusA320Seats(Seat[] seats, Passenger p, boolean isDepartureSeat) {
+        private AirbusA320Seats(Seat[] seats, Passenger p, boolean isReturn) {
             setLayout(new FlowLayout());
             setMinimumSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
             add(new JLabel("Airbus A320"));
@@ -85,10 +85,10 @@ public class AirbusA320 extends Aircraft {
                 if (seats[choice].isOccupied()) {
                     JErrorDialog.showWarning("Seat is already occupied");
                 } else {
-                    if (isDepartureSeat) {
-                        p.setDepartureSeat(seats[choice]);
-                    } else {
+                    if (isReturn) {
                         p.setReturnSeat(seats[choice]);
+                    } else {
+                        p.setDepartureSeat(seats[choice]);
                     }
                     MainWindow.returnToPreviousMenu();
                 }

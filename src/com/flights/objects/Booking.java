@@ -230,10 +230,12 @@ public class Booking extends DBConnectivity {
             }
             executeUpdates(); // automatically closes connection
             // now update the seats for each passenger, this needs to be done because the passengerIDs are generated in MYSQL so a batch must be executed first to then retrieve the passenger IDs to then update the seat database accordingly
-            for (Passenger passenger : passengers) {
-                passenger.updateSeatsDatabase();
+            if (newBooking) {
+                for (Passenger passenger : passengers) {
+                    passenger.updateSeatsDatabase();
+                }
+                executeUpdates(); // automatically closes connection
             }
-            executeUpdates(); // automatically closes connection
         } catch (SQLException e) {
             JErrorDialog.showError("An error occurred while updating database!", e);
         } finally {

@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Booking;
 import com.flights.objects.Flight;
@@ -35,11 +36,7 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
             mainPanel.add(Box.createVerticalStrut(50));
         }
 
-        JButton confirm = new JButton("Confirm seat selection");
-        confirm.setBorder(new EmptyBorder(5,20,5,20));
-        confirm.setBackground(MAIZE);
-        confirm.setFocusable(false);
-        confirm.setFont(new Font("Arial", Font.PLAIN, 18));
+        JButton confirm = new JSubmitButton("Confirm seat selection");
         confirm.setAlignmentX(CENTER_ALIGNMENT);
         confirm.addActionListener(e -> {
             boolean valid = true;
@@ -128,16 +125,12 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
             setSeatLabelText(label, p, isReturn);
             label.setFont(ARIAL20);
 
-            JButton button = new JButton("Select seat");
-            button.setBorder(new EmptyBorder(5,20,5,20));
-            button.setBackground(MAIZE);
-            button.setFocusable(false);
-            button.setFont(new Font("Arial", Font.PLAIN, 18));
+            JButton button = new JSubmitButton("Select seat");
             button.addActionListener(e -> {
                 if (isReturn) {
-                    MainWindow.createAndShowGUI(b.getReturnFlight().getAircraft().renderSeats(p, isReturn));
+                    MainWindow.createAndShowGUI(b.getReturnFlight().getAircraft().renderSeats(p, true));
                 } else {
-                    MainWindow.createAndShowGUI(b.getDepartureFlight().getAircraft().renderSeats(p, isReturn));
+                    MainWindow.createAndShowGUI(b.getDepartureFlight().getAircraft().renderSeats(p, false));
                 }
             });
 

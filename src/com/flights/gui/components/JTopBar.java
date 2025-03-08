@@ -19,7 +19,6 @@ import com.flights.util.FlightsConstants;
 public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
     private final JLabel loginLabel = new JLabel("Login");
     private final JLabel myBookingLabel = new JLabel("My Bookings");
-    private final JLabel FAQLabel = new JLabel("FAQ");
     private final JLabel home = new JLabel("Home");
 
     public JTopBar() {
@@ -34,8 +33,6 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         add(loginLabel);
         add(Box.createHorizontalStrut(20));
         add(myBookingLabel);
-        add(Box.createHorizontalStrut(20));
-        add(FAQLabel);
         add(Box.createHorizontalStrut(20));
         add(home);
 
@@ -60,8 +57,6 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
     public void mouseReleased(MouseEvent e) {
         if (e.getSource().equals(myBookingLabel)) {
             MainWindow.createAndShowGUI(new MyBookingMenu());
-        } else if (e.getSource().equals(FAQLabel)) {
-            //TODO switch windows or delete
         } else if (e.getSource().equals(loginLabel)) {
             MainWindow.createAndShowGUI(new LoginMenu());
         } else if (e.getSource().equals(home)) {

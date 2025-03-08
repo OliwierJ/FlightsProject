@@ -141,7 +141,7 @@ public class Passenger extends DBConnectivity {
                     oldReturnSeat.setPassengerID(null); // reset object reference to be null
                     returnSeat.setPassengerID(passengerID);
                     oldReturnSeat = returnSeat; // overwrite this reference with new seat
-                    addQueryToUpdate("UPDATE seat SET seat_no='"+departureSeat.getSeatNo()+"', class='"+returnSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+returnSeat.getFlightID()+"'");
+                    addQueryToUpdate("UPDATE seat SET seat_no='"+returnSeat.getSeatNo()+"', class='"+returnSeat.getSeatClass()+"' WHERE passenger_ID="+passengerID+" AND flight_id='"+returnSeat.getFlightID()+"'");
                 }
             } else {
                 // add new passenger to database
