@@ -212,7 +212,6 @@ public class Booking extends DBConnectivity {
                 if (returnFlight != null) {
                     addQueryToUpdate("INSERT INTO flight_booking (flight_id, booking_no, is_return) VALUES (" + returnFlight.getFlightID() + ", '" + bookingID + "', 1)");
                 }
-                this.newBooking = false;
             } else {
                 // update existing booking
                 ResultSet rs = connectAndExecuteQuery("SELECT * FROM booking WHERE booking_no='"+bookingID+"'");
@@ -235,6 +234,7 @@ public class Booking extends DBConnectivity {
                     passenger.updateSeatsDatabase();
                 }
                 executeUpdates(); // automatically closes connection
+                this.newBooking = false;
             }
         } catch (SQLException e) {
             JErrorDialog.showError("An error occurred while updating database!", e);

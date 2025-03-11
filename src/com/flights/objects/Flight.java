@@ -35,15 +35,6 @@ public class Flight extends DBConnectivity {
         }
     }
 
-    // TODO: delete later testing purposes
-    public Flight(int flightID, String departureAirport, String arrivalAirport, Timestamp departureTime, Timestamp arrivalTime) {
-        this.flightID = flightID;
-        this.departureAirport = departureAirport;
-        this.arrivalAirport = arrivalAirport;
-        this.departureTime = departureTime;
-        this.arrivalTime = arrivalTime;
-    }
-
     // used by flight selection menu
     public Flight(String departureAirport, String arrivalAirport, String date) {
         try {

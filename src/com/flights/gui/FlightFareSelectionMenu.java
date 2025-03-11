@@ -16,6 +16,8 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
         super();
         this.flight = flight;
         this.returnFlight = returnFlight;
+        System.out.println(flight);
+        System.out.println(returnFlight); // TODO: fix bug make sure the flights are properly selected in previous menu, choosing any other flight than the default selection doesn't work
         this.passengerTypes = passArray;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
