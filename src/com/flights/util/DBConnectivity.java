@@ -106,21 +106,16 @@ public abstract class DBConnectivity {
         }
     }
 
-    // executes all updates in batch and close all connections
-    public static void executeUpdates() throws SQLException {
-        pstmt.executeBatch();
-        closeConnection();
-    }
-
-    // gets entire table from a given table name
-    public static String[][] getTable(String name) throws SQLException {
-        return getMultipleRows(connectAndExecuteQuery("SELECT * FROM "+name));
-    }
-
     public static PreparedStatement getPreparedStatement(String query) throws SQLException {
         connectToDB();
         pstmt = con.prepareStatement(query);
         return pstmt;
+    }
+
+    // executes all updates in batch and close all connections
+    public static void executeUpdates() throws SQLException {
+        pstmt.executeBatch();
+        closeConnection();
     }
 
     protected abstract void updateDatabase(); // override this method to implement updating the database based on the contents of the class

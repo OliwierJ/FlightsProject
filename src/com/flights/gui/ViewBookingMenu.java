@@ -99,7 +99,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
             } else if (c instanceof JPanel) {
                 setAllFonts((JPanel) c);
             } else if (c instanceof JTextField && c.getFont().equals(DEFAULT_FONT_TEXTFIELD)) {
-                c.setFont(new Font("Arial", Font.PLAIN, 20));
+                c.setFont(ARIAL20PLAIN);
             }
         }
     }
@@ -136,8 +136,6 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
     }
 
     public static void main(String[] args) {
-        // MainWindow.createAndShowGUI(new ViewBookingMenu(new Booking("111675", "Alayna"+'\0'+"Doyle@outlook.com")));
-        // MainWindow.createAndShowGUI(new ViewBookingMenu(new Booking("103588", "Maia"+'\0'+"West@hotmail.com")));
         MainWindow.createAndShowGUI(new ViewBookingMenu(new Booking("522558", "govie@setu.ie"))); // TODO debug delete later
     }
 
