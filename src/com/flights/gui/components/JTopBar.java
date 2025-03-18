@@ -20,6 +20,7 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
     private final JLabel loginLabel = new JLabel("Login");
     private final JLabel myBookingLabel = new JLabel("My Bookings");
     private final JLabel home = new JLabel("Home");
+    private JLabel price = new JLabel("€0");
 
     public JTopBar() {
         setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -35,6 +36,8 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         add(myBookingLabel);
         add(Box.createHorizontalStrut(20));
         add(home);
+        add(Box.createHorizontalStrut(20));
+        add(price);
 
         for (Component c : getComponents()) {
             if (c instanceof JLabel) {
@@ -66,8 +69,10 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        e.getComponent().setForeground(SELECTEDGRAY);
+        if (!e.getComponent().equals(price)) {
+            e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            e.getComponent().setForeground(SELECTEDGRAY);
+        }
     }
 
     @Override

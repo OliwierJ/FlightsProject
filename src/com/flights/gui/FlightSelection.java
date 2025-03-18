@@ -251,6 +251,8 @@ public class FlightSelection extends JPanel implements FlightsConstants {
             add(flightPriceLabel);
             add(Box.createVerticalStrut(10));
             add(selectFlightBtn);
+
+            
         }
     }
 
