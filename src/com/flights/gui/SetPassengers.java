@@ -22,7 +22,7 @@ public class SetPassengers extends JPanel implements FlightsConstants {
     public SetPassengers(Booking b, int[] passengerType, double price) {
         setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
         setLayout(new BorderLayout());
-        add(new JTopBar(), BorderLayout.NORTH);
+        add(new JTopBar(price), BorderLayout.NORTH);
 
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
@@ -89,7 +89,7 @@ public class SetPassengers extends JPanel implements FlightsConstants {
                     }
                 }
                 b.addPassengers(passengers.toArray(new Passenger[0]));
-                MainWindow.createAndShowGUI(new PassengerSeatSelectionMenu(b));
+                MainWindow.createAndShowGUI(new PassengerSeatSelectionMenu(b,price));
             }
         });
 

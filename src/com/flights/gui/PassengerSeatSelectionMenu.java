@@ -17,14 +17,14 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
     private final JPanel[] departureSeatPanels;
     private final JPanel[] returnSeatPanels;
 
-    public PassengerSeatSelectionMenu(Booking b) {
+    public PassengerSeatSelectionMenu(Booking b, double price) {
         this.b = b;
         this.departureSeatPanels = new JPanel[b.getPassengerCount()];
         this.returnSeatPanels = new JPanel[b.getPassengerCount()];
 
         setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
         setLayout(new BorderLayout());
-        add(new JTopBar(), BorderLayout.NORTH);
+        add(new JTopBar(price), BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -32,6 +32,7 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
 
         for (int i = 0; i < b.getPassengerCount(); i++) {
             JPanel pp = new PassengerSeatSelectionPanel(i, b.getPassengers()[i]);
+
             mainPanel.add(pp);
             mainPanel.add(Box.createVerticalStrut(50));
         }
@@ -50,7 +51,7 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
             if (valid) {
                 int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to continue?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (n == 0) {
-                    MainWindow.createAndShowGUI(new ExtrasMenu(b));
+                    MainWindow.createAndShowGUI(new ExtrasMenu(b, price));
                 }
             }
         });
@@ -163,6 +164,6 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
         b.setDepartureFlight(new Flight(100));
         b.setReturnFlight(new Flight(101));
         b.addPassengers(new Passenger("Mr", "Brandon", "Jaroszczak", b.getBookingID()), new Passenger(null, "Other", "Guy", b.getBookingID()), new Passenger("Mrs", "Some random", "woman", b.getBookingID()), new Passenger("Ms", "Oliwier", "Jakubiec", b.getBookingID()));
-        MainWindow.createAndShowGUI(new PassengerSeatSelectionMenu(b));
+        MainWindow.createAndShowGUI(new PassengerSeatSelectionMenu(b, 200));
     }
 }

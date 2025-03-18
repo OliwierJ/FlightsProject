@@ -17,11 +17,11 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
     JRadioButton yesButton;
     Booking b;
 
-    public ExtrasMenu(Booking booking) {
+    public ExtrasMenu(Booking booking,double price) {
         this.b = booking;
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
-        add(new JTopBar(), BorderLayout.NORTH);
+        add(new JTopBar(price), BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -165,7 +165,7 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
     }
 
     public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new ExtrasMenu(new Booking("Standard")));
+        MainWindow.createAndShowGUI(new ExtrasMenu(new Booking("Standard"), 100));
 
     }
 

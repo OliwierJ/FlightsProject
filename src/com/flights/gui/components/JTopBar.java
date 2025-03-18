@@ -31,6 +31,22 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         setMaximumSize(new Dimension(10000, 40));
         setBorder(BorderFactory.createMatteBorder(0,3,3,0,MAIZE));
 
+        addAllComponents();
+    }
+    public JTopBar(double price) {
+        setLayout(new FlowLayout(FlowLayout.RIGHT));
+        setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        setAlignmentX(Component.RIGHT_ALIGNMENT);
+        setBackground(TRUEBLUE);
+        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, 40));
+        setMaximumSize(new Dimension(10000, 40));
+        setBorder(BorderFactory.createMatteBorder(0,3,3,0,MAIZE));
+
+        addAllComponents();
+        this.price.setText("€" + price);
+    }
+
+    private void addAllComponents() {
         add(loginLabel);
         add(Box.createHorizontalStrut(20));
         add(myBookingLabel);
@@ -49,6 +65,11 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
                 l.addMouseListener(this);
             }
         }
+    }
+
+    public void updatePrice(double price) {
+        this.price.setText(String.format("€%.2f", price));
+        this.repaint();
     }
 
     @Override
