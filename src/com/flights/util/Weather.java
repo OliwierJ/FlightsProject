@@ -2,18 +2,23 @@ package com.flights.util;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Scanner;
+import java.io.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Weather {
-    private String[] hours = new String[96];
+    private LocalTime[] hours = new LocalTime[96];
     private float[] temperatures = new float[96];
     private float[] precipitations = new float[96];
     private float[] windSpeeds = new float[96];
@@ -24,8 +29,9 @@ public class Weather {
         {"Barcelona", "41.2983", "2.0800"}
     };
 
-    public Weather(String date, String location) {
+    public Weather(LocalDate d, String location) {
         try {
+            String date = d.toString();
             String latitude = "";
             String longitude = "";
             for (String[] entry: locations) {
@@ -55,7 +61,7 @@ public class Weather {
             JSONArray gusts = timeObject.getJSONArray("wind_gusts_10m");            
             
             for (int i = 0; i < times.length(); i++) {
-                this.hours[i] = times.getString(i);
+                this.hours[i] = LocalDateTime.parse(times.getString(i)).toLocalTime();
                 this.temperatures[i] = temps.getFloat(i);
                 this.precipitations[i] = rains.getFloat(i);
                 this.weatherCodes[i] = codes.getInt(i);
@@ -72,21 +78,39 @@ public class Weather {
     }
 
     // Testing purposes
-    public void printData(String time) {
+    public String printData(String time) {
         for (int i = 0; i < hours.length; i++) {
             if (hours[i].equals(time)) {
+                return "Weather code: "+weatherCodes[i]+", wind speed: "+windSpeeds[i]+", gusts: "+windGusts[i]+", precipitation: "+precipitations[i]+", temperature degrees C: "+temperatures[i];
+            }
+        }
+        return null;
+    }
+
+    public void printData(LocalTime l) {
+        l = roundTime(l);
+        for (int i = 0; i < hours.length; i++) {
+            if (hours[i].equals(l)) {
+                System.out.println(hours[i].toString());
                 System.out.println("Weather code: "+weatherCodes[i]+", wind speed: "+windSpeeds[i]+", gusts: "+windGusts[i]+", precipitation: "+precipitations[i]+", temperature degrees C: "+temperatures[i]);
             }
         }
     }
 
-    public float[] getFlightData(String time) {
+    public float[] getFlightData(LocalTime l) {
+        l = roundTime(l);
         for (int i = 0; i < hours.length; i++) {
-            if (hours[i].equals(time)) {
+            if (hours[i].equals(l)) {
                 return new float[] {weatherCodes[i], windSpeeds[i], windGusts[i], precipitations[i], temperatures[i]};
-            }
+            } 
         }
         return null;
+    }
+
+    private LocalTime roundTime(LocalTime l) {
+        int minutes = l.toSecondOfDay() / 60;
+        int rounded = (minutes / 15) * 15;
+        return LocalTime.ofSecondOfDay(rounded * 60);
     }
 
     public void getWeatherStatus() {
@@ -95,7 +119,8 @@ public class Weather {
 
     // TODO finish off class testing purposes
     public static void main(String[] args) {
-        Weather weather = new Weather("2025-01-24", "Dublin");
-        weather.printData("2025-01-24T10:15");
+        Weather w = new Weather(LocalDate.of(2025, 03, 19), "Dublin");
+        w.printData(LocalTime.of(11, 29));
+        // weather.printData("2025-01-24T10:15");
     }
 }

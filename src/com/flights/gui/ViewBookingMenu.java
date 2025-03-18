@@ -12,9 +12,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import com.flights.util.FlightsConstants;
+import com.flights.util.Weather;
 
 public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionListener {
     private final Booking booking;
@@ -131,7 +133,42 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 MainWindow.createAndShowGUI(new MainWindow());
             }
         } else if (e.getSource() == weather) {
-            // TODO implement check weather
+            JPanel popup = new JPanel();
+            popup.setLayout(new BorderLayout());
+            
+            JLabel title = new JLabel("Weather");
+            popup.add(title, BorderLayout.NORTH);
+
+            Flight f = booking.getDepartureFlight();
+            Flight f1 = booking.getReturnFlight();
+
+            if (f.getDepartureLocalDate().isAfter(LocalDate.now().plusDays(14))) {
+                JOptionPane.showMessageDialog(MainWindow.frame, "Sorry, can't show weather more than 14 days into the future.\nPlease try again at a future time closer to the departure time of your flight", "Check weather", JOptionPane.PLAIN_MESSAGE);
+            } else {
+                Weather w = new Weather(f.getDepartureLocalDate(), f.getDepartureAirport());
+                float[] weatherData = w.getFlightData(f.getDepartureLocalTime());
+                JPanel p1 = new JPanel();
+                p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
+                p1.add(new JLabel("Weather code: "+weatherData[0]));
+                p1.add(new JLabel("Wind speed: "+weatherData[1]));
+                p1.add(new JLabel("Wind gusts: "+weatherData[2]));
+                p1.add(new JLabel("Precipitation: "+weatherData[3]));
+                p1.add(new JLabel("Temperature: "+weatherData[4]));
+                popup.add(p1, BorderLayout.WEST);
+                if (f1 != null) {
+                    w = new Weather(f1.getDepartureLocalDate(), f1.getDepartureAirport());
+                    weatherData = w.getFlightData(f1.getDepartureLocalTime());
+                    JPanel p2 = new JPanel();
+                    p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
+                    p2.add(new JLabel("Weather code: "+weatherData[0]));
+                    p2.add(new JLabel("Wind speed: "+weatherData[1]));
+                    p2.add(new JLabel("Wind gusts: "+weatherData[2]));
+                    p2.add(new JLabel("Precipitation: "+weatherData[3]));
+                    p2.add(new JLabel("Temperature: "+weatherData[4]));
+                    popup.add(p2, BorderLayout.EAST);
+                }
+                JOptionPane.showMessageDialog(MainWindow.frame, popup, "Check weather", JOptionPane.PLAIN_MESSAGE);
+            }
         }
     }
 
@@ -257,7 +294,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
             Flight depFlight = booking.getDepartureFlight();
             JLabel d1 = new JLabel("<html><u>Departure Flight</u></html>");
             JLabel d2 = new JLabel(depFlight.getDepartureAirport() + " to " + depFlight.getArrivalAirport());
-            JLabel d3 = new JLabel("Date: " + depFlight.getDepartureDate().substring(0, depFlight.getDepartureDate().length()-11));
+            JLabel d3 = new JLabel("Date: " + depFlight.getDepartureLocalDate().toString());
             JLabel d4 = new JLabel("Time: " + depFlight.getDepartureTime() + " - " + depFlight.getArrivalTime());
             dp.add(d1);
             dp.add(Box.createVerticalStrut(10));
@@ -275,7 +312,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 Flight returnFlight = booking.getReturnFlight();
                 JLabel r1 = new JLabel("<html><u>Return Flight</u></html>");
                 JLabel r2 = new JLabel(returnFlight.getDepartureAirport() + " to " + returnFlight.getArrivalAirport());
-                JLabel r3 = new JLabel("Date: " + returnFlight.getDepartureDate().substring(0, returnFlight.getDepartureDate().length()-11));
+                JLabel r3 = new JLabel("Date: " + returnFlight.getDepartureLocalDate().toString());
                 JLabel r4 = new JLabel("Time: " + returnFlight.getDepartureTime() + " - " + returnFlight.getArrivalTime());
                 rp.add(r1);
                 rp.add(Box.createVerticalStrut(10));

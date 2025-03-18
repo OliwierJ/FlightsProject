@@ -65,7 +65,7 @@ public final class Generator extends DBConnectivity {
                 boolean flightFound = false;
                 do {
                     depFlight = new Flight(Integer.parseInt(flights[r.nextInt(flights.length)][0]));
-                    String[][] returnFlights = getMultipleRows(connectAndExecuteQuery("SELECT flight_id FROM flight WHERE departure_airport='"+depFlight.getArrivalAirport()+"' AND arrival_airport='"+depFlight.getDepartureAirport()+"' AND departure_time>'"+depFlight.getArrivalDate()+"'"));
+                    String[][] returnFlights = getMultipleRows(connectAndExecuteQuery("SELECT flight_id FROM flight WHERE departure_airport='"+depFlight.getArrivalAirport()+"' AND arrival_airport='"+depFlight.getDepartureAirport()+"' AND departure_time>'"+depFlight.getArrivalLocalDate()+"'"));
                     if (returnFlights.length>0) {
                         returnFlight = new Flight(Integer.parseInt(returnFlights[r.nextInt(returnFlights.length)][0]));
                         b.setReturnFlight(returnFlight);
@@ -163,5 +163,10 @@ public final class Generator extends DBConnectivity {
     @Override
     protected void updateDatabase() {
         throw new UnsupportedOperationException("Operation not supported.");
+    }
+
+    public static void main(String[] args) throws SQLException {
+        Generator g = new Generator();
+        g.generateBookings(1);
     }
 }

@@ -2,8 +2,10 @@ package com.flights.objects;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalTime;
 
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
@@ -12,8 +14,8 @@ public class Flight extends DBConnectivity {
     private int flightID;
     private String departureAirport;
     private String arrivalAirport;
-    private Timestamp departureTime;
-    private Timestamp arrivalTime;
+    private LocalDateTime departureTime;
+    private LocalDateTime arrivalTime;
     private Aircraft aircraft;
     private double basePrice;
 
@@ -24,8 +26,9 @@ public class Flight extends DBConnectivity {
             this.flightID = flightID;
             this.departureAirport = result[0];
             this.arrivalAirport = result[1];
-            this.departureTime = Timestamp.valueOf(result[2]);
-            this.arrivalTime = Timestamp.valueOf(result[3]);
+            this.departureTime = Timestamp.valueOf(result[2]).toLocalDateTime();
+            this.arrivalTime = Timestamp.valueOf(result[3]).toLocalDateTime();
+
             setAircraft(result[4]);
             this.basePrice = Double.parseDouble(result[5]);
         } catch (SQLException e) {
@@ -42,8 +45,8 @@ public class Flight extends DBConnectivity {
             this.departureAirport = departureAirport;
             this.arrivalAirport = arrivalAirport;
             this.flightID = Integer.parseInt(result[0]);
-            this.departureTime = Timestamp.valueOf(result[1]);
-            this.arrivalTime = Timestamp.valueOf(result[2]);
+            this.departureTime = Timestamp.valueOf(result[1]).toLocalDateTime();
+            this.arrivalTime = Timestamp.valueOf(result[2]).toLocalDateTime();
             setAircraft(result[3]);
             this.basePrice = Double.parseDouble(result[4]);
         } catch (SQLException e) {
@@ -73,24 +76,35 @@ public class Flight extends DBConnectivity {
     }
 
     public String getDepartureTime() {
-        LocalDateTime t = departureTime.toLocalDateTime();
-        String str = t.getHour() + ":";
-        str = t.getMinute() < 10 ? str + "0" + t.getMinute() : str + t.getMinute();
-        return str;
+        return departureTime.toLocalTime().toString();
     }
 
     public String getArrivalTime() {
-        LocalDateTime t = arrivalTime.toLocalDateTime();
-        String str = t.getHour() + ":";
-        str = t.getMinute() < 10 ? str + "0" + t.getMinute() : str + t.getMinute();
-        return str;
+        return arrivalTime.toLocalTime().toString();
     }
 
-    public String getDepartureDate() {
-        return departureTime.toString();
+    public LocalTime getDepartureLocalTime() {
+        return departureTime.toLocalTime();
     }
-    public String getArrivalDate() {
-        return arrivalTime.toString();
+
+    public LocalTime getArrivalLocalTime() {
+        return arrivalTime.toLocalTime();
+    }
+
+    public LocalDateTime getDepartureLocalDateTime() {
+        return departureTime;
+    }
+
+    public LocalDateTime getArrivalLocalDateTime() {
+        return arrivalTime;
+    }
+
+    public LocalDate getDepartureLocalDate() {
+        return departureTime.toLocalDate();
+    }
+
+    public LocalDate getArrivalLocalDate() {
+        return arrivalTime.toLocalDate();
     }
 
     public Aircraft getAircraft() {
@@ -105,13 +119,8 @@ public class Flight extends DBConnectivity {
         return basePrice;
     }
 
-    public double getFlightDuration() {
-        // Turn the Timestamp from sql to localDateTime
-        LocalDateTime d1 = departureTime.toLocalDateTime();
-        LocalDateTime d2 = arrivalTime.toLocalDateTime();
-
-        // ChronoUnit (???) is a standard for Time units. Between will return the difference between the two times
-        return (double) ChronoUnit.MINUTES.between(d1,d2);
+    public int getFlightDuration() {
+        return (int) Duration.between(departureTime, arrivalTime).toMinutes();
 
     }
 
@@ -136,13 +145,13 @@ public class Flight extends DBConnectivity {
                 '}';
     }
 
-    // copied from deleted DBUtil class
     public static String[][] getFlightInfo(String dep, String arr) throws SQLException {
         return getMultipleRows(connectAndExecuteQuery("SELECT * FROM flight WHERE departure_airport='"+dep+"' AND arrival_airport='"+arr+"'"));
     }
 
     @Override
     protected void updateDatabase() {
+        throw new UnsupportedOperationException("Can't update flights database!");
         // empty, nothing needs to ever be updated in flight or aircraft, for now
     }
 }

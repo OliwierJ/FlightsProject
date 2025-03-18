@@ -1,6 +1,5 @@
 package com.flights.gui;
 
-
 import com.flights.objects.Flight;
 import com.flights.util.FlightsConstants;
 import javax.swing.*;
@@ -9,29 +8,23 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Calendar;
-import java.util.Date;
-
+import java.time.LocalDate;
 
 public class FlightSelection extends JPanel implements FlightsConstants {
-    static JFrame frame = new JFrame();
-    final int[] selectedDateIndex = {0};
-    JLabel departureLabel = new JLabel("Departure Flight");
-    int dateWidth = 125;
-    int dateCount = 25;
-    JLabel returnLabel = new JLabel("Return Flight");
-    int[] passengerTypes;
-    SelectedFlight selectedFlightR;
+    private final int[] selectedDateIndex = {0};
+    private final int dateWidth = 125;
+    private final int dateCount = 25;
+    private final int[] passengerTypes;
+    private SelectedFlight selectedFlightR;
 
     public FlightSelection(Flight defaultFlight, boolean showReturns, String returnFlightDate, int[] passArray) {
         setPreferredSize(new Dimension(1300, 800));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         this.passengerTypes = passArray;
-        departureLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        JLabel departureLabel = new JLabel("Departure Flight");
+        departureLabel.setFont(ARIAL20);
         departureLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         departureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -39,11 +32,7 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         datesBox.setMaximumSize(new Dimension(900, 90));
         datesBox.setLayout(new BoxLayout(datesBox, BoxLayout.X_AXIS));
 
-        // Dublin Barcelona 2024-12-7
-        System.out.println(defaultFlight.getDepartureDate());
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date convertedStartDate = getParsedDate(defaultFlight.getDepartureDate(), sdf);
+        LocalDate startDate = defaultFlight.getDepartureLocalDate();
 
         JScrollPane datesScroller = new DatesScroller(datesBox);
         SelectedFlight selectedFlight = new SelectedFlight(defaultFlight);
@@ -52,15 +41,13 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         Flight[] differentFlights = new Flight[dateCount];
         int index = 0;
         for (int j = -12; j <= 12; j++) {
-
-            String newDate = getChangedDate(convertedStartDate, j);
+            LocalDate nextDate = startDate.plusDays(j);
             Flight f = null;
             try {
-
-                f = new Flight(defaultFlight.getDepartureAirport(), defaultFlight.getArrivalAirport(), newDate);
+                f = new Flight(defaultFlight.getDepartureAirport(), defaultFlight.getArrivalAirport(), nextDate.toString());
             } catch (Exception ignored) {}
             differentFlights[index] = f;
-            date[index] = new DateSelections(f, dateWidth, newDate);
+            date[index] = new DateSelections(f, dateWidth, nextDate.toString());
             int finalI = index;
             date[index].addMouseListener(new MouseAdapter() {
 
@@ -102,7 +89,8 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         add(selectedFlight);
 
         if (showReturns) {
-            returnLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            JLabel returnLabel = new JLabel("Return Flight");
+            returnLabel.setFont(ARIAL20);
             returnLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             returnLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -111,9 +99,9 @@ public class FlightSelection extends JPanel implements FlightsConstants {
             returnDatesBox.setLayout(new BoxLayout(returnDatesBox, BoxLayout.X_AXIS));
 
             Flight defaultFlightReturn;
-            defaultFlightReturn = new Flight(defaultFlight.getArrivalAirport(), defaultFlight.getDepartureAirport(), returnFlightDate );
+            defaultFlightReturn = new Flight(defaultFlight.getArrivalAirport(), defaultFlight.getDepartureAirport(), returnFlightDate);
 
-            Date convertedEndDate = getParsedDate(returnFlightDate,sdf);
+            LocalDate returnStartDate = LocalDate.parse(returnFlightDate);
 
             JScrollPane datesScrollerR = new DatesScroller(returnDatesBox);
             selectedFlightR = new SelectedFlight(defaultFlightReturn);
@@ -122,15 +110,14 @@ public class FlightSelection extends JPanel implements FlightsConstants {
             Flight[] differentFlightsR = new Flight[dateCount];
             int index2 = 0;
             for (int j = -12; j <= 12; j++) {
-
-                String newDate = getChangedDate(convertedEndDate, j);
+                LocalDate nextReturnDate = returnStartDate.plusDays(j);
                 Flight f = null;
                 try {
-                    f = new Flight(defaultFlight.getArrivalAirport(), defaultFlight.getDepartureAirport(), newDate);
+                    f = new Flight(defaultFlight.getArrivalAirport(), defaultFlight.getDepartureAirport(), nextReturnDate.toString());
                     differentFlightsR[index2] = f;
                 } catch (Exception ignored) {
                 }
-                returnDate[index2] = new DateSelections(f, dateWidth, newDate);
+                returnDate[index2] = new DateSelections(f, dateWidth, nextReturnDate.toString());
                 int finalI = index2;
                 returnDate[index2].addMouseListener(new MouseAdapter() {
 
@@ -143,7 +130,6 @@ public class FlightSelection extends JPanel implements FlightsConstants {
                         selectedDateIndex[0] = finalI;
                         if (differentFlightsR[selectedDateIndex[0]] != null) {
                             SwingUtilities.invokeLater(() -> selectedFlightR.changeFlight(differentFlightsR[selectedDateIndex[0]]));
-
                         }
                     }
 
@@ -202,34 +188,16 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         scrollBar.setValue(centerValue);
     }
 
-    private Date getParsedDate(String unformattedDate, SimpleDateFormat sdf) {
-        try {
-            return sdf.parse(unformattedDate);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private String getChangedDate(Date date, int j) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, j);
-        return sdf.format(cal.getTime());
-    }
-
     private static class PriceAndSelectBtn extends JPanel {
-        JLabel priceLabel = new JLabel("Starting from ");
-        JLabel flightPriceLabel = new JLabel("€65");
-        JButton selectFlightBtn = new JButton("Select");
-
-        public PriceAndSelectBtn(Flight f) {
-            super();
+        PriceAndSelectBtn(Flight f) {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setMaximumSize(new Dimension(250, 175));
             setBackground(SEAGREEN);
             setBorder(BorderFactory.createEmptyBorder(12, 5, 5, 5));
+
+            JLabel priceLabel = new JLabel("Starting from ");
+            JLabel flightPriceLabel = new JLabel("€65");
+            JButton selectFlightBtn = new JButton("Select");
 
             priceLabel.setFont(new Font("Arial", Font.BOLD, 15));
             priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -254,22 +222,18 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         }
     }
 
-    static class TimeAndPlacePanel extends JPanel {
-        JLabel timeLabel;
-        JLabel place;
-
-        public TimeAndPlacePanel(Flight f, boolean isDep) {
-            super();
-            this.setBackground(Color.WHITE);
-            this.setMaximumSize(new Dimension(200, 175));
-            this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    private static class TimeAndPlacePanel extends JPanel {
+        TimeAndPlacePanel(Flight f, boolean isDep) {
+            setBackground(Color.WHITE);
+            setMaximumSize(new Dimension(200, 175));
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
             // absolutely disgusting ternary statement, but it saves on so many lines so idc
-            timeLabel = new JLabel(isDep ? f.getDepartureTime() : f.getArrivalTime());
+            JLabel timeLabel = new JLabel(isDep ? f.getDepartureTime() : f.getArrivalTime());
             timeLabel.setFont(new Font("Arial", Font.BOLD, 40));
             timeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            place = new JLabel(isDep ? f.getDepartureAirport() : f.getArrivalAirport());
+            JLabel place = new JLabel(isDep ? f.getDepartureAirport() : f.getArrivalAirport());
             place.setFont(new Font("Arial", Font.BOLD, 30));
             place.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -279,26 +243,22 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         }
     }
 
-    static class FlightDurationPanel extends JPanel {
-        JLabel line;
-        JLabel durationLabel = new JLabel();
-
-        public FlightDurationPanel(Flight f1) {
-            super();
+    private static class FlightDurationPanel extends JPanel {
+        FlightDurationPanel(Flight f1) {
             setBackground(Color.WHITE);
             setMaximumSize(new Dimension(250, 175));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-            line = new JLabel("________");
+            JLabel line = new JLabel("________");
             line.setFont(new Font("Arial", Font.BOLD, 50));
             line.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            int duration = (int) f1.getFlightDuration();
+            int duration = f1.getFlightDuration();
 
+            JLabel durationLabel = new JLabel();
             durationLabel.setText(Duration.ofMinutes(duration).toString().substring(2));
-
             durationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            durationLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            durationLabel.setFont(ARIAL20);
 
             add(Box.createVerticalStrut(15));
             add(line);
@@ -309,19 +269,14 @@ public class FlightSelection extends JPanel implements FlightsConstants {
     }
 
     private static class SelectedFlight extends JPanel {
-        JPanel priceAndSelectPanel;
-        JPanel depTimeAndPlace;
-        JPanel flightDuration;
-        JPanel arrTimeAndPlace;
         Flight flight;
 
-        public SelectedFlight(Flight f) {
-            super();
+        SelectedFlight(Flight f) {
             flight = f;
             setBackground(Color.WHITE);
-            this.setBorder(BorderFactory.createLineBorder(Color.lightGray, 2));
-            this.setMaximumSize(new Dimension(900, 175));
-            this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            setBorder(BorderFactory.createLineBorder(Color.lightGray, 2));
+            setMaximumSize(new Dimension(900, 175));
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
             addSelectedFlightsComponents(f);
         }
@@ -337,10 +292,10 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         }
 
         private void addSelectedFlightsComponents(Flight f) {
-            priceAndSelectPanel = new PriceAndSelectBtn(f);
-            depTimeAndPlace = new TimeAndPlacePanel(f, true);
-            flightDuration = new FlightDurationPanel(f);
-            arrTimeAndPlace = new TimeAndPlacePanel(f, false);
+            JPanel priceAndSelectPanel = new PriceAndSelectBtn(f);
+            JPanel depTimeAndPlace = new TimeAndPlacePanel(f, true);
+            JPanel flightDuration = new FlightDurationPanel(f);
+            JPanel arrTimeAndPlace = new TimeAndPlacePanel(f, false);
             add(priceAndSelectPanel);
             add(depTimeAndPlace);
             add(flightDuration);
@@ -348,33 +303,29 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         }
     }
 
-    static class DateSelections extends JPanel {
-        JLabel dateLabel;
-        JLabel costLabel;
-        int height = 85;
-
-        public DateSelections(Flight f, int dateWidth, String newDate) {
-            super();
+    private static class DateSelections extends JPanel {
+        DateSelections(Flight f, int dateWidth, String newDate) {
+            int height = 85;
             setMaximumSize(new Dimension(dateWidth, height));
             setMinimumSize(new Dimension(dateWidth, height));
             setPreferredSize(new Dimension(dateWidth, height));
             setBorder(BorderFactory.createLineBorder(Color.black, 2));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setBackground(Color.white);
-            dateLabel = new JLabel(newDate);
-            dateLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+            JLabel dateLabel = new JLabel(newDate);
+            dateLabel.setFont(ARIAL20PLAIN);
             dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            costLabel = new JLabel(f == null ? "" : "€"+f.getBasePrice());
+            JLabel costLabel = new JLabel(f == null ? "" : "€"+f.getBasePrice());
             costLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            costLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+            costLabel.setFont(ARIAL20PLAIN);
 
             add(dateLabel);
             add(costLabel);
         }
     }
 
-    class DatesScroller extends JScrollPane {
-        public DatesScroller(Container c) {
+    private class DatesScroller extends JScrollPane {
+        DatesScroller(Container c) {
             super(c);
             JScrollBar hBar = this.getHorizontalScrollBar();
             this.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
