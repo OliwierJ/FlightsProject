@@ -1,6 +1,7 @@
 package com.flights.gui;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
@@ -28,6 +29,9 @@ public class MyBookingMenu extends JPanel implements FlightsConstants{
                 JErrorDialog.showWarning("Invalid booking details!");
             }
         });
+
+        bookingID.registerKeyboardAction(e -> enter.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), WHEN_FOCUSED);
+        email.registerKeyboardAction(e -> enter.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), WHEN_FOCUSED);
         
         bookingLabel.setFont(ARIAL20);
         emailLabel.setFont(ARIAL20);

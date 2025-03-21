@@ -164,9 +164,4 @@ public final class Generator extends DBConnectivity {
     protected void updateDatabase() {
         throw new UnsupportedOperationException("Operation not supported.");
     }
-
-    public static void main(String[] args) throws SQLException {
-        Generator g = new Generator();
-        g.generateBookings(1);
-    }
 }

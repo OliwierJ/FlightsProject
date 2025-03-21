@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Payment {
     public boolean checkNo(long n) {
-        return n >= 1000_0000_0000_0000l && n <= 9999_9999_9999_9999l;
+        return n >= 1000_0000_0000_0000L && n <= 9999_9999_9999_9999L;
     }
 
     public boolean checkCVV(int n) {
@@ -12,7 +12,7 @@ public class Payment {
     }
 
     public boolean checkExpiryDate(int m, int y) {
-        LocalDate date = LocalDate.of(Integer.valueOf("20"+y),m,1);
+        LocalDate date = LocalDate.of(Integer.parseInt("20"+y),m,1);
         return date.isAfter(LocalDate.now());
     }
 

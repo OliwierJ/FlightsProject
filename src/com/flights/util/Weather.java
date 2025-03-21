@@ -2,7 +2,6 @@ package com.flights.util;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,29 +11,39 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Scanner;
-import java.io.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Weather {
-    private LocalTime[] hours = new LocalTime[96];
-    private float[] temperatures = new float[96];
-    private float[] precipitations = new float[96];
-    private float[] windSpeeds = new float[96];
-    private float[] windGusts = new float[96];
-    private int[] weatherCodes = new int[96];
-    private static String[][] locations = {
-        {"Dublin", "53.3331", "-6.2489"},
-        {"Barcelona", "41.2983", "2.0800"}
+    private final LocalTime[] hours = new LocalTime[96];
+    private final float[] temperatures = new float[96];
+    private final float[] precipitations = new float[96];
+    private final float[] windSpeeds = new float[96];
+    private final float[] windGusts = new float[96];
+    private final int[] weatherCodes = new int[96];
+    private static final String[][] LOCATIONS = {
+        {"Dublin", "53.4256", "-6.2573"},
+        {"Barcelona", "41.2983", "2.0800"},
+        {"Paris", "49.0078", "2.5507"},
+        {"London", "51.4679", "-0.4550"},
+        {"Rome", "41.8034", "12.2519"},
+        {"Warsaw", "52.1648", "20.9691"},
+        {"Berlin", "52.3650", "13.5010"}
     };
 
+    /**
+     * Construct a new weather object
+     * @param d the date to collect weather data from
+     * @param location the location to use (not coordinates)
+     * @throws IllegalArgumentException if location is not one of the 7 preset locations
+     */
     public Weather(LocalDate d, String location) {
         try {
             String date = d.toString();
             String latitude = "";
             String longitude = "";
-            for (String[] entry: locations) {
+            for (String[] entry: LOCATIONS) {
                 if (location.equalsIgnoreCase(entry[0])) {
                     latitude = entry[1];
                     longitude = entry[2];
@@ -42,7 +51,7 @@ public class Weather {
                 }
             }
             if (latitude.isEmpty() || longitude.isEmpty()) {
-                throw new IllegalArgumentException("Error while retrieving location data");
+                throw new IllegalArgumentException("Entered location is invalid");
             }
             URI uri = new URI("https://api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&timezone=GMT&start_date="+date+"&end_date="+date);
             URL apiURL = uri.toURL();
@@ -77,50 +86,20 @@ public class Weather {
         }
     }
 
-    // Testing purposes
-    public String printData(String time) {
-        for (int i = 0; i < hours.length; i++) {
-            if (hours[i].equals(time)) {
-                return "Weather code: "+weatherCodes[i]+", wind speed: "+windSpeeds[i]+", gusts: "+windGusts[i]+", precipitation: "+precipitations[i]+", temperature degrees C: "+temperatures[i];
-            }
-        }
-        return null;
-    }
-
-    public void printData(LocalTime l) {
-        l = roundTime(l);
-        for (int i = 0; i < hours.length; i++) {
-            if (hours[i].equals(l)) {
-                System.out.println(hours[i].toString());
-                System.out.println("Weather code: "+weatherCodes[i]+", wind speed: "+windSpeeds[i]+", gusts: "+windGusts[i]+", precipitation: "+precipitations[i]+", temperature degrees C: "+temperatures[i]);
-            }
-        }
-    }
-
-    public float[] getFlightData(LocalTime l) {
-        l = roundTime(l);
+    /**
+     * Gets the weather data
+     * @param l the time to get the weather data from
+     * @return a float[] containing the following in this exact order: weatherCode, windSpeed, windGust, precipitation, temperature. Returns empty array if invalid time
+     */
+    public float[] getWeatherData(LocalTime l) {
+        int minutes = l.toSecondOfDay() / 60;
+        int rounded = (minutes / 15) * 15;
+        l = LocalTime.ofSecondOfDay(rounded * 60);
         for (int i = 0; i < hours.length; i++) {
             if (hours[i].equals(l)) {
                 return new float[] {weatherCodes[i], windSpeeds[i], windGusts[i], precipitations[i], temperatures[i]};
             } 
         }
-        return null;
-    }
-
-    private LocalTime roundTime(LocalTime l) {
-        int minutes = l.toSecondOfDay() / 60;
-        int rounded = (minutes / 15) * 15;
-        return LocalTime.ofSecondOfDay(rounded * 60);
-    }
-
-    public void getWeatherStatus() {
-        
-    }
-
-    // TODO finish off class testing purposes
-    public static void main(String[] args) {
-        Weather w = new Weather(LocalDate.of(2025, 03, 19), "Dublin");
-        w.printData(LocalTime.of(11, 29));
-        // weather.printData("2025-01-24T10:15");
+        return new float[5];
     }
 }

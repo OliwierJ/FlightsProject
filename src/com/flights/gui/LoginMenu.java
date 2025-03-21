@@ -7,6 +7,7 @@ import com.flights.util.JErrorDialog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class LoginMenu extends JPanel implements FlightsConstants {
     public LoginMenu() {
@@ -26,6 +27,9 @@ public class LoginMenu extends JPanel implements FlightsConstants {
                 JErrorDialog.showWarning("Invalid username and/or password!");
             }
         });
+
+        usernameField.registerKeyboardAction(e -> enter.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), WHEN_FOCUSED);
+        passwordField.registerKeyboardAction(e -> enter.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), WHEN_FOCUSED);
         
         username.setFont(ARIAL20);
         password.setFont(ARIAL20);

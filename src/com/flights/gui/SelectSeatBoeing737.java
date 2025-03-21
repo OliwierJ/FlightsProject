@@ -1,20 +1,21 @@
 package com.flights.gui;
 
 import com.flights.gui.components.BackgroundImagePanel;
+import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Passenger;
 import com.flights.objects.Seat;
+import com.flights.util.FlightsConstants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class SelectSeatBoeing737 extends JPanel {
-
-    char[] seatLetters = {'A', 'B', 'C', 'D', 'E', 'F'};
-    String selectedSeat;
-    Seat[] seatsFromDB;
+public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
+    private final char[] seatLetters = {'A', 'B', 'C', 'D', 'E', 'F'};
+    private String selectedSeat;
+    private final Seat[] seatsFromDB;
 
     public SelectSeatBoeing737(Seat[] seatsFromDB, Passenger p, boolean isReturn) {
         this.seatsFromDB = seatsFromDB;
@@ -28,18 +29,12 @@ public class SelectSeatBoeing737 extends JPanel {
         BackgroundImagePanel image = new BackgroundImagePanel("src/com/flights/gui/images/boeing 737 800 seat map.png");
         image.setAlignmentX(Component.CENTER_ALIGNMENT);
         image.setLayout(new BoxLayout(image, BoxLayout.Y_AXIS));
-
-        int imgWidth = 600;
-        int imgHeight = 3200;
-        image.setPreferredSize(new Dimension(imgWidth, imgHeight));
-        image.setMaximumSize(new Dimension(imgWidth, imgHeight));
-        image.setMinimumSize(new Dimension(imgWidth, imgHeight));
+        setEqualSizes(image, 600, 3200);
 
         JPanel seatsPanel = new JPanel();
         seatsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         seatsPanel.setLayout(new BoxLayout(seatsPanel, BoxLayout.X_AXIS));
         setEqualSizes(seatsPanel, 400, 2400);
-        seatsPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
         seatsPanel.setOpaque(false);
 
         int seatsWidth = 150;
@@ -184,16 +179,15 @@ public class SelectSeatBoeing737 extends JPanel {
 
         JLabel text = new JLabel("Select your seats");
         text.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        text.setFont(MainWindow.ARIAL20);
+        text.setFont(ARIAL20);
         text.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 
         mainPanel.add(text);
         mainPanel.add(image);
-        JButton confirmButton = new JButton("Confirm");
+        JButton confirmButton = new JSubmitButton("Confirm");
+        confirmButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         confirmButton.addActionListener(e -> {
             if (selectedSeat != null) {
-                System.out.println(selectedSeat);
                 for (Seat seat : seatsFromDB) {
                     if (seat.getSeatNo().equals(selectedSeat)) {
                         if (isReturn) {
@@ -209,7 +203,9 @@ public class SelectSeatBoeing737 extends JPanel {
                 JOptionPane.showMessageDialog(this, "Please select a seat");
             }
         });
+        mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(confirmButton);
+        mainPanel.add(Box.createVerticalStrut(10));
 
         JScrollPane scrollPane = new JScrollPane(mainPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(30);
@@ -259,9 +255,7 @@ public class SelectSeatBoeing737 extends JPanel {
         private SeatPanel(SeatPanel[] seats, int i, String name) {
             int individualSeatHeight = 72;
             this.name = name;
-            setPreferredSize(new Dimension(49, individualSeatHeight));
-            setMaximumSize(new Dimension(49, individualSeatHeight));
-            setMinimumSize(new Dimension(49, individualSeatHeight));
+            setEqualSizes(this, 49, individualSeatHeight);
             setLayout(new BorderLayout());
             setOpaque(false);
             transparentPanel.setOpaque(false);
@@ -286,7 +280,6 @@ public class SelectSeatBoeing737 extends JPanel {
                 public void mouseClicked(MouseEvent e) {}
                 public void mousePressed(MouseEvent e) {}
                 public void mouseReleased(MouseEvent e) {
-                    System.out.println("mousePressed" + name + " isbooked " + isBooked);
                     if (isBooked) {
                         return;
                     }

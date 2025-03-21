@@ -1,12 +1,10 @@
 package com.flights.gui;
 
-import com.flights.Main;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.gui.components.RoundButton;
 import com.flights.objects.Booking;
 import com.flights.util.FlightsConstants;
-import com.flights.util.JErrorDialog;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.gui.components.BackgroundImagePanel;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Booking;
@@ -44,7 +45,8 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setHorizontalAlignment(SwingConstants.CENTER);
 
-        back.setEnabled(false);
+        back.setEnabled(currentPassenger > 0);
+        next.setEnabled(currentPassenger != booking.getPassengerCount()-1);
         back.addActionListener(this);
         next.addActionListener(this);
         cancel.addActionListener(this);
@@ -81,7 +83,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
         JLabel p2 = (JLabel) cp.getComponent(2);
         JLabel p3 = (JLabel) cp.getComponent(3);
         String p2String;
-        if (p.getTitle() == null || p.getTitle().isEmpty()) {
+        if (p.getTitle() == null || p.getTitle().isEmpty() || p.getTitle().equals("null")) {
             p2String = p.getName() + " " + p.getSurname();
         } else {
             p2String = p.getTitle() + " " + p.getName() + " " + p.getSurname();
@@ -133,47 +135,46 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 MainWindow.createAndShowGUI(new MainWindow());
             }
         } else if (e.getSource() == weather) {
-            JPanel popup = new JPanel();
-            popup.setLayout(new BorderLayout());
-            
-            JLabel title = new JLabel("Weather");
-            popup.add(title, BorderLayout.NORTH);
-
             Flight f = booking.getDepartureFlight();
             Flight f1 = booking.getReturnFlight();
-
             if (f.getDepartureLocalDate().isAfter(LocalDate.now().plusDays(14))) {
                 JOptionPane.showMessageDialog(MainWindow.frame, "Sorry, can't show weather more than 14 days into the future.\nPlease try again at a future time closer to the departure time of your flight", "Check weather", JOptionPane.PLAIN_MESSAGE);
             } else {
-                Weather w = new Weather(f.getDepartureLocalDate(), f.getDepartureAirport());
-                float[] weatherData = w.getFlightData(f.getDepartureLocalTime());
-                JPanel p1 = new JPanel();
-                p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
-                p1.add(new JLabel("Weather code: "+weatherData[0]));
-                p1.add(new JLabel("Wind speed: "+weatherData[1]));
-                p1.add(new JLabel("Wind gusts: "+weatherData[2]));
-                p1.add(new JLabel("Precipitation: "+weatherData[3]));
-                p1.add(new JLabel("Temperature: "+weatherData[4]));
-                popup.add(p1, BorderLayout.WEST);
+                JDialog dialog = new JDialog(MainWindow.frame, "Check weather", true);
+                JPanel popup = new JPanel();
+                popup.setLayout(new BoxLayout(popup, BoxLayout.Y_AXIS));
+                popup.setBorder(new EmptyBorder(10,10,10,10));
+                popup.setBackground(TRUEBLUE);
+
+                JLabel title = new JLabel("Weather");
+                title.setAlignmentX(Component.CENTER_ALIGNMENT);
+                title.setHorizontalAlignment(SwingConstants.CENTER);
+                title.setFont(new Font("Arial", Font.BOLD, 32));
+
+                JButton ok = new JSubmitButton("OK");
+                ok.setAlignmentX(CENTER_ALIGNMENT);
+                ok.addActionListener(e1 -> dialog.dispose());
+
+                popup.add(title);
+                popup.add(new WeatherPanel(f, true));
                 if (f1 != null) {
-                    w = new Weather(f1.getDepartureLocalDate(), f1.getDepartureAirport());
-                    weatherData = w.getFlightData(f1.getDepartureLocalTime());
-                    JPanel p2 = new JPanel();
-                    p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
-                    p2.add(new JLabel("Weather code: "+weatherData[0]));
-                    p2.add(new JLabel("Wind speed: "+weatherData[1]));
-                    p2.add(new JLabel("Wind gusts: "+weatherData[2]));
-                    p2.add(new JLabel("Precipitation: "+weatherData[3]));
-                    p2.add(new JLabel("Temperature: "+weatherData[4]));
-                    popup.add(p2, BorderLayout.EAST);
+                    if (f1.getDepartureLocalDate().isAfter(LocalDate.now().plusDays(14))) {
+                        JOptionPane.showMessageDialog(MainWindow.frame, "Sorry, can't show return flight weather as it is more than 14 days into the future.\nOnly showing departure flight weather at this time.", "Check weather", JOptionPane.PLAIN_MESSAGE);
+                    } else {
+                        popup.add(new WeatherPanel(f1, false));
+                    }
                 }
-                JOptionPane.showMessageDialog(MainWindow.frame, popup, "Check weather", JOptionPane.PLAIN_MESSAGE);
+                popup.add(Box.createVerticalStrut(10));
+                popup.add(ok);
+                setAllFonts(popup);
+
+                dialog.setIconImage(new ImageIcon("src/com/flights/gui/images/weatherAppLogo.png").getImage());
+                dialog.add(popup);
+                dialog.pack();
+                dialog.setLocationRelativeTo(MainWindow.frame); // Centers the dialog on the frame
+                dialog.setVisible(true);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new ViewBookingMenu(new Booking("522558", "govie@setu.ie"))); // TODO debug delete later
     }
 
     private void setSizes(JPanel p, int width, int height) {
@@ -354,7 +355,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
                 JLabel p1 = new JLabel("Passenger #"+(i+1)+":");
                 String p2String;
-                if (p.getTitle() == null || p.getTitle().isEmpty()) {
+                if (p.getTitle() == null || p.getTitle().isEmpty() || p.getTitle().equals("null")) {
                     p2String = p.getName() + " " + p.getSurname();
                 } else {
                     p2String = p.getTitle() + " " + p.getName() + " " + p.getSurname();
@@ -452,5 +453,74 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
             add(title, BorderLayout.NORTH);
             add(content, BorderLayout.CENTER);
         }
+    }
+
+    private class WeatherPanel extends JPanel {
+        WeatherPanel(Flight f, boolean isDeparture) {
+            setLayout(new BorderLayout());
+            JLabel l;
+            if (isDeparture) {
+                l = new JLabel("<html><u>Departure</u></html>");
+            } else {
+                l = new JLabel("<html><u>Arrival</u></html>");
+            }
+            l.setAlignmentX(Component.CENTER_ALIGNMENT);
+            l.setHorizontalAlignment(SwingConstants.CENTER);
+            l.setFont(new Font("Arial", Font.BOLD, 22));
+            l.setBorder(new EmptyBorder(5,0,5,0));
+            add(l, BorderLayout.NORTH);
+            add(createPanel(f, true), BorderLayout.WEST);
+            add(createPanel(f, false), BorderLayout.EAST);
+            setOpaque(false);
+        }
+
+        private JPanel createPanel(Flight f, boolean isDeparture) {
+            JPanel p = new JPanel();
+            float[] weatherData;
+            JLabel l1;
+            if (isDeparture) {
+                Weather w = new Weather(f.getDepartureLocalDate(), f.getDepartureAirport());
+                weatherData = w.getWeatherData(f.getDepartureLocalTime());
+                l1 = new JLabel("<html><u>"+f.getDepartureAirport()+"</u></html>");
+                p.setBackground(ASPARAGUS);
+            } else {
+                Weather w = new Weather(f.getArrivalLocalDate(), f.getArrivalAirport());
+                weatherData = w.getWeatherData(f.getArrivalLocalTime());
+                l1 = new JLabel("<html><u>"+f.getArrivalAirport()+"</u></html>");
+                p.setBackground(APPLEGREEN);
+            }
+            BackgroundImagePanel b = switch ((int) weatherData[0]) {
+                case 0, 1 -> new BackgroundImagePanel("src/com/flights/gui/images/sun.png");
+                case 2 -> new BackgroundImagePanel("src/com/flights/gui/images/cloudy.png");
+                case 3 -> new BackgroundImagePanel("src/com/flights/gui/images/cloud.png");
+                case 45, 48 -> new BackgroundImagePanel("src/com/flights/gui/images/fog.png");
+                case 51, 53, 55, 56, 57 -> new BackgroundImagePanel("src/com/flights/gui/images/drizzle.png");
+                case 61, 63, 65, 80, 81, 82 -> new BackgroundImagePanel("src/com/flights/gui/images/rainy.png");
+                case 66, 67 -> new BackgroundImagePanel("src/com/flights/gui/images/freezerain.png");
+                case 71, 73, 75, 77, 85, 86 -> new BackgroundImagePanel("src/com/flights/gui/images/snowy.png");
+                case 95, 96, 99 -> new BackgroundImagePanel("src/com/flights/gui/images/storm.png");
+                default -> throw new IllegalStateException("Unexpected value: " + weatherData[0]);
+            };
+            setSizes(b, 75, 75);
+            b.setOpaque(false);
+
+            JPanel text = new JPanel();
+            text.add(l1);
+            text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
+            text.add(new JLabel(weatherData[4]+"°C"));
+            text.add(new JLabel("Precipitation: "+weatherData[3]+"mm"));
+            text.add(new JLabel("Wind speed (gusts):"));
+            text.add(new JLabel(weatherData[1]+"km/h ("+weatherData[2]+"km/h)"));
+            text.setOpaque(false);
+
+            p.add(b, BorderLayout.NORTH);
+            p.add(text, BorderLayout.CENTER);
+            p.setBorder(new EmptyBorder(15,10,15,10));
+            return p;
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> MainWindow.createAndShowGUI(new ViewBookingMenu(new Booking("522558", "govie@setu.ie")))); // TODO debug delete later
     }
 }
