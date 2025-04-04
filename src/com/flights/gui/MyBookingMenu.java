@@ -11,10 +11,13 @@ import com.flights.objects.Booking;
 import com.flights.util.FlightsConstants;
 import com.flights.util.JErrorDialog;
 
+import static com.flights.gui.MainWindow.frame;
+
 public class MyBookingMenu extends JPanel implements FlightsConstants{
     public MyBookingMenu() {
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
+        setPreferredSize(new Dimension(frame.getWidth(), frame.getHeight()));
+
 
         JPanel contentPanel = new JPanel();
         JTextField bookingID = new JTextField(15);

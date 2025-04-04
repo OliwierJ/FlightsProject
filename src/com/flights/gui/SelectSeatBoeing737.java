@@ -1,7 +1,6 @@
 package com.flights.gui;
 
 import com.flights.gui.components.BackgroundImagePanel;
-import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Passenger;
 import com.flights.objects.Seat;
@@ -179,15 +178,16 @@ public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
 
         JLabel text = new JLabel("Select your seats");
         text.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        text.setFont(ARIAL20);
+        text.setFont(MainWindow.ARIAL20);
         text.setAlignmentX(Component.CENTER_ALIGNMENT);
+
 
         mainPanel.add(text);
         mainPanel.add(image);
-        JButton confirmButton = new JSubmitButton("Confirm");
-        confirmButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JButton confirmButton = new JButton("Confirm");
         confirmButton.addActionListener(e -> {
             if (selectedSeat != null) {
+                System.out.println(selectedSeat);
                 for (Seat seat : seatsFromDB) {
                     if (seat.getSeatNo().equals(selectedSeat)) {
                         if (isReturn) {

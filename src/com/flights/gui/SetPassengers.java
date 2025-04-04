@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class SetPassengers extends JPanel implements FlightsConstants {
 
-    JPanel progressPanel;
+//    JPanel progressPanel;
     private final PassengerAdditionPanel[] passengersPanels = new PassengerAdditionPanel[6];
     private final ArrayList<Passenger> passengers = new ArrayList<>();
     private int count = 0;
@@ -94,7 +94,9 @@ public class SetPassengers extends JPanel implements FlightsConstants {
         });
 
         contentPanel.add(submitButton);
-        add(new JScrollPane(contentPanel), BorderLayout.CENTER);
+        JScrollPane sp = new JScrollPane(contentPanel);
+        sp.getVerticalScrollBar().setUnitIncrement(20);
+        add(sp, BorderLayout.CENTER);
     }
 
     private boolean verifyPassengerFields(PassengerAdditionPanel[] array) {

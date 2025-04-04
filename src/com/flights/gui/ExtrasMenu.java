@@ -14,9 +14,11 @@ import java.awt.event.ItemListener;
 public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener {
     JRadioButton yesButton;
     Booking b;
-
+    double price;
     public ExtrasMenu(Booking booking,double price) {
         this.b = booking;
+        this.price = price;
+
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
         add(new JTopBar(price), BorderLayout.NORTH);
@@ -118,6 +120,7 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         increase1.addActionListener(e -> {
             if (!b.get20kgluggage()) {
                 b.set20kgluggage(true);
+                updatePrice(39.99);
                 luggageCount.setText("1");
             } else {
                 JOptionPane.showMessageDialog(MainWindow.frame, "Max 20kg luggage count reached" , "Luggage limit", JOptionPane.INFORMATION_MESSAGE);
@@ -131,6 +134,7 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         decrease1.addActionListener(e -> {
             if (b.get20kgluggage()) {
                 b.set20kgluggage(false);
+                updatePrice(-39.99);
                 luggageCount.setText("0");
             }
         });
@@ -151,15 +155,22 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         luggagePanel.add(luggageAddPanel);
         luggagePanel.add(pricePanel);
         JButton submit = new JSubmitButton("Next");
-        submit.addActionListener(e -> {
-            System.out.println(b);
-        });
+        submit.setAlignmentX(Component.CENTER_ALIGNMENT);
+        submit.addActionListener(e -> MainWindow.createAndShowGUI(new PaymentMenu(booking, price)));
         mainPanel.add(Box.createVerticalStrut(50));
         mainPanel.add(priorityPanel);
         mainPanel.add(Box.createVerticalStrut(50));
         mainPanel.add(luggagePanel);
+        mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(submit);
         add(mainPanel, BorderLayout.CENTER);
+    }
+
+    private void updatePrice(double i) {
+        price += i;
+        if (b.getReturnFlight() != null) {
+            price += i;
+        }
     }
 
     public static void main(String[] args) {
