@@ -1,6 +1,8 @@
 package com.flights.gui;
 
+import com.flights.Main;
 import com.flights.gui.components.BackgroundImagePanel;
+import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Passenger;
 import com.flights.objects.Seat;
@@ -16,12 +18,12 @@ public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
     private String selectedSeat;
     private final Seat[] seatsFromDB;
 
-    public SelectSeatBoeing737(Seat[] seatsFromDB, Passenger p, boolean isReturn) {
+    public SelectSeatBoeing737(Seat[] seatsFromDB, Passenger p, boolean isReturn, double price) {
         this.seatsFromDB = seatsFromDB;
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
+        setPreferredSize(Main.getFrameSize());
         setLayout(new BorderLayout());
 
-        add(new JTopBar(), BorderLayout.NORTH);
+        add(new JTopBar(price), BorderLayout.NORTH);
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
@@ -184,10 +186,9 @@ public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
 
         mainPanel.add(text);
         mainPanel.add(image);
-        JButton confirmButton = new JButton("Confirm");
+        JButton confirmButton = new JSubmitButton("Confirm");
         confirmButton.addActionListener(e -> {
             if (selectedSeat != null) {
-                System.out.println(selectedSeat);
                 for (Seat seat : seatsFromDB) {
                     if (seat.getSeatNo().equals(selectedSeat)) {
                         if (isReturn) {
@@ -195,7 +196,7 @@ public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
                         } else {
                             p.setDepartureSeat(seat);
                         }
-                        MainWindow.returnToPreviousMenu();
+                        Main.returnToPreviousMenu();
                         break; // just in case
                     }
                 }
@@ -247,10 +248,10 @@ public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
     }
 
     private class SeatPanel extends JPanel {
-        JPanel transparentPanel = new TransparentPanel();
+        final JPanel transparentPanel = new TransparentPanel();
         boolean isSelected = false;
         boolean isBooked;
-        String name;
+        final String name;
 
         private SeatPanel(SeatPanel[] seats, int i, String name) {
             int individualSeatHeight = 72;

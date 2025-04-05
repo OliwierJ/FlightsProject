@@ -145,10 +145,6 @@ public class Flight extends DBConnectivity {
                 '}';
     }
 
-    public static String[][] getFlightInfo(String dep, String arr) throws SQLException {
-        return getMultipleRows(connectAndExecuteQuery("SELECT * FROM flight WHERE departure_airport='"+dep+"' AND arrival_airport='"+arr+"'"));
-    }
-
     @Override
     protected void updateDatabase() {
         throw new UnsupportedOperationException("Can't update flights database!");

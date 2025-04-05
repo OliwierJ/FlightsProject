@@ -53,7 +53,7 @@ public class Boeing737 extends Aircraft {
     }
 
     @Override
-    public JPanel renderSeats(Passenger p, boolean isReturn) {
-        return new SelectSeatBoeing737(getAllSeats(), p, isReturn);
+    public JPanel renderSeats(Passenger p, boolean isReturn, double price) {
+        return new SelectSeatBoeing737(getAllSeats(), p, isReturn, price);
     }
 }

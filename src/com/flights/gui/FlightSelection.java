@@ -1,4 +1,5 @@
 package com.flights.gui;
+import com.flights.Main;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Flight;
@@ -24,12 +25,13 @@ public class FlightSelection extends JPanel implements FlightsConstants {
     private final int dateWidth = 125;
     private final int[] passengerTypes;
     private SelectedFlight selectedFlightReturnPanel;
-    double depPrice = 0;
-    double retPrice = 0;
-    double price = 0;
+    private double depPrice = 0;
+    private double retPrice = 0;
+    private double price = 0;
     private Flight selectedFlight = null;
     private Flight selectedReturnFlight = null;
-    JTopBar top = new JTopBar();
+    private final JTopBar top = new JTopBar();
+
     /**
      * Constructs a FlightSelection panel with options for departure and return flights.
      *
@@ -38,10 +40,8 @@ public class FlightSelection extends JPanel implements FlightsConstants {
      * @param returnFlightDate The default return flight date.
      * @param passArray       Array representing passenger types.
      */
-
     public FlightSelection(Flight defaultFlight, boolean showReturns, String returnFlightDate, int[] passArray) {
-
-        setPreferredSize(new Dimension(1300, 800));
+        setPreferredSize(Main.getFrameSize());
         setLayout(new BorderLayout());
 
         this.passengerTypes = passArray;
@@ -50,7 +50,6 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         JPanel contentPanel = new JPanel();
 
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-//        contentPanel.setPreferredSize(new Dimension(1300, 800));
         JLabel departureLabel = new JLabel("Departure Flight");
         departureLabel.setFont(ARIAL20);
         departureLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -58,7 +57,6 @@ public class FlightSelection extends JPanel implements FlightsConstants {
 
         JPanel datesBox = new JPanel();
         datesBox.setMaximumSize(new Dimension(900, 90));
-//        datesBox.setPreferredSize(new Dimension(900, 90));
         datesBox.setMinimumSize(new Dimension(900, 90));
         datesBox.setLayout(new BoxLayout(datesBox, BoxLayout.X_AXIS));
 
@@ -220,13 +218,13 @@ public class FlightSelection extends JPanel implements FlightsConstants {
                     JErrorDialog.showWarning("Select flight first");
                     return;
                 }
-                MainWindow.createAndShowGUI(new FlightFareSelectionMenu(selectedFlight, null, passengerTypes, price));
+                Main.createAndShowGUI(new FlightFareSelectionMenu(selectedFlight, null, passengerTypes, price));
             } else {
                 if (selectedFlight == null || selectedReturnFlight == null) {
                     JErrorDialog.showWarning("Select both flights first");
                     return;
                 }
-                MainWindow.createAndShowGUI(new FlightFareSelectionMenu(selectedFlight, selectedReturnFlight, passengerTypes, price));
+                Main.createAndShowGUI(new FlightFareSelectionMenu(selectedFlight, selectedReturnFlight, passengerTypes, price));
             }
         });
         contentPanel.add(Box.createVerticalStrut(40));
@@ -288,23 +286,18 @@ public class FlightSelection extends JPanel implements FlightsConstants {
                     retPrice = f.getBasePrice();
                     price += retPrice;
                     top.updatePrice(price);
-                    System.out.println("selectedReturnFlight: " + selectedReturnFlight);
-
                 } else {
                     selectedFlight = f;
                     price -= depPrice;
                     depPrice = f.getBasePrice();
                     price += depPrice;
                     top.updatePrice(price);
-                    System.out.println("selectedFlight: " + selectedFlight);
                 }
             });
             add(priceLabel);
             add(flightPriceLabel);
             add(Box.createVerticalStrut(10));
             add(selectFlightBtn);
-
-
         }
     }
 
@@ -355,10 +348,7 @@ public class FlightSelection extends JPanel implements FlightsConstants {
     }
 
     private class SelectedFlight extends JPanel {
-        Flight flight;
-
         SelectedFlight(Flight f, boolean isReturn) {
-            flight = f;
             setBackground(Color.WHITE);
             setBorder(BorderFactory.createLineBorder(Color.lightGray, 2));
             setMaximumSize(new Dimension(900, 175));
@@ -421,9 +411,5 @@ public class FlightSelection extends JPanel implements FlightsConstants {
 
             hBar.setBlockIncrement(dateWidth);
         }
-    }
-
-    public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new FlightSelection(new Flight(100), true, "2025-03-06", new int[]{3,2,0,1}));
     }
 }

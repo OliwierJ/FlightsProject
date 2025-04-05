@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.Main;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Booking;
 import com.flights.objects.Flight;
@@ -8,25 +9,21 @@ import com.flights.util.FlightsConstants;
 import javax.swing.*;
 import java.awt.*;
 public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
-
-    Flight flight;
-    Flight returnFlight;
-    int[] passengerTypes;
-    double price;
+    private final Flight flight;
+    private final Flight returnFlight;
+    private final int[] passengerTypes;
+    private final double price;
 
     public FlightFareSelectionMenu(Flight flight, Flight returnFlight, int[] passArray, double price) {
         super();
         this.price = price;
         this.flight = flight;
         this.returnFlight = returnFlight;
-        System.out.println(flight);
-        System.out.println(returnFlight); // TODO: fix bug make sure the flights are properly selected in previous menu, choosing any other flight than the default selection doesn't work
         this.passengerTypes = passArray;
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
+        setPreferredSize(Main.getFrameSize());
 
         JPanel infoPanel = new InfoPanel();
-        // TODO priceMultiplier will be changed
         JPanel basicPanel = new PerkPanel(SEAGREEN, 1, "Basic", Color.WHITE, 1);
         JPanel standardPanel = new PerkPanel(DARKSPRINGGREEN, 4, "Standard", Color.WHITE, 1.25);
         JPanel deluxePanel = new PerkPanel(MAIZE, 8, "Premium+", Color.WHITE, 1.5);
@@ -54,7 +51,6 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
                 else break;
             }
         }
-
         return totalPrice;
     }
     public static void addTickLabels(Container c, int i) {
@@ -64,13 +60,12 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
     }
 
     private static class InfoPanel extends JPanel {
-
         InfoPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setBackground(ASPARAGUS);
-            setPreferredSize(new Dimension(400, MainWindow.FRAME_HEIGHT));
-            setMaximumSize(new Dimension(400, MainWindow.FRAME_HEIGHT));
-            setMinimumSize(new Dimension(350, 700));
+            int height = (int) Main.getFrameSize().getHeight();
+            setPreferredSize(new Dimension(400, height));
+            setMaximumSize(new Dimension(400, height));
 
             JLabel chooseFareLabel = new JLabel("Choose your Fare");
             chooseFareLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -84,7 +79,6 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
 
             JPanel perksListPanel = new PerkListPanel();
 
-
             add(chooseFareLabel);
             add(chooseFareSubtext);
             add(Box.createVerticalStrut(35));
@@ -93,7 +87,6 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
     }
 
     private static class PerkListPanel extends JPanel {
-
         public PerkListPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setMinimumSize(new Dimension(400, 525));
@@ -144,9 +137,7 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
             add(perk6);
             add(perk7);
             add(perk8);
-
         }
-
     }
 
     private static class TickLabel extends JLabel {
@@ -161,13 +152,12 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
     }
 
     private class PerkPanel extends JPanel {
-
         PerkPanel(Color c, int perkCount, String fareType, Color textColor, double priceMultiplier) {
-
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setPreferredSize(new Dimension(300, 800));
-            setMaximumSize(new Dimension(300, 800));
-            setMinimumSize(new Dimension(300, 700));
+            int height = (int) Main.getFrameSize().getHeight();
+            setPreferredSize(new Dimension(300, height));
+            setMaximumSize(new Dimension(300, height));
+            setMinimumSize(new Dimension(300, height));
 
             JPanel holder = new JPanel();
             holder.setMaximumSize(new Dimension(300, 215));
@@ -194,7 +184,6 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
             select.setAlignmentX(Component.CENTER_ALIGNMENT);
             select.setFocusable(false);
             select.addActionListener(e -> {
-                // TODO Pricing
                 Booking b = new Booking(fareType);
                 if (fareType.equals("Basic")) {
                     b.setPriorityBoarding(0);
@@ -208,7 +197,7 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
                 }
                 b.setDepartureFlight(flight);
                 b.setReturnFlight(returnFlight);
-                MainWindow.createAndShowGUI(new SetPassengers(b, passengerTypes, priceLabel));
+                Main.createAndShowGUI(new SetPassengers(b, passengerTypes, priceLabel));
             });
 
             basicTitle.add(Box.createVerticalGlue());
@@ -226,8 +215,6 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
             add(holder);
             add(Box.createVerticalStrut(5));
             addTickLabels(this, perkCount);
-
         }
     }
-
 }

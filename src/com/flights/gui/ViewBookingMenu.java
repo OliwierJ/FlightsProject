@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.Main;
 import com.flights.gui.components.BackgroundImagePanel;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
@@ -34,7 +35,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
     public ViewBookingMenu(Booking booking) {
         this.booking = booking;
         passengerDetailsPanels = new JPanel[booking.getPassengerCount()];
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
+        setPreferredSize(Main.getFrameSize());
         setLayout(new BorderLayout());
 
         JPanel contentPanel = new JPanel();
@@ -54,7 +55,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
         weather.addActionListener(this);
 
         JPanel buttons = new JPanel();
-        setSizes(buttons, MainWindow.FRAME_WIDTH, 50);
+        setSizes(buttons, 1000, 50);
         buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttons.add(weather);
         buttons.add(update);
@@ -125,22 +126,22 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
             if (n == 0) {
                 booking.deleteEntry();
                 JOptionPane.showMessageDialog(this, "Booking cancelled successfully!", "Booking cancelled successfully!", JOptionPane.INFORMATION_MESSAGE);
-                MainWindow.createAndShowGUI(new MainWindow());
+                Main.createAndShowGUI(new MainWindow());
             }
         } else if (e.getSource() == update) {
             int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to save your booking changes?", "Are you sure?", JOptionPane.YES_NO_OPTION);
             if (n == 0) {
                 booking.updateDatabase();
                 JOptionPane.showMessageDialog(this, "Booking updated successfully!", "Booking updated successfully!", JOptionPane.INFORMATION_MESSAGE);
-                MainWindow.createAndShowGUI(new MainWindow());
+                Main.createAndShowGUI(new MainWindow());
             }
         } else if (e.getSource() == weather) {
             Flight f = booking.getDepartureFlight();
             Flight f1 = booking.getReturnFlight();
             if (f.getDepartureLocalDate().isAfter(LocalDate.now().plusDays(14))) {
-                JOptionPane.showMessageDialog(MainWindow.frame, "Sorry, can't show weather more than 14 days into the future.\nPlease try again at a future time closer to the departure time of your flight", "Check weather", JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(Main.frame, "Sorry, can't show weather more than 14 days into the future.\nPlease try again at a future time closer to the departure time of your flight", "Check weather", JOptionPane.PLAIN_MESSAGE);
             } else {
-                JDialog dialog = new JDialog(MainWindow.frame, "Check weather", true);
+                JDialog dialog = new JDialog(Main.frame, "Check weather", true);
                 JPanel popup = new JPanel();
                 popup.setLayout(new BoxLayout(popup, BoxLayout.Y_AXIS));
                 popup.setBorder(new EmptyBorder(10,10,10,10));
@@ -159,7 +160,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 popup.add(new WeatherPanel(f, true));
                 if (f1 != null) {
                     if (f1.getDepartureLocalDate().isAfter(LocalDate.now().plusDays(14))) {
-                        JOptionPane.showMessageDialog(MainWindow.frame, "Sorry, can't show return flight weather as it is more than 14 days into the future.\nOnly showing departure flight weather at this time.", "Check weather", JOptionPane.PLAIN_MESSAGE);
+                        JOptionPane.showMessageDialog(Main.frame, "Sorry, can't show return flight weather as it is more than 14 days into the future.\nOnly showing departure flight weather at this time.", "Check weather", JOptionPane.PLAIN_MESSAGE);
                     } else {
                         popup.add(new WeatherPanel(f1, false));
                     }
@@ -171,7 +172,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 dialog.setIconImage(new ImageIcon("src/com/flights/gui/images/weatherAppLogo.png").getImage());
                 dialog.add(popup);
                 dialog.pack();
-                dialog.setLocationRelativeTo(MainWindow.frame); // Centers the dialog on the frame
+                dialog.setLocationRelativeTo(Main.frame); // Centers the dialog on the frame
                 dialog.setVisible(true);
             }
         }
@@ -233,7 +234,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 popup.add(email);
                 setAllFonts(popup);
                 String[] options = {"Cancel", "Confirm"};
-                int n = JOptionPane.showOptionDialog(MainWindow.frame, popup, "Edit email", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                int n = JOptionPane.showOptionDialog(Main.frame, popup, "Edit email", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
                 if (n == 1) {
                     booking.setEmail(email.getText());
                     t1.setText("Email: "+booking.getEmail());
@@ -398,7 +399,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                     titles.setFont(new Font("Arial", Font.PLAIN, 20));
                     setAllFonts(popup);
                     String[] options = {"Cancel", "Confirm"};
-                    int n = JOptionPane.showOptionDialog(MainWindow.frame, popup, "Amend details", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                    int n = JOptionPane.showOptionDialog(Main.frame, popup, "Amend details", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
                     if (n == 1) {
                         if (Objects.equals(titles.getSelectedItem(), "Prefer not to say")) {
                             p.setTitle(null);
@@ -411,14 +412,14 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                     }
                 });
                 JButton changeDeparture = new JSubmitButton("Change departure seat");
-                changeDeparture.addActionListener(e -> MainWindow.createAndShowGUI(booking.getDepartureFlight().getAircraft().renderSeats(p, false)));
+                changeDeparture.addActionListener(e -> Main.createAndShowGUI(booking.getDepartureFlight().getAircraft().renderSeats(p, false, 0)));
                 buttonsPanel.add(Box.createVerticalStrut(15));
                 buttonsPanel.add(edit);
                 buttonsPanel.add(Box.createVerticalStrut(5));
                 buttonsPanel.add(changeDeparture);
                 if (booking.getReturnFlight() != null) {
                     JButton changeReturn = new JSubmitButton("Change return seat");
-                    changeReturn.addActionListener(e -> MainWindow.createAndShowGUI(booking.getReturnFlight().getAircraft().renderSeats(p, true)));
+                    changeReturn.addActionListener(e -> Main.createAndShowGUI(booking.getReturnFlight().getAircraft().renderSeats(p, true, 0)));
                     buttonsPanel.add(Box.createVerticalStrut(5));
                     buttonsPanel.add(changeReturn);
                 }
@@ -458,12 +459,7 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
     private class WeatherPanel extends JPanel {
         WeatherPanel(Flight f, boolean isDeparture) {
             setLayout(new BorderLayout());
-            JLabel l;
-            if (isDeparture) {
-                l = new JLabel("<html><u>Departure</u></html>");
-            } else {
-                l = new JLabel("<html><u>Arrival</u></html>");
-            }
+            JLabel l = new JLabel(isDeparture ? "<html><u>Departure</u></html>" : "<html><u>Arrival</u></html>");
             l.setAlignmentX(Component.CENTER_ALIGNMENT);
             l.setHorizontalAlignment(SwingConstants.CENTER);
             l.setFont(new Font("Arial", Font.BOLD, 22));
@@ -505,8 +501,8 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
             b.setOpaque(false);
 
             JPanel text = new JPanel();
-            text.add(l1);
             text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
+            text.add(l1);
             text.add(new JLabel(weatherData[4]+"°C"));
             text.add(new JLabel("Precipitation: "+weatherData[3]+"mm"));
             text.add(new JLabel("Wind speed (gusts):"));
@@ -518,9 +514,5 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
             p.setBorder(new EmptyBorder(15,10,15,10));
             return p;
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> MainWindow.createAndShowGUI(new ViewBookingMenu(new Booking("522558", "govie@setu.ie")))); // TODO debug delete later
     }
 }

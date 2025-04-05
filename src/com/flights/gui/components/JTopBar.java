@@ -4,13 +4,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.*;
 
+import com.flights.Main;
 import com.flights.gui.LoginMenu;
 import com.flights.gui.MainWindow;
 import com.flights.gui.MyBookingMenu;
@@ -27,18 +27,8 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         setAlignmentX(Component.RIGHT_ALIGNMENT);
         setBackground(TRUEBLUE);
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, 40));
-        setMaximumSize(new Dimension(10000, 40));
         setBorder(BorderFactory.createMatteBorder(0,3,3,0,MAIZE));
 
-        addAllComponents();
-    }
-    public JTopBar(double price) {
-        this();
-        this.price.setText("€" + price);
-    }
-
-    private void addAllComponents() {
         add(loginLabel);
         add(Box.createHorizontalStrut(20));
         add(myBookingLabel);
@@ -48,8 +38,7 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         add(price);
 
         for (Component c : getComponents()) {
-            if (c instanceof JLabel) {
-                JLabel l = (JLabel) c;
+            if (c instanceof JLabel l) {
                 l.setAlignmentX(Component.CENTER_ALIGNMENT);
                 l.setAlignmentY(Component.CENTER_ALIGNMENT);
                 l.setForeground(Color.WHITE);
@@ -57,6 +46,10 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
                 l.addMouseListener(this);
             }
         }
+    }
+    public JTopBar(double price) {
+        this();
+        this.price.setText("€" + price);
     }
 
     public void updatePrice(double price) {
@@ -72,11 +65,11 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getSource().equals(myBookingLabel)) {
-            MainWindow.createAndShowGUI(new MyBookingMenu());
+            Main.createAndShowGUI(new MyBookingMenu());
         } else if (e.getSource().equals(loginLabel)) {
-            MainWindow.createAndShowGUI(new LoginMenu());
+            Main.createAndShowGUI(new LoginMenu());
         } else if (e.getSource().equals(home)) {
-            MainWindow.createAndShowGUI(new MainWindow());
+            Main.createAndShowGUI(new MainWindow());
         }
     }
 

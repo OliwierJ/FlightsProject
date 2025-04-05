@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class RoundButton extends JButton {
 
-    private boolean plus;
+    private final boolean plus;
 
     public RoundButton(boolean plus) {
         super();
@@ -59,9 +59,7 @@ public class RoundButton extends JButton {
     @Override
     public boolean contains(int x, int y) {
         int radius = getWidth() / 2;
-        int centerX = radius;
-        int centerY = radius;
-        return Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2) <= Math.pow(radius, 2);
+        return Math.pow(x - radius, 2) + Math.pow(y - radius, 2) <= Math.pow(radius, 2);
     }
 
     @Override

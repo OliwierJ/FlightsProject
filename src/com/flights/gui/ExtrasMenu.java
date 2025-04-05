@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.Main;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.gui.components.RoundButton;
@@ -12,16 +13,16 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener {
-    JRadioButton yesButton;
-    Booking b;
-    double price;
-    public ExtrasMenu(Booking booking,double price) {
+    private final JRadioButton yesButton;
+    private final Booking b;
+    private double price;
+    private final JTopBar topBar = new JTopBar();
+    public ExtrasMenu(Booking booking, double price) {
         this.b = booking;
-        this.price = price;
 
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
-        add(new JTopBar(price), BorderLayout.NORTH);
+        setPreferredSize(Main.getFrameSize());
+        add(topBar, BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -30,9 +31,7 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         priorityPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         priorityPanel.setLayout(new BoxLayout(priorityPanel, BoxLayout.Y_AXIS));
         priorityPanel.setBorder(BorderFactory.createLineBorder(DARKSPRINGGREEN, 4));
-        priorityPanel.setMaximumSize(new Dimension(500, 300));
-        priorityPanel.setPreferredSize(new Dimension(500, 300));
-        priorityPanel.setMinimumSize(new Dimension(500, 300));
+        setSizes(priorityPanel, 500, 300);
 
         JLabel priorityLabel = new JLabel("Priority Boarding");
         priorityLabel.setFont(new Font("Arial", Font.BOLD, 30));
@@ -54,7 +53,6 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         noButton.setBorder(BorderFactory.createEmptyBorder(empty,empty,empty,empty));
         noButton.setFont(ARIAL20);
 
-        //b.setPriorityBoarding(1);
         if (b.getPriorityBoarding() != 1) {
             noButton.setSelected(true);
         }
@@ -78,9 +76,7 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         luggagePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         luggagePanel.setLayout(new BoxLayout(luggagePanel, BoxLayout.Y_AXIS));
         luggagePanel.setBorder(BorderFactory.createLineBorder(DARKSPRINGGREEN, 4));
-        luggagePanel.setMaximumSize(new Dimension(500, 300));
-        luggagePanel.setPreferredSize(new Dimension(500, 300));
-        luggagePanel.setMinimumSize(new Dimension(500, 300));
+        setSizes(luggagePanel, 500, 300);
 
         JLabel luggageLabel = new JLabel("Add bags");
         luggageLabel.setFont(new Font("Arial", Font.BOLD, 30));
@@ -88,15 +84,12 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         luggageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel luggageAddPanel = new JPanel();
-        luggageAddPanel.setPreferredSize(new Dimension(500,50));
-        luggageAddPanel.setMaximumSize(new Dimension(500,50));
+        setSizes(luggageAddPanel, 500, 50);
         luggageAddPanel.setLayout(new BoxLayout(luggageAddPanel, BoxLayout.X_AXIS));
 
         JPanel pricePanel = new JPanel();
         pricePanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        pricePanel.setMaximumSize(new Dimension(500,50));
-        pricePanel.setPreferredSize(new Dimension(500,50));
-        pricePanel.setMinimumSize(new Dimension(500,50));
+        setSizes(pricePanel, 500, 50);
         pricePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel priceLabel = new JLabel("€39.99 per flight");
@@ -109,13 +102,11 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         label20kg.setFont(ARIAL20);
 
         JLabel luggageCount = new JLabel(b.get20kgluggage() ? "1" : "0");
-        System.out.println(b.get20kgluggage());
         luggageCount.setFont(ARIAL20);
 
         RoundButton increase1 = new RoundButton(true);
         increase1.setForeground(SEAGREEN);
-        increase1.setMaximumSize(new Dimension(35, 35));
-        increase1.setPreferredSize(new Dimension(35, 35));
+        setSizes(increase1, 35, 35);
         increase1.setFocusable(false);
         increase1.addActionListener(e -> {
             if (!b.get20kgluggage()) {
@@ -123,13 +114,12 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
                 updatePrice(39.99);
                 luggageCount.setText("1");
             } else {
-                JOptionPane.showMessageDialog(MainWindow.frame, "Max 20kg luggage count reached" , "Luggage limit", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(Main.frame, "Max 20kg luggage count reached" , "Luggage limit", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
         RoundButton decrease1 = new RoundButton(false);
-        decrease1.setMaximumSize(new Dimension(35, 35));
-        decrease1.setPreferredSize(new Dimension(35, 35));
+        setSizes(decrease1, 35, 35);
         decrease1.setFocusable(false);
         decrease1.addActionListener(e -> {
             if (b.get20kgluggage()) {
@@ -138,7 +128,6 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
                 luggageCount.setText("0");
             }
         });
-
 
         luggageAddPanel.add(Box.createHorizontalStrut(15));
         luggageAddPanel.add(label20kg);
@@ -156,7 +145,7 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         luggagePanel.add(pricePanel);
         JButton submit = new JSubmitButton("Next");
         submit.setAlignmentX(Component.CENTER_ALIGNMENT);
-        submit.addActionListener(e -> MainWindow.createAndShowGUI(new PaymentMenu(booking, price)));
+        submit.addActionListener(e -> Main.createAndShowGUI(new PaymentMenu(booking, this.price)));
         mainPanel.add(Box.createVerticalStrut(50));
         mainPanel.add(priorityPanel);
         mainPanel.add(Box.createVerticalStrut(50));
@@ -164,6 +153,16 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(submit);
         add(mainPanel, BorderLayout.CENTER);
+
+        // this has to be here
+        this.price = price;
+        topBar.updatePrice(price);
+    }
+
+    private void setSizes(JComponent p, int width, int height) {
+        p.setPreferredSize(new Dimension(width, height));
+        p.setMaximumSize(new Dimension(width, height));
+        p.setMinimumSize(new Dimension(width, height));
     }
 
     private void updatePrice(double i) {
@@ -171,11 +170,7 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         if (b.getReturnFlight() != null) {
             price += i;
         }
-    }
-
-    public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new ExtrasMenu(new Booking("Standard"), 100));
-
+        topBar.updatePrice(price);
     }
 
     @Override
@@ -183,7 +178,12 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         if (e.getSource() == yesButton) {
             if (yesButton.isSelected()) {
                 b.setPriorityBoarding(1);
-            } else {b.setPriorityBoarding(0);}
+                updatePrice(20);
+            } else {
+                b.setPriorityBoarding(0);
+                updatePrice(-20);
+            }
+            topBar.updatePrice(price);
         }
     }
 }

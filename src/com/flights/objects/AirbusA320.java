@@ -5,7 +5,8 @@ import java.sql.SQLException;
 
 import javax.swing.*;
 
-import com.flights.gui.MainWindow;
+import com.flights.Main;
+import com.flights.gui.components.JTopBar;
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
 
@@ -64,21 +65,24 @@ public class AirbusA320 extends Aircraft {
     }
 
     @Override
-    public JPanel renderSeats(Passenger p, boolean isReturn) {
-        return new AirbusA320Seats(getAllSeats(), p, isReturn);
+    public JPanel renderSeats(Passenger p, boolean isReturn, double price) {
+        return new AirbusA320Seats(getAllSeats(), p, isReturn, price);
     }
 
     static class AirbusA320Seats extends JPanel {
-        private AirbusA320Seats(Seat[] seats, Passenger p, boolean isReturn) {
-            setLayout(new FlowLayout());
-            setMinimumSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
-            add(new JLabel("Airbus A320"));
+        private AirbusA320Seats(Seat[] seats, Passenger p, boolean isReturn, double price) {
+            setLayout(new BorderLayout());
+            add(new JTopBar(price), BorderLayout.NORTH);
+            setPreferredSize(Main.getFrameSize());
+            JPanel content = new JPanel();
+            content.setLayout(new FlowLayout());
+            content.add(new JLabel("Airbus A320"));
 
             JComboBox<String> selector = new JComboBox<>();
             for (Seat s: seats) {
                 selector.addItem(s.getSeatNo());
             }
-            add(selector);
+            content.add(selector);
             JButton confirm = new JButton("Confirm choice");
             confirm.addActionListener(e -> {
                 int choice = selector.getSelectedIndex();
@@ -90,10 +94,11 @@ public class AirbusA320 extends Aircraft {
                     } else {
                         p.setDepartureSeat(seats[choice]);
                     }
-                    MainWindow.returnToPreviousMenu();
+                    Main.returnToPreviousMenu();
                 }
             });
-            add(confirm);
+            content.add(confirm);
+            add(content, BorderLayout.CENTER);
         }
     }
 }

@@ -1,9 +1,9 @@
 package com.flights.gui;
 
+import com.flights.Main;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Booking;
-import com.flights.objects.Flight;
 import com.flights.objects.Passenger;
 import com.flights.util.FlightsConstants;
 
@@ -16,13 +16,15 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
     private final Booking b;
     private final JPanel[] departureSeatPanels;
     private final JPanel[] returnSeatPanels;
+    private final double price;
 
     public PassengerSeatSelectionMenu(Booking b, double price) {
         this.b = b;
         this.departureSeatPanels = new JPanel[b.getPassengerCount()];
         this.returnSeatPanels = new JPanel[b.getPassengerCount()];
+        this.price = price;
 
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
+        setPreferredSize(Main.getFrameSize());
         setLayout(new BorderLayout());
         add(new JTopBar(price), BorderLayout.NORTH);
 
@@ -32,7 +34,6 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
 
         for (int i = 0; i < b.getPassengerCount(); i++) {
             JPanel pp = new PassengerSeatSelectionPanel(i, b.getPassengers()[i]);
-
             mainPanel.add(pp);
             mainPanel.add(Box.createVerticalStrut(50));
         }
@@ -51,7 +52,7 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
             if (valid) {
                 int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to continue?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (n == 0) {
-                    MainWindow.createAndShowGUI(new ExtrasMenu(b, price));
+                    Main.createAndShowGUI(new ExtrasMenu(b, price));
                 }
             }
         });
@@ -129,9 +130,9 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
             JButton button = new JSubmitButton("Select seat");
             button.addActionListener(e -> {
                 if (isReturn) {
-                    MainWindow.createAndShowGUI(b.getReturnFlight().getAircraft().renderSeats(p, true));
+                    Main.createAndShowGUI(b.getReturnFlight().getAircraft().renderSeats(p, true, price));
                 } else {
-                    MainWindow.createAndShowGUI(b.getDepartureFlight().getAircraft().renderSeats(p, false));
+                    Main.createAndShowGUI(b.getDepartureFlight().getAircraft().renderSeats(p, false, price));
                 }
             });
 
@@ -157,13 +158,5 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
                 l.setText("Departure seat: not selected yet");
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Booking b = new Booking("Basic");
-        b.setDepartureFlight(new Flight(100));
-        b.setReturnFlight(new Flight(101));
-        b.addPassengers(new Passenger("Mr", "Brandon", "Jaroszczak", b.getBookingID()), new Passenger(null, "Other", "Guy", b.getBookingID()), new Passenger("Mrs", "Some random", "woman", b.getBookingID()), new Passenger("Ms", "Oliwier", "Jakubiec", b.getBookingID()));
-        MainWindow.createAndShowGUI(new PassengerSeatSelectionMenu(b, 200));
     }
 }

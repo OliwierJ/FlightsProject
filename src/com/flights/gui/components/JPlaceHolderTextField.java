@@ -44,7 +44,7 @@ public class JPlaceHolderTextField extends JTextField implements FocusListener {
         this.placeholder = placeholder;
     }
 
-    // return get text only if the placeholder isnt the same as the text
+    // return get text only if the placeholder isn't the same as the text
     @Override
     public String getText() {
         String s = super.getText();

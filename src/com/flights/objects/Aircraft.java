@@ -59,7 +59,7 @@ public abstract class Aircraft {
 
     protected abstract void generateSeats(int flightID);
 
-    public abstract JPanel renderSeats(Passenger p, boolean isReturn);
+    public abstract JPanel renderSeats(Passenger p, boolean isReturn, double price);
 
     @Override
     public String toString() {

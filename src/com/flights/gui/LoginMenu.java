@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.Main;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.util.FlightsConstants;
@@ -12,7 +13,7 @@ import java.awt.event.KeyEvent;
 public class LoginMenu extends JPanel implements FlightsConstants {
     public LoginMenu() {
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
+        setPreferredSize(Main.getFrameSize());
         
         JPanel contentPanel = new JPanel();
         JLabel username = new JLabel("Username: ");
@@ -21,8 +22,9 @@ public class LoginMenu extends JPanel implements FlightsConstants {
         JPasswordField passwordField = new JPasswordField(15);
         JButton enter = new JSubmitButton("Log in");
         enter.addActionListener(e -> {
+            // very secure username and password, NEVER to be used in prod :)
             if (usernameField.getText().equals("admin") && String.valueOf(passwordField.getPassword()).equals("admin")) {
-                MainWindow.createAndShowGUI(new AdminMenu());
+                Main.createAndShowGUI(new AdminMenu());
             } else {
                 JErrorDialog.showWarning("Invalid username and/or password!");
             }

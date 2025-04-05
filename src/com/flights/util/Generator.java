@@ -24,7 +24,7 @@ public final class Generator extends DBConnectivity {
 
     private void generateFlights(String departureAirport, String arrivalAirport, LocalDate firstDay, LocalDate lastDay, String aircraft, int basePrice, int daysBetweenFlights, int flightDuration) {
         if (!new HashSet<>(Arrays.asList(DESTINATIONS)).containsAll(Arrays.asList(departureAirport, arrivalAirport))) {
-            System.out.println("Airports not allowed!");
+            System.err.println("Airports not allowed!");
             return;
         }
         try {
@@ -152,7 +152,19 @@ public final class Generator extends DBConnectivity {
         g.generateFlights("Berlin", "Barcelona", startReturn, endReturn, "Airbus A320", 70, 5, 155);
 
         try {
-            g.generateBookings(1000);
+            System.out.println("Enter number of bookings to generate: ");
+            Scanner s = new Scanner(System.in);
+            boolean valid = false;
+            int i;
+            do {
+                i = s.nextInt();
+                if (i < 0) {
+                    System.out.println("Please enter a positive integer: ");
+                } else {
+                    valid = true;
+                }
+            } while (!valid);
+            g.generateBookings(i);
         } catch (SQLException e) {
             e.printStackTrace(System.err);
         } finally {

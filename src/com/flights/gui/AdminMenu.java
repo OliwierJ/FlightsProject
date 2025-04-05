@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.Main;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.util.DBConnectivity;
@@ -17,14 +18,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Objects;
 
-import static com.flights.gui.MainWindow.*;
-
 public class AdminMenu extends JPanel implements FlightsConstants {
-    JTable resultTable = new JTable();
+    private final JTable resultTable = new JTable();
 
     public AdminMenu() {
         setLayout(new BorderLayout());
-        setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
+        setMinimumSize(Main.getFrameSize());
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));

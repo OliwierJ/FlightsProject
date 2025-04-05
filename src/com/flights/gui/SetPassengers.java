@@ -1,8 +1,9 @@
 package com.flights.gui;
 
+import com.flights.Main;
+import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Booking;
-import com.flights.objects.Flight;
 import com.flights.util.FlightsConstants;
 import com.flights.objects.Passenger;
 import com.flights.util.JErrorDialog;
@@ -13,14 +14,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class SetPassengers extends JPanel implements FlightsConstants {
-
-//    JPanel progressPanel;
     private final PassengerAdditionPanel[] passengersPanels = new PassengerAdditionPanel[6];
     private final ArrayList<Passenger> passengers = new ArrayList<>();
     private int count = 0;
 
     public SetPassengers(Booking b, int[] passengerType, double price) {
-        setPreferredSize(new Dimension(MainWindow.FRAME_WIDTH, MainWindow.FRAME_HEIGHT));
+        setPreferredSize(Main.getFrameSize());
         setLayout(new BorderLayout());
         add(new JTopBar(price), BorderLayout.NORTH);
 
@@ -38,44 +37,29 @@ public class SetPassengers extends JPanel implements FlightsConstants {
                     passengersPanels[0] = primaryAdult;
                 } else {
                     switch (i) {
-                        case 0:
-                            passengersPanels[count] = new PassengerAdditionPanel("Adult", false);
-                            break;
-                        case 1:
-                            passengersPanels[count] = new PassengerAdditionPanel("Teen", false);
-                            break;
-                        case 2:
-                            passengersPanels[count] = new PassengerAdditionPanel("Child", false);
-                            break;
-                        case 3:
-                            passengersPanels[count] = new PassengerAdditionPanel("Infant", false);
-
-                        default:
-                            break;
+                        case 0 -> passengersPanels[count] = new PassengerAdditionPanel("Adult", false);
+                        case 1 -> passengersPanels[count] = new PassengerAdditionPanel("Teen", false);
+                        case 2 -> passengersPanels[count] = new PassengerAdditionPanel("Child", false);
+                        case 3 -> passengersPanels[count] = new PassengerAdditionPanel("Infant", false);
                     }
                 }
             }
         }
 
-        contentPanel.add(Box.createVerticalStrut(75));
         for (int i = 0; i < count; i++) {
-            contentPanel.add(passengersPanels[i]);
             contentPanel.add(Box.createVerticalStrut(50));
+            contentPanel.add(passengersPanels[i]);
         }
 
-        JButton submitButton = new JButton("Confirm passengers");
-        submitButton.setFont(MainWindow.ARIAL20);
-        submitButton.setPreferredSize(new Dimension(200,75));
+        JButton submitButton = new JSubmitButton("Confirm passengers");
         submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         submitButton.addActionListener(e -> {
             passengers.clear();
             if (!verifyPassengerFields(passengersPanels)) {
                 JErrorDialog.showWarning("Passenger fields are incomplete!");
                 return;
             }
-
-            int choice = JOptionPane.showConfirmDialog(this, "Confirm passengers?");
+            int choice = JOptionPane.showConfirmDialog(this, "Confirm passengers?", "Confirm passengers?", JOptionPane.YES_NO_OPTION);
             if (choice == JOptionPane.OK_OPTION) {
                 for (int i = 0; i < count; i++) {
                     PassengerAdditionPanel panel = passengersPanels[i];
@@ -89,14 +73,22 @@ public class SetPassengers extends JPanel implements FlightsConstants {
                     }
                 }
                 b.addPassengers(passengers.toArray(new Passenger[0]));
-                MainWindow.createAndShowGUI(new PassengerSeatSelectionMenu(b,price));
+                Main.createAndShowGUI(new PassengerSeatSelectionMenu(b,price));
             }
         });
 
+        contentPanel.add(Box.createVerticalStrut(25));
         contentPanel.add(submitButton);
+        contentPanel.add(Box.createVerticalStrut(25));
         JScrollPane sp = new JScrollPane(contentPanel);
         sp.getVerticalScrollBar().setUnitIncrement(20);
         add(sp, BorderLayout.CENTER);
+    }
+
+    private void setSizes(JComponent p, int width, int height) {
+        p.setMinimumSize(new Dimension(width, height));
+        p.setPreferredSize(new Dimension(width, height));
+        p.setMaximumSize(new Dimension(width, height));
     }
 
     private boolean verifyPassengerFields(PassengerAdditionPanel[] array) {
@@ -121,25 +113,20 @@ public class SetPassengers extends JPanel implements FlightsConstants {
     }
 
     private class PassengerAdditionPanel extends JPanel {
-        TextBoxPanel passengerTitle;
-        TextBoxPanel firstName;
-        TextBoxPanel lastName;
-        TextBoxPanel email;
+        private TextBoxPanel passengerTitle;
+        private final TextBoxPanel firstName;
+        private final TextBoxPanel lastName;
+        private TextBoxPanel email;
 
         PassengerAdditionPanel(String name, boolean isPrimary) {
             setBackground(Color.BLUE);
-
-            setPreferredSize(new Dimension(1000, 180));
-            setMinimumSize(new Dimension(1000, 180));
-            setMaximumSize(new Dimension(1000, 180));
+            setSizes(this, 1000, 180);
             setLayout(new BorderLayout());
 
             JPanel titleFlowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             titleFlowPanel.setBackground(APPLEGREEN);
             int titleHeight = 60;
-            titleFlowPanel.setPreferredSize(new Dimension(1000, titleHeight));
-            titleFlowPanel.setMinimumSize(new Dimension(1000, titleHeight));
-            titleFlowPanel.setMaximumSize(new Dimension(1000, titleHeight));
+            setSizes(titleFlowPanel, 1000, titleHeight);
 
             JLabel title = new JLabel("Passenger " + ++count);
             title.setFont(new Font("Arial", Font.BOLD, 35));
@@ -157,7 +144,6 @@ public class SetPassengers extends JPanel implements FlightsConstants {
             passengerInfoPanel.setLayout(new BoxLayout(passengerInfoPanel, BoxLayout.X_AXIS));
             passengerInfoPanel.setBackground(ASPARAGUS);
             passengerInfoPanel.setPreferredSize(new Dimension(800, 180 - titleHeight));
-
 
             firstName = new TextBoxPanel(175, "First name");
             lastName = new TextBoxPanel(175, "Last name");
@@ -200,22 +186,19 @@ public class SetPassengers extends JPanel implements FlightsConstants {
         }
     }
 
-    private static class TextBoxPanel extends JPanel {
-        private final Component field;
+    private class TextBoxPanel extends JPanel {
+        private final JComponent field;
 
-        public TextBoxPanel(int width, String name) {
+        TextBoxPanel(int width, String name) {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            // setBackground(Color.BLUE);
             setOpaque(false);
             setPreferredSize(new Dimension(width, 120));
 
             JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             panel.setOpaque(false);
-            panel.setPreferredSize(new Dimension(width, 40));
-            panel.setMaximumSize(new Dimension(width, 40));
+            setSizes(panel, width, 40);
             JLabel label = new JLabel(name);
-            label.setFont(MainWindow.ARIAL20);
-
+            label.setFont(ARIAL20);
             panel.add(label);
             
             if (name.equals("Title")) {
@@ -224,9 +207,7 @@ public class SetPassengers extends JPanel implements FlightsConstants {
                 field = new JPlaceHolderTextField(name);
             }
 
-            field.setPreferredSize(new Dimension(width, 35));
-            field.setMaximumSize(new Dimension(width - 10, 35));
-            field.setMinimumSize(new Dimension(width, 35));
+            setSizes(field, width, 35);
             field.setFont(new Font("Arial", Font.PLAIN, 18));
 
             add(Box.createVerticalGlue());
@@ -240,16 +221,8 @@ public class SetPassengers extends JPanel implements FlightsConstants {
             if (field instanceof JPlaceHolderTextField) {
                 return ((JPlaceHolderTextField) field).getText();
             } else {
-                return Objects.requireNonNull(((JComboBox<String>) field).getSelectedItem()).toString();
+                return Objects.requireNonNull(((JComboBox<?>) field).getSelectedItem()).toString();
             }
         }
     }
-
-    public static void main(String[] args) { // TODO delete later
-        Booking b = new Booking("Basic");
-        b.setDepartureFlight(new Flight(100));
-        b.setReturnFlight(new Flight(101));
-        MainWindow.createAndShowGUI(new SetPassengers(b, new int[] { 1, 1, 1, 0 }, 50));
-    }
-
 }

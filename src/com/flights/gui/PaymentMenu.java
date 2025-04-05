@@ -1,5 +1,6 @@
 package com.flights.gui;
 
+import com.flights.Main;
 import com.flights.gui.components.JSubmitButton;
 import com.flights.gui.components.JTopBar;
 import com.flights.objects.Booking;
@@ -15,7 +16,7 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static com.flights.gui.MainWindow.frame;
+import static com.flights.Main.frame;
 
 public class PaymentMenu extends JPanel implements FlightsConstants {
 
@@ -30,6 +31,7 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
         this.price = price;
 
         setLayout(new BorderLayout());
+        setPreferredSize(Main.getFrameSize());
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
@@ -54,7 +56,6 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
 
         add(new JTopBar(price), BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
-
     }
 
     private JPanel createBookingInfoPanel() {
@@ -78,7 +79,6 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, hh:mm a");
 
         String outboundFlight = f.getFlightID() + " | " + f.getDepartureAirport() + " → " + f.getArrivalAirport() + "<br>" + time.format(formatter);
-
 
         Font boldFont = new Font("SansSerif", Font.BOLD, 18);
         Font labelFont = new Font("SansSerif", Font.PLAIN, 20);
@@ -138,15 +138,12 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
         return panel;
     }
 
-
     // Helper for styled labels
-        private JLabel makeLabel(String text, Font font) {
-            JLabel label = new JLabel(text);
-            label.setFont(font);
-            return label;
-        }
-
-
+    private JLabel makeLabel(String text, Font font) {
+        JLabel label = new JLabel(text);
+        label.setFont(font);
+        return label;
+    }
 
     private JPanel createCreditCardFormPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
@@ -174,7 +171,7 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
             if (!validPayment()) {
                 return;
             }
-            if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to confirm this booking?") !=  JOptionPane.YES_OPTION ) {
+            if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to confirm this booking?", "Confirm booking", JOptionPane.YES_NO_OPTION) !=  JOptionPane.YES_OPTION ) {
                 return;
             }
             showConfirmationScreen();
@@ -213,17 +210,14 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
     private boolean validPayment() {
         if (cardNumberField.getText().isEmpty() || !Payment.checkNo(Long.parseLong(cardNumberField.getText()))) {
             JErrorDialog.showWarning("Invalid Card Number");
-            return false;
-        }
-        if (cvvField.getText().isEmpty() || !Payment.checkCVV(Integer.parseInt(cvvField.getText()))) {
-            JErrorDialog.showWarning("Invalid Card Number");
-            return false;
-        }
-        if (!Payment.checkName(nameField.getText())) {
+        } else if (cvvField.getText().isEmpty() || !Payment.checkCVV(Integer.parseInt(cvvField.getText()))) {
+            JErrorDialog.showWarning("Invalid CVV");
+        } else if (!Payment.checkName(nameField.getText())) {
             JErrorDialog.showWarning("Invalid Name. Only letters, spaces, hyphens, and apostrophes");
-            return false;
+        } else {
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void showConfirmationScreen() {
@@ -251,7 +245,7 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
         closeButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
         closeButton.addActionListener(e -> {
             dialog.dispose();
-            MainWindow.createAndShowGUI(new MainWindow());
+            Main.createAndShowGUI(new MainWindow());
         });
 
         contentPanel.add(title);
@@ -262,13 +256,5 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
         booking.updateDatabase();
         dialog.add(contentPanel, BorderLayout.CENTER);
         dialog.setVisible(true);
-
-
     }
-
-    public static void main(String[] args) {
-        MainWindow.createAndShowGUI(new PaymentMenu(new Booking("Standard"), 100));
-
-    }
-
 }
