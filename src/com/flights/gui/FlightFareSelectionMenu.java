@@ -24,9 +24,9 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
         setPreferredSize(Main.getFrameSize());
 
         JPanel infoPanel = new InfoPanel();
-        JPanel basicPanel = new PerkPanel(SEAGREEN, 1, "Basic", Color.WHITE, 1);
-        JPanel standardPanel = new PerkPanel(DARKSPRINGGREEN, 4, "Standard", Color.WHITE, 1.25);
-        JPanel deluxePanel = new PerkPanel(MAIZE, 8, "Premium+", Color.WHITE, 1.5);
+        JPanel basicPanel = new PerkPanel(SEAGREEN, 1, "Basic", 1);
+        JPanel standardPanel = new PerkPanel(DARKSPRINGGREEN, 4, "Standard", 1.25);
+        JPanel deluxePanel = new PerkPanel(MAIZE, 8, "Premium+", 1.5);
 
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.X_AXIS));
@@ -55,7 +55,7 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
     }
     public static void addTickLabels(Container c, int i) {
         for (int j = 0; j < i; j++) {
-            c.add(new TickLabel("✔"));
+            c.add(new TickLabel());
         }
     }
 
@@ -141,8 +141,8 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
     }
 
     private static class TickLabel extends JLabel {
-        TickLabel(String text) {
-            super(text);
+        TickLabel() {
+            super("✔");
             setAlignmentX(Component.CENTER_ALIGNMENT);
             setAlignmentY(Component.CENTER_ALIGNMENT);
             setFont(new Font(null, Font.BOLD, 32));
@@ -152,7 +152,7 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
     }
 
     private class PerkPanel extends JPanel {
-        PerkPanel(Color c, int perkCount, String fareType, Color textColor, double priceMultiplier) {
+        PerkPanel(Color c, int perkCount, String fareType, double priceMultiplier) {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             int height = (int) Main.getFrameSize().getHeight();
             setPreferredSize(new Dimension(300, height));
@@ -170,7 +170,7 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
 
             JLabel title = new JLabel(fareType);
             title.setFont(new Font("Arial", Font.BOLD, 35));
-            title.setForeground(textColor);
+            title.setForeground(Color.WHITE);
             title.setAlignmentX(Component.CENTER_ALIGNMENT);
             title.setHorizontalAlignment(SwingConstants.CENTER);
 

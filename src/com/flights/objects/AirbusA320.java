@@ -10,14 +10,24 @@ import com.flights.gui.components.JTopBar;
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
 
+/**
+ * AirbusA320 object extends Aircraft, contains all Seat objects related to a specific Flight
+ */
 public class AirbusA320 extends Aircraft {
 
+    /**
+     * Construct a new AirbusA320 object
+     * @param flightID flightID of the Flight
+     */
     public AirbusA320(int flightID) {
         super(96,42,12,"Airbus A320");
         generateSeats(flightID);
     }
 
-
+    /**
+     * Retrieve all seats from database and use to generate Seat[] for this Aircraft
+     * @param flightID flightID of the flight
+     */
     @Override
     protected void generateSeats(int flightID) {
         try {
@@ -64,12 +74,19 @@ public class AirbusA320 extends Aircraft {
         }
     }
 
+    /**
+     * INCOMPLETE renders the Aircraft Seats to be used in the Swing GUI and for flight seat selection
+     * @param p the Passenger object to later assign the Seat to
+     * @param isReturn <code>true</code> if return flight, <code>false otherwise</code>
+     * @param price price to render in JTopBar
+     * @return JPanel
+     */
     @Override
     public JPanel renderSeats(Passenger p, boolean isReturn, double price) {
         return new AirbusA320Seats(getAllSeats(), p, isReturn, price);
     }
 
-    static class AirbusA320Seats extends JPanel {
+    private static class AirbusA320Seats extends JPanel {
         private AirbusA320Seats(Seat[] seats, Passenger p, boolean isReturn, double price) {
             setLayout(new BorderLayout());
             add(new JTopBar(price), BorderLayout.NORTH);

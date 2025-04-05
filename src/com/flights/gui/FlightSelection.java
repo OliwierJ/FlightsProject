@@ -22,7 +22,6 @@ import java.time.LocalDate;
 
 public class FlightSelection extends JPanel implements FlightsConstants {
     private final int[] selectedDateIndex = {0};
-    private final int dateWidth = 125;
     private final int[] passengerTypes;
     private SelectedFlight selectedFlightReturnPanel;
     private double depPrice = 0;
@@ -78,7 +77,7 @@ public class FlightSelection extends JPanel implements FlightsConstants {
                 f = new Flight(defaultFlight.getDepartureAirport(), defaultFlight.getArrivalAirport(), nextDate.toString());
             } catch (Exception ignored) {}
             differentFlights[index] = f;
-            date[index] = new DateSelections(f, dateWidth, nextDate.toString());
+            date[index] = new DateSelections(f, nextDate.toString());
             int finalI = index;
 
             date[index].addMouseListener(new MouseAdapter() {
@@ -159,7 +158,7 @@ public class FlightSelection extends JPanel implements FlightsConstants {
                     differentFlightsR[index2] = f;
                 } catch (Exception ignored) {
                 }
-                returnDate[index2] = new DateSelections(f, dateWidth, nextReturnDate.toString());
+                returnDate[index2] = new DateSelections(f, nextReturnDate.toString());
                 int finalI = index2;
                 returnDate[index2].addMouseListener(new MouseAdapter() {
 
@@ -379,11 +378,11 @@ public class FlightSelection extends JPanel implements FlightsConstants {
     }
 
     private static class DateSelections extends JPanel {
-        DateSelections(Flight f, int dateWidth, String newDate) {
+        DateSelections(Flight f, String newDate) {
             int height = 85;
-            setMaximumSize(new Dimension(dateWidth, height));
-            setMinimumSize(new Dimension(dateWidth, height));
-            setPreferredSize(new Dimension(dateWidth, height));
+            setMaximumSize(new Dimension(125, height));
+            setMinimumSize(new Dimension(125, height));
+            setPreferredSize(new Dimension(125, height));
             setBorder(BorderFactory.createLineBorder(Color.black, 2));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setBackground(Color.white);
@@ -399,12 +398,13 @@ public class FlightSelection extends JPanel implements FlightsConstants {
         }
     }
 
-    private class DatesScroller extends JScrollPane {
+    private static class DatesScroller extends JScrollPane {
         DatesScroller(Container c) {
             super(c);
             JScrollBar hBar = this.getHorizontalScrollBar();
             this.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
             this.setMaximumSize(new Dimension(900, 90));
+            int dateWidth = 125;
             hBar.setUnitIncrement(dateWidth);
 
             SwingUtilities.invokeLater(() -> centerScrollBarThumb(hBar));

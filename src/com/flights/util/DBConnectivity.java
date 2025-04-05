@@ -2,6 +2,9 @@ package com.flights.util;
 
 import java.sql.*;
 
+/**
+ * Class providing database access and functionality
+ */
 public abstract class DBConnectivity {
     private static Connection con;
     private static PreparedStatement pstmt;
@@ -36,7 +39,9 @@ public abstract class DBConnectivity {
         }
     }
 
-    // closes all database connection (also resets PreparedStatement)
+    /**
+     * Closes all database connections and resets PreparedStatement(s)
+     */
     public static void closeConnection() {
         try {
             pstmt.close();
@@ -55,7 +60,7 @@ public abstract class DBConnectivity {
     }
 
     /**
-     * Connects and executes a QUERY (e.g. SELECT) that doesn't modify the database, returns a result set
+     * Connects and executes a QUERY (e.g. SELECT) that doesn't modify the database
      * @param query the query to execute
      * @return the ResultSet of the query
      * @throws SQLException if anything goes wrong
@@ -66,7 +71,12 @@ public abstract class DBConnectivity {
         return pstmt2.executeQuery();
     }
 
-    // converts the next row of a result set into a 1d array and closes connection
+    /**
+     * Converts the next row of a ResultSet into a String[] array
+     * @param rs ResultSet
+     * @return String[] of the next row
+     * @throws SQLException if any exception occurs
+     */
     public static String[] getRow(ResultSet rs) throws SQLException {
         int colNo = rs.getMetaData().getColumnCount();
         String[] result = new String[colNo];
@@ -77,7 +87,12 @@ public abstract class DBConnectivity {
         return result;
     }
 
-    // converts all rows of a result set into a 2d array format
+    /**
+     * Converts all rows of a ResultSet into a String[][] array
+     * @param rs ResultSet
+     * @return String[][] of all data
+     * @throws SQLException if any exception occurs
+     */
     public static String[][] getMultipleRows(ResultSet rs) throws SQLException {
         int colNo = rs.getMetaData().getColumnCount();
         rs.last();
@@ -93,7 +108,11 @@ public abstract class DBConnectivity {
         return result;
     }
 
-    // connects (if needed) and adds an UPDATE (e.g. INSERT, UPDATE) that modifies the database to the batch of commands to be run when executeUpdates() is called
+    /**
+     * Connects (if needed) and adds an UPDATE (e.g. INSERT, UPDATE) that modifies the database to the batch of commands to be run when executeUpdates() is called
+     * @param query the query to be added to the batch
+     * @throws SQLException if any exception occurs
+     */
     public static void addQueryToUpdate(String query) throws SQLException {
         if (con.isClosed()) {
             connectToDB();
@@ -106,17 +125,29 @@ public abstract class DBConnectivity {
         }
     }
 
+    /**
+     * Add a query to a PreparedStatement and return the PreparedStatement
+     * @param query query to be added
+     * @return PreparedStatement
+     * @throws SQLException if any exception occurs
+     */
     public static PreparedStatement getPreparedStatement(String query) throws SQLException {
         connectToDB();
         pstmt = con.prepareStatement(query);
         return pstmt;
     }
 
-    // executes all updates in batch and close all connections
+    /**
+     * Executes all updates in batch and closes all connections
+     * @throws SQLException if any exception occurs
+     */
     public static void executeUpdates() throws SQLException {
         pstmt.executeBatch();
         closeConnection();
     }
 
-    protected abstract void updateDatabase(); // override this method to implement updating the database based on the contents of the class
+    /**
+     * Override this method to implement updating the database in other classes
+     */
+    protected abstract void updateDatabase();
 }

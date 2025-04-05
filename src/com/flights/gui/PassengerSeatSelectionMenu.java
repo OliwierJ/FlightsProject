@@ -12,12 +12,20 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * Passenger Seat Selection Menu used to allow Passengers to select their Flight Seat(s)
+ */
 public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstants{
     private final Booking b;
     private final JPanel[] departureSeatPanels;
     private final JPanel[] returnSeatPanels;
     private final double price;
 
+    /**
+     * Construct a new PassengerSeatSelectionMenu JPanel
+     * @param b Booking
+     * @param price double price to be render in JTopBar
+     */
     public PassengerSeatSelectionMenu(Booking b, double price) {
         this.b = b;
         this.departureSeatPanels = new JPanel[b.getPassengerCount()];
@@ -65,6 +73,9 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
         add(sp, BorderLayout.CENTER);
     }
 
+    /**
+     * Refresh all relevant JLabel text after updating values outside of this JPanel
+     */
     public void refreshText() {
         for (int i = 0; i < b.getPassengerCount(); i++) {
             JPanel jp = departureSeatPanels[i];
@@ -144,7 +155,7 @@ public class PassengerSeatSelectionMenu extends JPanel implements FlightsConstan
         }
     }
 
-    public void setSeatLabelText(JLabel l, Passenger p, boolean isReturn) {
+    private void setSeatLabelText(JLabel l, Passenger p, boolean isReturn) {
         if (isReturn) {
             if (p.getReturnSeat() != null) {
                 l.setText("Return seat: "+p.getReturnSeat().getSeatNo()+", "+p.getReturnSeat().getSeatClass());

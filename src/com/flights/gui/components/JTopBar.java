@@ -16,12 +16,18 @@ import com.flights.gui.MainWindow;
 import com.flights.gui.MyBookingMenu;
 import com.flights.util.FlightsConstants;
 
+/**
+ * Class for the top menu bar JPanel used across all screens
+ */
 public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
     private final JLabel loginLabel = new JLabel("Login");
     private final JLabel myBookingLabel = new JLabel("My Bookings");
     private final JLabel home = new JLabel("Home");
     private final JLabel price = new JLabel("€0");
 
+    /**
+     * Construct a new JTopBar with default price €0
+     */
     public JTopBar() {
         setLayout(new FlowLayout(FlowLayout.RIGHT));
         setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -47,11 +53,20 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
             }
         }
     }
+
+    /**
+     * Construct new JTopBar with a custom price
+     * @param price double
+     */
     public JTopBar(double price) {
         this();
         this.price.setText("€" + price);
     }
 
+    /**
+     * Updates the price label on the JTopBar
+     * @param price double
+     */
     public void updatePrice(double price) {
         this.price.setText(String.format("€%.2f", price));
         this.repaint();

@@ -13,13 +13,6 @@ public class JPlaceHolderTextField extends JTextField implements FocusListener {
     private String placeholder;
 
     // constructors to match JTextField Constructors
-    public JPlaceHolderTextField() {
-        super();
-        setForeground(Color.GRAY);     // set the color to gray for the placeholder
-        setText(placeholder);
-        this.addFocusListener(this);     // add the focus listener
-    }
-
     public JPlaceHolderTextField(String placeholder) {
         super(placeholder);
         setForeground(Color.GRAY);

@@ -10,7 +10,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
+/**
+ * Login Menu screen used to log in and access the Admin Menu
+ */
 public class LoginMenu extends JPanel implements FlightsConstants {
+    /**
+     * Construct a new LoginMenu JPanel
+     */
     public LoginMenu() {
         setLayout(new BorderLayout());
         setPreferredSize(Main.getFrameSize());

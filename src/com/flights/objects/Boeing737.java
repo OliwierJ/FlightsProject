@@ -8,13 +8,24 @@ import com.flights.gui.SelectSeatBoeing737;
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
 
+/**
+ * Boeing737 object extends Aircraft, contains all Seat objects related to a specific Flight
+ */
 public class Boeing737 extends Aircraft {
 
+    /**
+     * Construct a new Boeing737 object
+     * @param flightID the flightID of the Flight
+     */
     public Boeing737(int flightID) {
         super(195, 0, 0, "Boeing 737-800");
         generateSeats(flightID);
     }
 
+    /**
+     * Retrieve all seats from database and generate the Seat[]
+     * @param flightID flightID of the flight
+     */
     @Override
     protected void generateSeats(int flightID) {
         try {
@@ -52,6 +63,13 @@ public class Boeing737 extends Aircraft {
         }
     }
 
+    /**
+     * Render all seats in the Swing GUI to be later used for Flight Seat selection
+     * @param p the Passenger object to later assign the Seat to
+     * @param isReturn <code>true</code> if return flight, <code>false otherwise</code>
+     * @param price price to render in JTopBar
+     * @return JPanel
+     */
     @Override
     public JPanel renderSeats(Passenger p, boolean isReturn, double price) {
         return new SelectSeatBoeing737(getAllSeats(), p, isReturn, price);

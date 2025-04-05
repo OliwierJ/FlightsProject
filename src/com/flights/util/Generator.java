@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+/**
+ * Class to automatically generate Flights and Bookings into the database
+ */
 public final class Generator extends DBConnectivity {
     private final Random r = new Random();
     private static final String[] TIERS = new String[] {"Basic", "Standard", "Premium+"};
@@ -107,6 +110,9 @@ public final class Generator extends DBConnectivity {
         }
     }
 
+    /**
+     * Generate a set number of flights and then ask and generate bookings into database
+     */
     public static void generate() {
         Generator g = new Generator();
 
@@ -172,6 +178,10 @@ public final class Generator extends DBConnectivity {
         }
     }
 
+    /**
+     * Calling this method is not supported
+     * @throws UnsupportedOperationException unsupported
+     */
     @Override
     protected void updateDatabase() {
         throw new UnsupportedOperationException("Operation not supported.");

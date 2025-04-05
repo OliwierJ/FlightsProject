@@ -18,12 +18,18 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Objects;
 
+/**
+ * Admin Menu Panel to display database inside of the application
+ */
 public class AdminMenu extends JPanel implements FlightsConstants {
     private final JTable resultTable = new JTable();
 
+    /**
+     * Constructs a new AdminMenu JPanel
+     */
     public AdminMenu() {
         setLayout(new BorderLayout());
-        setMinimumSize(Main.getFrameSize());
+        setPreferredSize(Main.getFrameSize());
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));

@@ -27,7 +27,7 @@ public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        BackgroundImagePanel image = new BackgroundImagePanel("src/com/flights/gui/images/boeing 737 800 seat map.png");
+        BackgroundImagePanel image = new BackgroundImagePanel("/com/flights/gui/images/boeing 737 800 seat map.png");
         image.setAlignmentX(Component.CENTER_ALIGNMENT);
         image.setLayout(new BoxLayout(image, BoxLayout.Y_AXIS));
         setEqualSizes(image, 600, 3200);
@@ -187,6 +187,7 @@ public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
         mainPanel.add(text);
         mainPanel.add(image);
         JButton confirmButton = new JSubmitButton("Confirm");
+        confirmButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         confirmButton.addActionListener(e -> {
             if (selectedSeat != null) {
                 for (Seat seat : seatsFromDB) {

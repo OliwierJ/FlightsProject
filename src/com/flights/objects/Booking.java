@@ -8,6 +8,9 @@ import java.util.Random;
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
 
+/**
+ * Booking object containing everything needed to create, read, update or remove a booking from database
+ */
 public class Booking extends DBConnectivity {
     private String bookingID;
     private String email;
@@ -20,7 +23,10 @@ public class Booking extends DBConnectivity {
     private boolean newBooking;
     private String tier;
 
-    // make new empty booking and add values using setters
+    /**
+     * make new empty booking and add values later using setters
+     * @param tier tier of booking, can only accept "Basic", "Standard", "Premium+"
+     */
     public Booking(String tier) {
         this.generateBookingID();
         this.newBooking = true;
@@ -48,7 +54,11 @@ public class Booking extends DBConnectivity {
         } while (exists);
     }
 
-    // gets an existing booking from database
+    /**
+     * Retrieve existing booking from database
+     * @param bookingID the booking no
+     * @param email the booking email
+     */
     public Booking(String bookingID, String email) {
         this.newBooking = false;
         try {
@@ -90,6 +100,12 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Verify does the booking exist in database
+     * @param bookingID the booking no
+     * @param email the booking email
+     * @return true if exists, false otherwise
+     */
     public static boolean verifyBookingDetails(String bookingID, String email) {
         try {
             return connectAndExecuteQuery("SELECT * FROM booking WHERE booking_no='" + bookingID + "' AND email='" + email + "'").next(); // true if entry exists, false otherwise
@@ -101,54 +117,106 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Gets amount of luggage in the booking
+     * @return luggage amount
+     */
     public int getLuggage() {
         return luggage;
     }
 
+    /**
+     * Gets 20kg luggage in the booking
+     * @return true if 20kg luggage reserved, false otherwise
+     */
     public boolean get20kgluggage() {
         return luggage20kg;
     }
 
+    /**
+     * Gets tier of the booking
+     * @return booking tier
+     */
     public String getTier() {
         return tier;
     }
 
+    /**
+     * Gets priority boarding of the booking
+     * @return 1 if priority boarding selected, 0 otherwise
+     */
     public int getPriorityBoarding() {
         return priorityBoarding;
     }
 
+    /**
+     * Gets the passengers of the booking
+     * @return array of Passenger objects
+     */
     public Passenger[] getPassengers() {
         return passengers;
     }
 
+    /**
+     * Gets the booking no
+     * @return booking no
+     */
     public String getBookingID() {
         return bookingID;
     }
 
+    /**
+     * Gets the departure flight of the booking
+     * @return Flight object
+     */
     public Flight getDepartureFlight() {
         return departureFlight;
     }
 
+    /**
+     * Gets the return flight of the booking
+     * @return Flight object
+     */
     public Flight getReturnFlight() {
         return returnFlight;
     }
 
+    /**
+     * Gets the email of the booking
+     * @return booking email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Gets passenger count in the booking
+     * @return int passenger count
+     */
     public int getPassengerCount() {
         return passengers.length;
     }
 
+    /**
+     * Sets booking email
+     * @param email String booking email
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Sets priority boarding
+     * @param priorityBoarding <code>0</code> for false, <code>1</code> for true
+     */
     public void setPriorityBoarding(int priorityBoarding) {
         this.priorityBoarding = priorityBoarding;
     }
 
+    /**
+     * Set 20kg luggage
+     * @param l <code>true</code> if luggage included, <code>false</code> otherwise
+     */
     public void set20kgluggage(boolean l) {
         this.luggage20kg = l;
         if (luggage20kg && luggage == passengers.length) {
@@ -158,6 +226,11 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Set departure flight
+     * @param departureFlight Flight object
+     * @throws UnsupportedOperationException if attempting to change flight on existing booking
+     */
     public void setDepartureFlight(Flight departureFlight) {
         if (newBooking) {
             this.departureFlight = departureFlight;
@@ -166,6 +239,11 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Set return flight
+     * @param returnFlight Flight object
+     * @throws UnsupportedOperationException if attempting to change flight on existing booking
+     */
     public void setReturnFlight(Flight returnFlight) {
         if (newBooking) {
             this.returnFlight = returnFlight;
@@ -174,6 +252,10 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Set tier of booking
+     * @param tier can only accept "Basic", "Standard", "Premium+"
+     */
     public void setTier(String tier) {
         if (tier.equals("Basic") || tier.equals("Standard") || tier.equals("Premium+")) {
             this.tier = tier;
@@ -183,6 +265,10 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Adds passengers to the booking
+     * @param newPassengers Passenger... 1 or more Passenger objects, or Passenger[]
+     */
     public void addPassengers(Passenger... newPassengers) {
         Passenger[] tempPassengers = new Passenger[passengers.length + newPassengers.length];
 
@@ -199,6 +285,11 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Updates the database with the booking details
+     * <br>Automatically detects is it a new or existing booking and updates the database accordingly
+     * <br>Also updates its child Passenger and Seat objects database entries, use this method ONLY to update the database
+     */
     @Override
     public void updateDatabase() {
         try {
@@ -243,6 +334,10 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Deletes the booking and all related objects from the database
+     * <br>This action is IRREVERSIBLE
+     */
     public void deleteEntry() {
         if (newBooking) {
             throw new UnsupportedOperationException("Can't delete a booking that hasn't been inserted into the database yet!");
@@ -261,6 +356,10 @@ public class Booking extends DBConnectivity {
         }
     }
 
+    /**
+     * Get all booking details for debug purposes
+     * @return String containing all booking details and all child objects details
+     */
     @Override
     public String toString() {
         return "Booking{" +

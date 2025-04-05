@@ -12,7 +12,13 @@ import com.flights.objects.Booking;
 import com.flights.util.FlightsConstants;
 import com.flights.util.JErrorDialog;
 
+/**
+ * MyBooking Menu used to enter Booking credentials to access and view a Booking
+ */
 public class MyBookingMenu extends JPanel implements FlightsConstants{
+    /**
+     * Construct a new MyBookingMenu JPanel
+     */
     public MyBookingMenu() {
         setLayout(new BorderLayout());
         setPreferredSize(Main.getFrameSize());

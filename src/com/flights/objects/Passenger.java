@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import com.flights.util.DBConnectivity;
 import com.flights.util.JErrorDialog;
 
+/**
+ * Passenger object containing its details and Seat details
+ */
 public class Passenger extends DBConnectivity {
     private String title;
     private String name;
@@ -17,7 +20,13 @@ public class Passenger extends DBConnectivity {
     private Seat oldDepartureSeat;
     private Seat oldReturnSeat;
 
-    // make a new empty passenger for a new booking
+    /**
+     * Construct a new Passenger object to be used in a new Booking
+     * @param title passenger title
+     * @param name passenger name
+     * @param surname passenger surname
+     * @param bookingID booking ID that the passenger is assigned to
+     */
     public Passenger(String title, String name, String surname, String bookingID) {
         this.title = title;
         this.name = name;
@@ -31,7 +40,10 @@ public class Passenger extends DBConnectivity {
         // passenger ID is created when saving to database for the first time
     }
 
-    // gets an existing passenger from database
+    /**
+     * Gets an existing Passenger details from database and constructs a new Passenger object
+     * @param passengerID ID of passenger
+     */
     public Passenger(String passengerID) {
         try {
             String[] result = getRow(connectAndExecuteQuery("SELECT title, first_name, last_name, booking_no FROM passenger WHERE passenger_ID="+passengerID));
@@ -62,46 +74,75 @@ public class Passenger extends DBConnectivity {
             closeConnection();
         }
     }
+
+    /**
+     * Get Passenger title
+     * @return String
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Get Passenger name
+     * @return String
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get Passenger surname
+     * @return String
+     */
     public String getSurname() {
         return surname;
     }
 
-    public String getBookingID() {
-        return bookingID;
-    }
-
-    public String getPassengerID() {
-        return passengerID;
-    }
-
+    /**
+     * Get Passenger departure Seat
+     * @return Seat
+     */
     public Seat getDepartureSeat() {
         return departureSeat;
     }
 
+    /**
+     * Get Passenger return Seat
+     * @return Seat
+     */
     public Seat getReturnSeat() {
         return returnSeat;
     }
 
+    /**
+     * Set Passenger title
+     * @param title String, <code>null</code> for "Prefer not to say"
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Set Passenger name
+     * @param name String
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Set Passenger surname
+     * @param surname String
+     */
     public void setSurname(String surname) {
         this.surname = surname;
     }
 
+    /**
+     * Set Passenger departure Seat
+     * @param s Seat
+     */
     public void setDepartureSeat(Seat s) {
         if (departureSeat != null && !departureSeat.equals(oldDepartureSeat)) {
             departureSeat.setPassengerID(null);
@@ -110,6 +151,10 @@ public class Passenger extends DBConnectivity {
         departureSeat.setPassengerID(passengerID);
     }
 
+    /**
+     * Set Passenger return Seat
+     * @param s Seat
+     */
     public void setReturnSeat(Seat s) {
         if (returnSeat != null && !returnSeat.equals(oldReturnSeat)) {
             returnSeat.setPassengerID(null);
@@ -118,6 +163,10 @@ public class Passenger extends DBConnectivity {
         returnSeat.setPassengerID(passengerID);
     }
 
+    /**
+     * Update database with the relevant Passenger details
+     * <br>This should only be called from <code>Booking.updateDatabase()</code>
+     */
     @Override
     protected void updateDatabase() {
         try {
@@ -155,6 +204,10 @@ public class Passenger extends DBConnectivity {
         }
     }
 
+    /**
+     * Update seat database with the relevant Passenger Seat details
+     * <br>This should only be called from <code>Booking.updateDatabase()</code>
+     */
     protected void updateSeatsDatabase() {
         if (!passengerID.equals("-1")) {
             throw new UnsupportedOperationException("Cannot update passenger seats database on an already existing passenger!");
@@ -176,6 +229,10 @@ public class Passenger extends DBConnectivity {
         }
     }
 
+    /**
+     * Get the Passenger details for debug purposes
+     * @return String of all details
+     */
     @Override
     public String toString() {
         return "Passenger{" +

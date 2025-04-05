@@ -13,10 +13,17 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 
+/**
+ * Main class containing <code>public static void main</code> and the main JFrame
+ */
 public final class Main {
     public static final JFrame frame = new JFrame();
     private static JPanel previousPanel;
 
+    /**
+     * Entry point into the program
+     * @param args use <code>--generate</code> to launch generate flight and bookings into database
+     */
     public static void main(String[] args) {
         try {
             String jarDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
@@ -34,6 +41,10 @@ public final class Main {
         }
     }
 
+    /**
+     * Set the passed in panel as the JFrame's content pane and render to screen
+     * @param panel JPanel
+     */
     public static void createAndShowGUI(JPanel panel) {
         // catch if any panel throws exception e.g. FlightSelection
         try {
@@ -54,10 +65,17 @@ public final class Main {
         frame.setVisible(true);
     }
 
+    /**
+     * Render the stored previous JPanel allowing the program and user to store 1 previous JPanel to render without regenerating the JPanel
+     */
     public static void returnToPreviousMenu() {
         createAndShowGUI(previousPanel);
     }
 
+    /**
+     * Get JFrame size excluding all borders, titles and insets
+     * @return new Dimension(width, height)
+     */
     public static Dimension getFrameSize() {
         Insets insets = frame.getInsets();
         int width = frame.getWidth() - insets.left - insets.right;

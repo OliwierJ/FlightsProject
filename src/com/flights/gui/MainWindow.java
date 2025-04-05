@@ -33,6 +33,8 @@ public class MainWindow extends JPanel  implements ItemListener, FlightsConstant
     private final JPlaceHolderTextField departureField;
     private final JPlaceHolderTextField arrivalField;
     private int[] passArray = {1, 0, 0, 0};
+    private final String DEPARTURE_PLACEHOLDER = "Enter departure airport";
+    private final String ARRIVAL_PLACEHOLDER = "Enter arrival airport";
 
     public MainWindow() {
         super(new BorderLayout());

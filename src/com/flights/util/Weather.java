@@ -15,6 +15,9 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Class to access weather details from <a href="https://open-meteo.com">Open Meteo</a> for a specific Flight
+ */
 public class Weather {
     private final LocalTime[] hours = new LocalTime[96];
     private final float[] temperatures = new float[96];
@@ -89,7 +92,9 @@ public class Weather {
     /**
      * Gets the weather data
      * @param l the time to get the weather data from
-     * @return a float[] containing the following in this exact order: weatherCode, windSpeed, windGust, precipitation, temperature. Returns empty array if invalid time
+     * @return a float[] containing the following in this exact order:
+     * <br><code>weatherCode, windSpeed, windGust, precipitation, temperature</code>
+     * <br>Returns empty float[5] if invalid time
      */
     public float[] getWeatherData(LocalTime l) {
         int minutes = l.toSecondOfDay() / 60;

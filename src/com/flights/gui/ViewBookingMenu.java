@@ -20,6 +20,9 @@ import java.util.Objects;
 import com.flights.util.FlightsConstants;
 import com.flights.util.Weather;
 
+/**
+ * View Booking Menu Panel used to view a booking, amend its details, delete a booking or check the flight weather
+ */
 public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionListener {
     private final Booking booking;
     private final JPanel passengersCardPanel = new JPanel(new CardLayout());
@@ -32,6 +35,10 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
     private final JPanel[] passengerDetailsPanels;
     private final Font TITLE_FONT = new Font("Arial", Font.BOLD, 26);
 
+    /**
+     * Construct a new ViewBookingMenu JPanel
+     * @param booking the Booking to be displayed
+     */
     public ViewBookingMenu(Booking booking) {
         this.booking = booking;
         passengerDetailsPanels = new JPanel[booking.getPassengerCount()];
@@ -78,6 +85,9 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
         setAllFonts(this);
     }
 
+    /**
+     * Refresh all relevant JLabel text after updating values outside of this JPanel
+     */
     public void refreshText() {
         JPanel cp = passengerDetailsPanels[currentPassenger];
         Passenger p = booking.getPassengers()[currentPassenger];
@@ -99,16 +109,20 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
 
     private void setAllFonts(JPanel p) {
         for (Component c : p.getComponents()) {
-            if ((c instanceof JLabel || c instanceof JButton) && c.getFont().equals(DEFAULT_FONT)) {
+            if ((c instanceof JLabel || c instanceof JButton) && c.getFont().equals(new JLabel().getFont())) {
                 c.setFont(ARIAL20);
             } else if (c instanceof JPanel) {
                 setAllFonts((JPanel) c);
-            } else if (c instanceof JTextField && c.getFont().equals(DEFAULT_FONT_TEXTFIELD)) {
+            } else if (c instanceof JTextField && c.getFont().equals(new JTextField().getFont())) {
                 c.setFont(ARIAL20PLAIN);
             }
         }
     }
 
+    /**
+     * Overridden action listener
+     * @param e the event to be processed
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == back || e.getSource() == next) {
@@ -486,15 +500,15 @@ public class ViewBookingMenu extends JPanel implements FlightsConstants, ActionL
                 p.setBackground(APPLEGREEN);
             }
             BackgroundImagePanel b = switch ((int) weatherData[0]) {
-                case 0, 1 -> new BackgroundImagePanel("src/com/flights/gui/images/sun.png");
-                case 2 -> new BackgroundImagePanel("src/com/flights/gui/images/cloudy.png");
-                case 3 -> new BackgroundImagePanel("src/com/flights/gui/images/cloud.png");
-                case 45, 48 -> new BackgroundImagePanel("src/com/flights/gui/images/fog.png");
-                case 51, 53, 55, 56, 57 -> new BackgroundImagePanel("src/com/flights/gui/images/drizzle.png");
-                case 61, 63, 65, 80, 81, 82 -> new BackgroundImagePanel("src/com/flights/gui/images/rainy.png");
-                case 66, 67 -> new BackgroundImagePanel("src/com/flights/gui/images/freezerain.png");
-                case 71, 73, 75, 77, 85, 86 -> new BackgroundImagePanel("src/com/flights/gui/images/snowy.png");
-                case 95, 96, 99 -> new BackgroundImagePanel("src/com/flights/gui/images/storm.png");
+                case 0, 1 -> new BackgroundImagePanel("/com/flights/gui/images/sun.png");
+                case 2 -> new BackgroundImagePanel("/com/flights/gui/images/cloudy.png");
+                case 3 -> new BackgroundImagePanel("/com/flights/gui/images/cloud.png");
+                case 45, 48 -> new BackgroundImagePanel("/com/flights/gui/images/fog.png");
+                case 51, 53, 55, 56, 57 -> new BackgroundImagePanel("/com/flights/gui/images/drizzle.png");
+                case 61, 63, 65, 80, 81, 82 -> new BackgroundImagePanel("/com/flights/gui/images/rainy.png");
+                case 66, 67 -> new BackgroundImagePanel("/com/flights/gui/images/freezerain.png");
+                case 71, 73, 75, 77, 85, 86 -> new BackgroundImagePanel("/com/flights/gui/images/snowy.png");
+                case 95, 96, 99 -> new BackgroundImagePanel("/com/flights/gui/images/storm.png");
                 default -> throw new IllegalStateException("Unexpected value: " + weatherData[0]);
             };
             setSizes(b, 75, 75);
