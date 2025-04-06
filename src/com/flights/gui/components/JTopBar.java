@@ -72,11 +72,17 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         this.repaint();
     }
 
+    /** @param e the event to be processed */
     @Override
     public void mouseClicked(MouseEvent e) {}
+    /** @param e the event to be processed */
     @Override
     public void mousePressed(MouseEvent e) {}
 
+    /**
+     * Switch to appropriate screen when label in the top bar is clicked
+     * @param e the event to be processed
+     */
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getSource().equals(myBookingLabel)) {
@@ -88,6 +94,10 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         }
     }
 
+    /**
+     * Darken the label text in the top bar when mouse is hovering over the label
+     * @param e the event to be processed
+     */
     @Override
     public void mouseEntered(MouseEvent e) {
         if (!e.getComponent().equals(price)) {
@@ -96,6 +106,10 @@ public class JTopBar extends JPanel implements FlightsConstants, MouseListener {
         }
     }
 
+    /**
+     * Return label to normal when mouse hovers out of the label
+     * @param e the event to be processed
+     */
     @Override
     public void mouseExited(MouseEvent e) {
         e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

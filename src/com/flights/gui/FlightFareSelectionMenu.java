@@ -8,12 +8,23 @@ import com.flights.util.FlightsConstants;
 
 import javax.swing.*;
 import java.awt.*;
+
+/**
+ * Flight Fare Selection Menu used during the Booking process to choose the Booking tier
+ */
 public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
     private final Flight flight;
     private final Flight returnFlight;
     private final int[] passengerTypes;
     private final double price;
 
+    /**
+     * Construct a new FlightFareSelectionMenu JPanel
+     * @param flight the departure Flight
+     * @param returnFlight the return Flight, can be <code>null</code>
+     * @param passArray int[] of passengers and types
+     * @param price current Booking price
+     */
     public FlightFareSelectionMenu(Flight flight, Flight returnFlight, int[] passArray, double price) {
         super();
         this.price = price;
@@ -52,11 +63,6 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
             }
         }
         return totalPrice;
-    }
-    public static void addTickLabels(Container c, int i) {
-        for (int j = 0; j < i; j++) {
-            c.add(new TickLabel());
-        }
     }
 
     private static class InfoPanel extends JPanel {
@@ -214,7 +220,9 @@ public class FlightFareSelectionMenu extends JPanel implements FlightsConstants{
 
             add(holder);
             add(Box.createVerticalStrut(5));
-            addTickLabels(this, perkCount);
+            for (int j = 0; j < perkCount; j++) {
+                add(new TickLabel());
+            }
         }
     }
 }

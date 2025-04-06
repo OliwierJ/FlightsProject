@@ -3,10 +3,17 @@ package com.flights.gui.components;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Class to make a round button Swing component that extends JButton
+ */
 public class RoundButton extends JButton {
 
     private final boolean plus;
 
+    /**
+     * Construct a new RoundButton
+     * @param plus <code>true</code> if a <code>+</code> is to be rendered, <code>false</code> otherwise
+     */
     public RoundButton(boolean plus) {
         super();
         setContentAreaFilled(false);

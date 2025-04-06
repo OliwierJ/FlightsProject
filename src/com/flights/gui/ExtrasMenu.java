@@ -12,11 +12,20 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+/**
+ * Extras menu used during the flight booking process to select extras such as priority boarding and 20kg luggage
+ */
 public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener {
     private final JRadioButton yesButton;
     private final Booking b;
     private double price;
     private final JTopBar topBar = new JTopBar();
+
+    /**
+     * Construct a new ExtrasMenu JPanel
+     * @param booking the current Booking object
+     * @param price the current price of the Booking
+     */
     public ExtrasMenu(Booking booking, double price) {
         this.b = booking;
 
@@ -173,6 +182,10 @@ public class ExtrasMenu extends JPanel implements FlightsConstants, ItemListener
         topBar.updatePrice(price);
     }
 
+    /**
+     * Item Listener run when priority boarding radio buttons are changed
+     * @param e the event to be processed
+     */
     @Override
     public void itemStateChanged(ItemEvent e) {
         if (e.getSource() == yesButton) {

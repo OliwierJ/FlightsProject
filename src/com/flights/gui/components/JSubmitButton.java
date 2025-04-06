@@ -10,7 +10,14 @@ import javax.swing.border.EmptyBorder;
 
 import com.flights.util.FlightsConstants;
 
+/**
+ * Custom button class that extends JButton and includes custom butting styling and font
+ */
 public class JSubmitButton extends JButton implements FlightsConstants {
+    /**
+     * Construct a new JSubmitButton
+     * @param text String text to be displayed inside the button
+     */
     public JSubmitButton(String text) {
         setText(text);
         setBorder(new EmptyBorder(5,20,5,20));

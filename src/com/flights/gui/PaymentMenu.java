@@ -18,6 +18,9 @@ import java.time.format.DateTimeFormatter;
 
 import static com.flights.Main.frame;
 
+/**
+ * Payment Menu used during the Booking process to process payment, finish the Booking and display Booking confirmation to the user
+ */
 public class PaymentMenu extends JPanel implements FlightsConstants {
 
     private final Booking booking;
@@ -26,6 +29,11 @@ public class PaymentMenu extends JPanel implements FlightsConstants {
     private JTextField cardNumberField;
     private final double price;
 
+    /**
+     * Construct a new PaymentMenu JPanel
+     * @param b the current Booking
+     * @param price the current Booking price
+     */
     public PaymentMenu(Booking b, double price) {
         this.booking = b;
         this.price = price;

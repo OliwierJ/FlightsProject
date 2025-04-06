@@ -13,11 +13,21 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+/**
+ * Seat selection screen for the Boeing 737 used to select seats for a new or existing Booking
+ */
 public class SelectSeatBoeing737 extends JPanel implements FlightsConstants {
     private final char[] seatLetters = {'A', 'B', 'C', 'D', 'E', 'F'};
     private String selectedSeat;
     private final Seat[] seatsFromDB;
 
+    /**
+     * Construct a new SelectSeatBoeing737 JPanel
+     * @param seatsFromDB Seat[] of all Flight Seats
+     * @param p Passenger to assign the selected Seat to
+     * @param isReturn <code>true</code> if the Flight is a return Flight, <code>false</code> otherwise
+     * @param price the current Booking price
+     */
     public SelectSeatBoeing737(Seat[] seatsFromDB, Passenger p, boolean isReturn, double price) {
         this.seatsFromDB = seatsFromDB;
         setPreferredSize(Main.getFrameSize());

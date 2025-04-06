@@ -13,11 +13,20 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Set Passengers menu used to enter all passenger details for the Booking, as well as the Booking email
+ */
 public class SetPassengers extends JPanel implements FlightsConstants {
     private final PassengerAdditionPanel[] passengersPanels = new PassengerAdditionPanel[6];
     private final ArrayList<Passenger> passengers = new ArrayList<>();
     private int count = 0;
 
+    /**
+     * Construct a new SetPassengers JPanel
+     * @param b the current Booking
+     * @param passengerType int[] of all Passengers grouped by type
+     * @param price the current Booking price
+     */
     public SetPassengers(Booking b, int[] passengerType, double price) {
         setPreferredSize(Main.getFrameSize());
         setLayout(new BorderLayout());
